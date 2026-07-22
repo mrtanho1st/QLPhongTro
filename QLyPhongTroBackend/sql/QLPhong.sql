@@ -13,6 +13,19 @@ GO
 USE QuanLyPhongTro;
 GO
 
+CREATE TABLE Districts
+(
+    DistrictId INT IDENTITY PRIMARY KEY,
+    DistrictName NVARCHAR(50) NOT NULL UNIQUE
+);
+GO
+
+CREATE TABLE TypeRooms
+(
+    TypeRoomId INT IDENTITY PRIMARY KEY,
+    TypeRoomName NVARCHAR(50) NOT NULL UNIQUE
+);
+
 CREATE TABLE Buildings
 (
     BuildingId INT IDENTITY PRIMARY KEY,
@@ -95,16 +108,3 @@ CREATE TABLE RoomMedia
     FOREIGN KEY(RoomId) REFERENCES Rooms(RoomId)
 );
 GO
-
-CREATE TABLE Districts
-(
-    DistrictId INT IDENTITY PRIMARY KEY,
-    DistrictName NVARCHAR(50) NOT NULL UNIQUE
-);
-GO
-
-CREATE TABLE TypeRooms
-(
-    TypeRoomId INT IDENTITY PRIMARY KEY,
-    TypeRoomName NVARCHAR(50) NOT NULL UNIQUE
-);

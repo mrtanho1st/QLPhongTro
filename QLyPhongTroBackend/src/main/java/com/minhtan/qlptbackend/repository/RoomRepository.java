@@ -33,4 +33,6 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     List<Room> findByAvailableDate(LocalDate availableDate);
 
     List<Room> findByNote(String note);
+
+    List<Room> findByTypeRoomId(Integer typeRoomId);
 }

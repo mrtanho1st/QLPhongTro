@@ -16,4 +16,6 @@ public interface BuildingRepository extends JpaRepository<Building, Integer> {
 
     List<Building> findByOwnerPhone(String ownerPhone);
 
+    List<Building> findByDistrictId(Integer districtId);
+
 }

@@ -1,6 +1,7 @@
 package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.Room;
+import com.minhtan.qlptbackend.entity.TypeRoom;
 import com.minhtan.qlptbackend.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,10 @@ public class RoomService {
 
     public List<Room> searchByPrice(BigDecimal price) {
         return roomRepository.findByPrice(price);
+    }
+
+    public List<Room> searchByTypeRoomId(Integer typeRoomId) {
+        return roomRepository.findByTypeRoomId(typeRoomId);
     }
 
     public List<Room> searchByBedroom(Integer bedroom) {

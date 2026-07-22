@@ -36,6 +36,10 @@ public class BuildingService {
         return buildingRepository.findByOwnerPhone(ownerPhone);
     }
 
+    public List<Building> searchByDistrictId(Integer districtId) {
+        return buildingRepository.findByDistrictId(districtId);
+    }
+    
     public Optional<Building> getBuildingById(Integer buildingId) {
         return buildingRepository.findById(buildingId);
     }
