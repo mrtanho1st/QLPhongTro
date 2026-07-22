@@ -4,6 +4,7 @@ import com.minhtan.qlptclient.entity.Amenity;
 import com.minhtan.qlptclient.entity.Building;
 import com.minhtan.qlptclient.entity.Room;
 import com.minhtan.qlptclient.entity.RoomAmenity;
+import com.minhtan.qlptclient.entity.TypeRoom;
 import com.minhtan.qlptclient.gui.RoomGUI;
 import com.minhtan.qlptclient.gui.RoomMediaDialog;
 import com.minhtan.qlptclient.service.ApiClient;
@@ -36,10 +37,10 @@ public class RoomController {
             }
             view.getRoomIdField().setText(valueOrEmpty(selected.getRoomId()));
             selectBuilding(selected.getBuildingId());
+            selectTypeRoom(selected.getTypeRoomId());
             view.getRoomCodeField().setText(valueOrEmpty(selected.getRoomCode()));
             view.getPriceField().setText(valueOrEmpty(selected.getPrice()));
             view.getBedroomField().setText(valueOrEmpty(selected.getBedroom()));
-            view.getHasKitchenBox().setSelected(Boolean.TRUE.equals(selected.getHasKitchen()));
             view.getPersonLimitField().setText(valueOrEmpty(selected.getPersonLimit()));
             view.getAreaField().setText(valueOrEmpty(selected.getArea()));
             view.getLockedBox().setSelected(Boolean.TRUE.equals(selected.getLocked()));
@@ -69,9 +70,10 @@ public class RoomController {
             @Override
             protected RoomPageData call() throws Exception {
                 List<Building> buildings = apiClient.getBuildings();
+                List<TypeRoom> typeRooms = apiClient.getTypeRooms();
                 List<Room> rooms = apiClient.getRooms();
                 List<Amenity> amenities = apiClient.getAmenities();
-                return new RoomPageData(rooms, buildings, amenities);
+                return new RoomPageData(rooms, buildings, amenities, typeRooms);
             }
         };
 
@@ -109,10 +111,10 @@ public class RoomController {
             protected List<Room> call() throws Exception {
                 return switch (mode) {
                     case "Building ID" -> apiClient.searchRoomsByBuildingId(Integer.valueOf(keyword));
+                    case "Type Room Name" -> apiClient.searchRoomsByTypeRoomName(keyword);
                     case "Room Code" -> apiClient.searchRoomsByRoomCode(keyword);
                     case "Price" -> apiClient.searchRoomsByPrice(keyword);
                     case "Bedroom" -> apiClient.searchRoomsByBedroom(Integer.valueOf(keyword));
-                    case "Has Kitchen" -> apiClient.searchRoomsByHasKitchen(Boolean.valueOf(keyword));
                     case "Person Limit" -> apiClient.searchRoomsByPersonLimitGreaterThanEqual(Integer.valueOf(keyword));
                     case "Area" -> apiClient.searchRoomsByAreaGreaterThanEqual(keyword);
                     case "Locked" -> apiClient.searchRoomsByLocked(Boolean.valueOf(keyword));
@@ -319,6 +321,11 @@ public class RoomController {
             throw new IllegalArgumentException("Hãy chọn Building ID từ danh sách tòa nhà.");
         }
 
+        TypeRoom selectedTypeRoom = view.getTypeRoomBox().getValue();
+        if (selectedTypeRoom == null || selectedTypeRoom.getTypeRoomId() == null) {
+            throw new IllegalArgumentException("Hãy chọn Type Room ID từ danh sách loại phòng.");
+        }
+
         Room room = new Room();
         String roomIdText = textOf(view.getRoomIdField().getText());
         if (!roomIdText.isBlank()) {
@@ -326,10 +333,11 @@ public class RoomController {
         }
         room.setBuildingId(selectedBuilding.getBuildingId());
         room.setBuilding(null);
+        room.setTypeRoomId(selectedTypeRoom.getTypeRoomId());
+        room.setTypeRoom(null);
         room.setRoomCode(textOf(view.getRoomCodeField().getText()));
         room.setPrice(decimalOrNull(view.getPriceField().getText(), "Price"));
         room.setBedroom(integerOrNull(view.getBedroomField().getText(), "Bedroom"));
-        room.setHasKitchen(view.getHasKitchenBox().isSelected());
         room.setPersonLimit(integerOrNull(view.getPersonLimitField().getText(), "Person Limit"));
         room.setArea(decimalOrNull(view.getAreaField().getText(), "Area"));
         room.setLocked(view.getLockedBox().isSelected());
@@ -350,6 +358,20 @@ public class RoomController {
                 .ifPresentOrElse(
                         building -> view.getBuildingBox().getSelectionModel().select(building),
                         () -> view.getBuildingBox().getSelectionModel().clearSelection());
+    }
+
+    private void selectTypeRoom(Integer typeRoomId) {
+        if (typeRoomId == null) {
+            view.getTypeRoomBox().getSelectionModel().clearSelection();
+            return;
+        }
+
+        view.getTypeRoomItems().stream()
+                .filter(typeRoom -> typeRoomId.equals(typeRoom.getTypeRoomId()))
+                .findFirst()
+                .ifPresentOrElse(
+                        typeRoom -> view.getTypeRoomBox().getSelectionModel().select(typeRoom),
+                        () -> view.getTypeRoomBox().getSelectionModel().clearSelection());
     }
 
     private void handleTaskFailure(Task<?> task, String fallbackMessage) {
@@ -419,7 +441,8 @@ public class RoomController {
         });
     }
 
-    private record RoomPageData(List<Room> rooms, List<Building> buildings, List<Amenity> amenities) {
+    private record RoomPageData(List<Room> rooms, List<Building> buildings, List<Amenity> amenities,
+            List<TypeRoom> typeRooms) {
     }
 
     @FunctionalInterface

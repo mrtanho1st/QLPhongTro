@@ -3,7 +3,7 @@ package com.minhtan.qlptclient.gui;
 import com.minhtan.qlptclient.entity.Amenity;
 import com.minhtan.qlptclient.entity.Building;
 import com.minhtan.qlptclient.entity.Room;
-import com.minhtan.qlptclient.service.ApiClient;
+import com.minhtan.qlptclient.entity.TypeRoom;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -40,6 +40,7 @@ public class RoomGUI extends BorderPane {
     private final Label statusLabel = new Label("Sẵn sàng kết nối API backend");
     private final ObservableList<Room> roomItems = FXCollections.observableArrayList();
     private final ObservableList<Building> buildingItems = FXCollections.observableArrayList();
+    private final ObservableList<TypeRoom> typeRoomItems = FXCollections.observableArrayList();
     private final ObservableList<Amenity> amenityItems = FXCollections.observableArrayList();
     private final ObservableList<Amenity> availableAmenityItems = FXCollections.observableArrayList();
     private final TableView<Room> roomList = new TableView<>(roomItems);
@@ -48,7 +49,7 @@ public class RoomGUI extends BorderPane {
     private final TextField roomCodeField = new TextField();
     private final TextField priceField = new TextField();
     private final TextField bedroomField = new TextField();
-    private final CheckBox hasKitchenBox = new CheckBox("Có bếp");
+    private final ComboBox<TypeRoom> typeRoomBox = new ComboBox<>(typeRoomItems);
     private final TextField personLimitField = new TextField();
     private final TextField areaField = new TextField();
     private final CheckBox lockedBox = new CheckBox("Đã khóa");
@@ -57,10 +58,10 @@ public class RoomGUI extends BorderPane {
     private final ComboBox<String> searchModeBox = new ComboBox<>(FXCollections.observableArrayList(
             "All",
             "Building ID",
+            "Type Room Name",
             "Room Code",
             "Price",
             "Bedroom",
-            "Has Kitchen",
             "Person Limit", // >= x
             "Area", // >= x
             "Locked", // 0:false or 1:true
@@ -88,12 +89,14 @@ public class RoomGUI extends BorderPane {
 
         configureRoomTable();
         configureBuildingComboBox();
+        configureTypeRoomComboBox();
 
         roomList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         roomIdField.setEditable(false);
         roomIdField.setPromptText("Tự động");
         buildingBox.setPromptText("Chọn tòa nhà");
+        typeRoomBox.setPromptText("Chọn loại phòng");
         roomCodeField.setPromptText("Mã phòng");
         priceField.setPromptText("Giá phòng");
         bedroomField.setPromptText("Số phòng ngủ");
@@ -135,7 +138,7 @@ public class RoomGUI extends BorderPane {
         form.addRow(2, new Label("Room Code"), roomCodeField);
         form.addRow(3, new Label("Price"), priceField);
         form.addRow(4, new Label("Bedroom"), bedroomField);
-        form.addRow(5, new Label("Has Kitchen"), hasKitchenBox);
+        form.addRow(5, new Label("Type room"), typeRoomBox);
         form.addRow(6, new Label("Person Limit"), personLimitField);
         form.addRow(7, new Label("Area"), areaField);
         form.addRow(8, new Label("Locked"), lockedBox);
@@ -145,6 +148,7 @@ public class RoomGUI extends BorderPane {
                 .filter(node -> node instanceof TextField)
                 .forEach(node -> ((TextField) node).setMaxWidth(Double.MAX_VALUE));
         buildingBox.setMaxWidth(Double.MAX_VALUE);
+        typeRoomBox.setMaxWidth(Double.MAX_VALUE);
         availableDatePicker.setMaxWidth(Double.MAX_VALUE);
 
         HBox actionBar = new HBox(10, createButton, updateButton, deleteButton, clearButton);
@@ -207,10 +211,9 @@ public class RoomGUI extends BorderPane {
         bedroomColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getBedroom()));
         bedroomColumn.setPrefWidth(90);
 
-        TableColumn<Room, String> kitchenColumn = new TableColumn<>("Kitchen");
-        kitchenColumn.setCellValueFactory(
-                cellData -> new ReadOnlyStringWrapper(booleanText(cellData.getValue().getHasKitchen())));
-        kitchenColumn.setPrefWidth(90);
+        TableColumn<Room, String> typeRoomColumn = new TableColumn<>("Type Room");
+        typeRoomColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(typeRoomText(cellData.getValue())));
+        typeRoomColumn.setPrefWidth(210);
 
         TableColumn<Room, Integer> personLimitColumn = new TableColumn<>("Person Limit");
         personLimitColumn
@@ -237,7 +240,7 @@ public class RoomGUI extends BorderPane {
         noteColumn.setPrefWidth(180);
 
         roomList.getColumns().setAll(List.of(idColumn, buildingColumn, codeColumn, priceColumn, bedroomColumn,
-                kitchenColumn, personLimitColumn, areaColumn, lockedColumn, availableDateColumn, noteColumn));
+                typeRoomColumn, personLimitColumn, areaColumn, lockedColumn, availableDateColumn, noteColumn));
         roomList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         roomList.setPlaceholder(new Label("Chưa có dữ liệu phòng"));
         roomList.setStyle(
@@ -247,6 +250,11 @@ public class RoomGUI extends BorderPane {
     private void configureBuildingComboBox() {
         buildingBox.setCellFactory(comboBox -> new BuildingListCell());
         buildingBox.setButtonCell(new BuildingListCell());
+    }
+
+    private void configureTypeRoomComboBox() {
+        typeRoomBox.setCellFactory(comboBox -> new TypeRoomListCell());
+        typeRoomBox.setButtonCell(new TypeRoomListCell());
     }
 
     private String buildingText(Room room) {
@@ -272,6 +280,17 @@ public class RoomGUI extends BorderPane {
         return id.isBlank() ? trueAddress : id + " - " + trueAddress;
     }
 
+    private String typeRoomText(Room room) {
+        if (room == null) {
+            return "";
+        }
+        TypeRoom typeRoom = room.getTypeRoom();
+        if (typeRoom != null && typeRoom.getTypeRoomName() != null && !typeRoom.getTypeRoomName().isBlank()) {
+            return typeRoom.getTypeRoomName();
+        }
+        return room.getTypeRoomId() == null ? "" : String.valueOf(room.getTypeRoomId());
+    }
+
     private String booleanText(Boolean value) {
         return Boolean.TRUE.equals(value) ? "True" : "False";
     }
@@ -290,6 +309,7 @@ public class RoomGUI extends BorderPane {
         String fieldStyle = "-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;";
         roomIdField.setStyle(fieldStyle);
         buildingBox.setStyle(fieldStyle);
+        typeRoomBox.setStyle(fieldStyle);
         roomCodeField.setStyle(fieldStyle);
         priceField.setStyle(fieldStyle);
         bedroomField.setStyle(fieldStyle);
@@ -352,8 +372,8 @@ public class RoomGUI extends BorderPane {
         return bedroomField;
     }
 
-    public CheckBox getHasKitchenBox() {
-        return hasKitchenBox;
+    public ComboBox<TypeRoom> getTypeRoomBox() {
+        return typeRoomBox;
     }
 
     public TextField getPersonLimitField() {
@@ -435,7 +455,9 @@ public class RoomGUI extends BorderPane {
     public ObservableList<Building> getBuildingItems() {
         return buildingItems;
     }
-
+    public ObservableList<TypeRoom> getTypeRoomItems() {
+        return typeRoomItems;
+    }
     public ObservableList<Amenity> getAmenityItems() {
         return amenityItems;
     }
@@ -457,7 +479,7 @@ public class RoomGUI extends BorderPane {
         roomCodeField.clear();
         priceField.clear();
         bedroomField.clear();
-        hasKitchenBox.setSelected(false);
+        typeRoomBox.getSelectionModel().clearSelection();
         personLimitField.clear();
         areaField.clear();
         lockedBox.setSelected(false);
@@ -477,6 +499,14 @@ public class RoomGUI extends BorderPane {
         }
     }
 
+    private class TypeRoomListCell extends ListCell<TypeRoom> {
+        @Override
+        protected void updateItem(TypeRoom typeRoom, boolean empty) {
+            super.updateItem(typeRoom, empty);
+            setText(empty || typeRoom == null ? null : typeRoomText(typeRoom));
+        }
+    }
+
     private class AmenityListCell extends ListCell<Amenity> {
         @Override
         protected void updateItem(Amenity amenity, boolean empty) {
@@ -491,6 +521,15 @@ public class RoomGUI extends BorderPane {
         }
         String name = textOrEmpty(amenity.getName());
         String id = amenity.getAmenityId() == null ? "" : String.valueOf(amenity.getAmenityId());
+        return id.isBlank() ? name : id + " - " + name;
+    }
+
+    private String typeRoomText(TypeRoom typeRoom) {
+        if (typeRoom == null) {
+            return "";
+        }
+        String name = textOrEmpty(typeRoom.getTypeRoomName());
+        String id = typeRoom.getTypeRoomId() == null ? "" : String.valueOf(typeRoom.getTypeRoomId());
         return id.isBlank() ? name : id + " - " + name;
     }
 }

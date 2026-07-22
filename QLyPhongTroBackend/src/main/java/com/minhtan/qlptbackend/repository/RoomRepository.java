@@ -18,8 +18,6 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
 
     List<Room> findByBedroom(Integer bedroom);
 
-    List<Room> findByHasKitchen(Boolean hasKitchen);
-
     List<Room> findByPersonLimit(Integer personLimit);
 
     List<Room> findByPersonLimitGreaterThanEqual(Integer personLimit);

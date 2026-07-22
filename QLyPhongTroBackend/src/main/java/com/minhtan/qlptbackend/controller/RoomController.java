@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -29,6 +32,11 @@ public class RoomController {
         return roomService.searchByBuildingId(buildingId);
     }
 
+    @GetMapping("/search/type-room-id/{typeRoomId}")
+    public List<Room> searchByTypeRoomId(@PathVariable Integer typeRoomId) {
+        return roomService.searchByTypeRoomId(typeRoomId);
+    }
+
     @GetMapping("/search/room-code")
     public List<Room> searchByRoomCode(@RequestParam String roomCode) {
         return roomService.searchByRoomCode(roomCode);
@@ -42,11 +50,6 @@ public class RoomController {
     @GetMapping("/search/bedroom/{bedroom}")
     public List<Room> searchByBedroom(@PathVariable Integer bedroom) {
         return roomService.searchByBedroom(bedroom);
-    }
-
-    @GetMapping("/search/has-kitchen/{hasKitchen}")
-    public List<Room> searchByHasKitchen(@PathVariable Boolean hasKitchen) {
-        return roomService.searchByHasKitchen(hasKitchen);
     }
 
     @GetMapping("/search/person-limit/{personLimit}")

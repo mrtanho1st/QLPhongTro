@@ -26,12 +26,15 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 
 import com.minhtan.qlptclient.entity.Building;
+import com.minhtan.qlptclient.entity.District;
 
 public class BuildingGUI extends BorderPane {
 
     private final Label statusLabel = new Label("Sẵn sàng kết nối API backend");
     private final ObservableList<Building> buildingItems = FXCollections.observableArrayList();
+    private final ObservableList<District> districtItems = FXCollections.observableArrayList();
     private final TableView<Building> buildingList = new TableView<>(buildingItems);
+    private final ComboBox<District> districtComboBox = new ComboBox<>(districtItems);
     private final TextField buildingIdField = new TextField();
     private final TextField trueAddressField = new TextField();
     private final TextField fakeAddressField = new TextField();
@@ -39,6 +42,7 @@ public class BuildingGUI extends BorderPane {
     private final TextField ownerPhoneField = new TextField();
     private final ComboBox<String> searchModeBox = new ComboBox<>(FXCollections.observableArrayList(
             "All",
+            "District Name",
             "True Address",
             "Fake Address",
             "Note",

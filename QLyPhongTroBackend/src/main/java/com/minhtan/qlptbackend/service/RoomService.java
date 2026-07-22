@@ -43,10 +43,6 @@ public class RoomService {
         return roomRepository.findByBedroom(bedroom);
     }
 
-    public List<Room> searchByHasKitchen(Boolean hasKitchen) {
-        return roomRepository.findByHasKitchen(hasKitchen);
-    }
-
     public List<Room> searchByPersonLimit(Integer personLimit) {
         return roomRepository.findByPersonLimit(personLimit);
     }

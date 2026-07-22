@@ -23,6 +23,11 @@ public class BuildingController {
         return buildingService.getAllBuildings();
     }
 
+    @GetMapping("/search/district-id/{districtId}")
+    public List<Building> searchByDistrictId(@PathVariable Integer districtId) {
+        return buildingService.searchByDistrictId(districtId);
+    }
+
     @GetMapping("/search/true-address")
     public List<Building> searchByTrueAddress(@RequestParam String trueAddress) {
         return buildingService.searchByTrueAddress(trueAddress);

@@ -11,10 +11,11 @@ public class Room {
     private Integer roomId;
     private Integer buildingId;
     private Building building;
+    private Integer typeRoomId;
+    private TypeRoom typeRoom;
     private String roomCode;
     private BigDecimal price;
     private Integer bedroom;
-    private Boolean hasKitchen;
     private Integer personLimit;
     private BigDecimal area;
     private Boolean locked;
@@ -24,17 +25,17 @@ public class Room {
     public Room() {
     }
 
-    public Room(Integer roomId, Integer buildingId, Building building, String roomCode, BigDecimal price,
-            Integer bedroom,
-            Boolean hasKitchen, Integer personLimit, BigDecimal area, Boolean locked, LocalDate availableDate,
+    public Room(Integer roomId, Integer buildingId, Building building, Integer typeRoomId, TypeRoom typeRoom, String roomCode, BigDecimal price,
+            Integer bedroom, Integer personLimit, BigDecimal area, Boolean locked, LocalDate availableDate,
             String note) {
         this.roomId = roomId;
         this.buildingId = buildingId;
         this.building = building;
+        this.typeRoomId = typeRoomId;
+        this.typeRoom = typeRoom;
         this.roomCode = roomCode;
         this.price = price;
         this.bedroom = bedroom;
-        this.hasKitchen = hasKitchen;
         this.personLimit = personLimit;
         this.area = area;
         this.locked = locked;
@@ -90,14 +91,6 @@ public class Room {
         this.bedroom = bedroom;
     }
 
-    public Boolean getHasKitchen() {
-        return hasKitchen;
-    }
-
-    public void setHasKitchen(Boolean hasKitchen) {
-        this.hasKitchen = hasKitchen;
-    }
-
     public Integer getPersonLimit() {
         return personLimit;
     }
@@ -138,15 +131,31 @@ public class Room {
         this.note = note;
     }
 
+    public Integer getTypeRoomId() {
+        return typeRoomId;
+    }
+
+    public void setTypeRoomId(Integer typeRoomId) {
+        this.typeRoomId = typeRoomId;
+    }
+
+    public TypeRoom getTypeRoom() {
+        return typeRoom;
+    }
+
+    public void setTypeRoom(TypeRoom typeRoom) {
+        this.typeRoom = typeRoom;
+    }
+
     @Override
     public String toString() {
         return "Room{" +
                 "roomId=" + roomId +
                 ", buildingId=" + buildingId +
+                ", typeRoomId=" + typeRoomId +
                 ", roomCode='" + roomCode + '\'' +
                 ", price=" + price +
                 ", bedroom=" + bedroom +
-                ", hasKitchen=" + hasKitchen +
                 ", personLimit=" + personLimit +
                 ", area=" + area +
                 ", locked=" + locked +

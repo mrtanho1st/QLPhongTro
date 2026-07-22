@@ -10,6 +10,7 @@ import com.minhtan.qlptclient.entity.Commission;
 import com.minhtan.qlptclient.entity.Room;
 import com.minhtan.qlptclient.entity.RoomAmenity;
 import com.minhtan.qlptclient.entity.RoomMedia;
+import com.minhtan.qlptclient.entity.TypeRoom;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,6 +37,11 @@ public class ApiClient {
 
     public List<Building> getBuildings() throws IOException, InterruptedException {
         return getList("/api/buildings", new TypeReference<List<Building>>() {
+        });
+    }
+
+    public List<TypeRoom> getTypeRooms() throws IOException, InterruptedException {
+        return getList("/api/type-rooms", new TypeReference<List<TypeRoom>>() {
         });
     }
 
@@ -130,9 +136,10 @@ public class ApiClient {
         });
     }
 
-    public List<Room> searchRoomsByHasKitchen(Boolean hasKitchen) throws IOException, InterruptedException {
-        return getList("/api/rooms/search/has-kitchen/" + hasKitchen, new TypeReference<List<Room>>() {
-        });
+    public List<Room> searchRoomsByTypeRoomName(String typeRoomName) throws IOException, InterruptedException {
+        return getList("/api/rooms/search/type-room-name?name=" + encode(typeRoomName),
+                new TypeReference<List<Room>>() {
+                });
     }
 
     public List<Room> searchRoomsByPersonLimit(Integer personLimit) throws IOException, InterruptedException {
