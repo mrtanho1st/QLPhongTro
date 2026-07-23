@@ -19,8 +19,8 @@ public class BuildingController {
     public BuildingController(BuildingGUI view) {
         this.view = view;
         wireEvents();
-        loadBuildings();
-        loadDistricts();
+        loadBuildingPage();
+        
     }
 
     private void wireEvents() {
@@ -38,7 +38,7 @@ public class BuildingController {
             loadBuildingFee(selected.getBuildingId());
         });
 
-        view.getRefreshButton().setOnAction(event -> loadBuildings());
+        view.getRefreshButton().setOnAction(event -> loadBuildingPage());
         view.getSearchButton().setOnAction(event -> searchBuildings());
         view.getCreateButton().setOnAction(event -> createBuilding());
         view.getUpdateButton().setOnAction(event -> updateBuilding());
@@ -50,7 +50,8 @@ public class BuildingController {
         view.getClearFeeButton().setOnAction(event -> clearFeeFormForSelectedBuilding());
     }
 
-    private void loadBuildings() {
+    private void loadBuildingPage() {
+        loadDistricts();
         runLoadTask("Đang tải /api/buildings...", apiClient::getBuildings);
     }
 
@@ -79,7 +80,7 @@ public class BuildingController {
         String mode = view.getSearchModeBox().getValue();
 
         if ("All".equals(mode)) {
-            loadBuildings();
+            loadBuildingPage();
             return;
         }
 
@@ -242,7 +243,7 @@ public class BuildingController {
 
         task.setOnSucceeded(workerStateEvent -> {
             view.setStatus("Thực hiện thành công");
-            loadBuildings();
+            loadBuildingPage();
             if (!view.getBuildingIdField().getText().isBlank()) {
                 loadBuildingFee(Integer.valueOf(view.getBuildingIdField().getText()));
             }

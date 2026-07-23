@@ -14,6 +14,8 @@ public class MainController {
         new CommissionController(view.getCommissionGUI());
         new HomeDashboardController(view.getHomeDashboardPane());
         new SearchRoomController(view.getSearchRoomGUI());
+        new DistrictController(view.getDistrictGUI());
+        new TypeRoomController(view.getTypeRoomGUI());
         wireEvents();
         showHome();
     }
@@ -25,6 +27,8 @@ public class MainController {
         view.getAmenityButton().setOnAction(event -> showAmenity());
         view.getCommissionButton().setOnAction(event -> showCommission());
         view.getSearchButton().setOnAction(event -> showSearchRoom());
+        view.getDistrictButton().setOnAction(event -> showDistrict());
+        view.getTypeRoomButton().setOnAction(event -> showTypeRoom());
     }
 
     private void showHome() {
@@ -49,5 +53,13 @@ public class MainController {
 
     private void showSearchRoom() {
         view.setPage("Tìm phòng trọ", view.getSearchRoomGUI(), view.getSearchButton());
+    }
+
+    private void showDistrict() {
+        view.setPage("Quản lý quận", view.getDistrictGUI(), view.getDistrictButton());
+    }
+
+    private void showTypeRoom() {
+        view.setPage("Quản lý loại phòng", view.getTypeRoomGUI(), view.getTypeRoomButton());
     }
 }

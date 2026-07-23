@@ -120,7 +120,7 @@ public class BuildingGUI extends BorderPane {
         fieldColumn.setHgrow(Priority.ALWAYS);
         form.getColumnConstraints().addAll(labelColumn, fieldColumn);
         form.addRow(0, textFieldLabel("Building ID"), buildingIdField);
-        form.addRow(1, textFieldLabel("District"), districtBox);
+        form.addRow(1, textFieldLabel("District Name"), districtBox);
         form.addRow(2, textFieldLabel("True Address"), trueAddressField);
         form.addRow(3, textFieldLabel("Fake Address"), fakeAddressField);
         form.addRow(4, textFieldLabel("Note"), noteField);
@@ -189,15 +189,22 @@ public class BuildingGUI extends BorderPane {
         setStyle("-fx-background-color: #f3f6fb;");
         styleControls();
     }
-    private void configureDistrictComboBox(){
+
+    private void configureDistrictComboBox() {
         districtBox.setCellFactory(comboBox -> new DistrictListCell());
         districtBox.setButtonCell(new DistrictListCell());
     }
+
     private void configureBuildingTable() {
         TableColumn<Building, Integer> idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getBuildingId()));
         idColumn.setPrefWidth(70);
         idColumn.setMinWidth(64);
+
+        TableColumn<Building, String> districtColumn = new TableColumn<>("District Name");
+        districtColumn.setCellValueFactory(
+                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getDistrict() != null ? cellData.getValue().getDistrict().getDistrictName() : "")));
+        districtColumn.setPrefWidth(140);
 
         TableColumn<Building, String> trueAddressColumn = new TableColumn<>("True Address");
         trueAddressColumn.setCellValueFactory(
@@ -219,7 +226,7 @@ public class BuildingGUI extends BorderPane {
                 cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getOwnerPhone())));
         ownerPhoneColumn.setPrefWidth(140);
 
-        buildingList.getColumns().setAll(List.of(idColumn, trueAddressColumn, fakeAddressColumn, noteColumn,
+        buildingList.getColumns().setAll(List.of(idColumn, districtColumn, trueAddressColumn, fakeAddressColumn, noteColumn,
                 ownerPhoneColumn));
         buildingList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         buildingList.setPlaceholder(new Label("Chưa có dữ liệu tòa nhà"));
@@ -416,7 +423,7 @@ public class BuildingGUI extends BorderPane {
     public void setStatus(String text) {
         statusLabel.setText(text);
     }
-    
+
     public ComboBox<District> getDistrictBox() {
         return districtBox;
     }

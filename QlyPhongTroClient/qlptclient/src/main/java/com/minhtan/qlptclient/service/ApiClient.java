@@ -335,6 +335,59 @@ public class ApiClient {
         ensureSuccess(response);
     }
 
+    // District api
+    public District createDistrict(District district) throws IOException, InterruptedException {
+        return sendJson("/api/districts", "POST", district, District.class);
+    }
+
+    public District updateDistrict(Integer districtId, District district) throws IOException, InterruptedException {
+        return sendJson("/api/districts/" + districtId, "PUT", district, District.class);
+    }
+
+    public void deleteDistrict(Integer districtId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/api/districts/" + districtId))
+                .timeout(Duration.ofSeconds(20))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        ensureSuccess(response);
+    }
+
+    public List<District> searchDistrictsByName(String districtName) throws IOException, InterruptedException {
+        return getList("/api/districts/search/district-name/" + encode(districtName),
+                new TypeReference<List<District>>() {
+                });
+    }
+
+    // TypeRoom api
+    public TypeRoom createTypeRoom(TypeRoom typeRoom) throws IOException, InterruptedException {
+        return sendJson("/api/type-rooms", "POST", typeRoom, TypeRoom.class);
+    }
+
+    public TypeRoom updateTypeRoom(Integer typeRoomId, TypeRoom typeRoom) throws IOException, InterruptedException {
+        return sendJson("/api/type-rooms/" + typeRoomId, "PUT", typeRoom, TypeRoom.class);
+    }
+
+    public void deleteTypeRoom(Integer typeRoomId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/api/type-rooms/" + typeRoomId))
+                .timeout(Duration.ofSeconds(20))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        ensureSuccess(response);
+    }
+
+    public List<TypeRoom> searchTypeRoomsByName(String typeRoomName) throws IOException, InterruptedException {
+        return getList("/api/type-rooms/search/name?name=" + encode(typeRoomName),
+                new TypeReference<List<TypeRoom>>() {
+                });
+    }
+
+    // Ensures the HTTP response is successful
     private static void ensureSuccess(HttpResponse<String> response) {
         int statusCode = response.statusCode();
         if (statusCode < 200 || statusCode >= 300) {

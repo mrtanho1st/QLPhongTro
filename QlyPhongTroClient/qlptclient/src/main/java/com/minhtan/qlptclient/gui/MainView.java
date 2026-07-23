@@ -22,14 +22,18 @@ public class MainView extends BorderPane {
     private final AmenityGUI amenityGUI = new AmenityGUI();
     private final CommissionGUI commissionGUI = new CommissionGUI();
     private final SearchRoomGUI searchRoomGUI = new SearchRoomGUI();
+    private final DistrictGUI districtGUI = new DistrictGUI();
+    private final TypeRoomGUI typeRoomGUI = new TypeRoomGUI();
     private final Button homeButton = navButton("Trang chủ");
     private final Button buildingButton = navButton("Tòa nhà");
     private final Button roomButton = navButton("Phòng");
     private final Button amenityButton = navButton("Tiện ích");
     private final Button commissionButton = navButton("Hoa hồng");
+    private final Button districtButton = navButton("Khu vực");
+    private final Button typeRoomButton = navButton("Loại phòng");
     private final Button searchButton = navButton("Tìm kiếm");
     private final List<Button> navButtons = List.of(homeButton, buildingButton, roomButton, amenityButton,
-            commissionButton, searchButton);
+            commissionButton, districtButton, typeRoomButton, searchButton);
 
     public MainView() {
         buildUi();
@@ -45,6 +49,8 @@ public class MainView extends BorderPane {
                 roomButton,
                 amenityButton,
                 commissionButton,
+                districtButton,
+                typeRoomButton,
                 searchButton);
         sidebar.setPadding(new Insets(18));
         sidebar.setPrefWidth(220);
@@ -128,6 +134,14 @@ public class MainView extends BorderPane {
         return searchRoomGUI;
     }
 
+    public DistrictGUI getDistrictGUI() {
+        return districtGUI;
+    }
+
+    public TypeRoomGUI getTypeRoomGUI() {
+        return typeRoomGUI;
+    }
+
     public Button getHomeButton() {
         return homeButton;
     }
@@ -150,5 +164,13 @@ public class MainView extends BorderPane {
 
     public Button getSearchButton() {
         return searchButton;
+    }
+
+    public Button getDistrictButton() {
+        return districtButton;
+    }
+
+    public Button getTypeRoomButton() {
+        return typeRoomButton;
     }
 }

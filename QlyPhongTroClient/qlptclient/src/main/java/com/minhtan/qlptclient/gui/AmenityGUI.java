@@ -128,7 +128,7 @@ public class AmenityGUI extends BorderPane {
 
         amenityList.getColumns().setAll(List.of(idColumn, nameColumn));
         amenityList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        amenityList.setPlaceholder(new Label("Chua co du lieu tien ich"));
+        amenityList.setPlaceholder(new Label("Chưa có dữ liệu tiện ích"));
         amenityList.setStyle("-fx-background-color: white; -fx-border-color: #d8dee9; -fx-border-radius: 8; -fx-background-radius: 8;");
     }
 

@@ -3,7 +3,7 @@ package com.minhtan.qlptbackend.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "TypeRoom")
+@Table(name = "TypeRooms")
 public class TypeRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
