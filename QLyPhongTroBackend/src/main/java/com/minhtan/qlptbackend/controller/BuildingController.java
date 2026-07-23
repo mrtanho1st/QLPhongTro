@@ -1,7 +1,10 @@
 package com.minhtan.qlptbackend.controller;
 
 import com.minhtan.qlptbackend.entity.Building;
+import com.minhtan.qlptbackend.entity.District;
 import com.minhtan.qlptbackend.service.BuildingService;
+import com.minhtan.qlptbackend.service.DistrictService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +16,11 @@ import java.util.List;
 public class BuildingController {
 
     private final BuildingService buildingService;
+    private final DistrictService districtService;
 
-    public BuildingController(BuildingService buildingService) {
+    public BuildingController(BuildingService buildingService, DistrictService districtService) {
         this.buildingService = buildingService;
+        this.districtService = districtService;
     }
 
     @GetMapping
@@ -26,6 +31,17 @@ public class BuildingController {
     @GetMapping("/search/district-id/{districtId}")
     public List<Building> searchByDistrictId(@PathVariable Integer districtId) {
         return buildingService.searchByDistrictId(districtId);
+    }
+    
+    @GetMapping("/search/district-name/{districtName}")
+    public List<Building> searchByDistrictName(@PathVariable String districtName) {
+        List<District> districts = districtService.searchByName(districtName);
+        if (!districts.isEmpty()) {
+            return buildingService.searchByDistrictId(districts.get(0).getDistrictId());
+        } 
+        else {
+            return List.of();
+        }
     }
 
     @GetMapping("/search/true-address")

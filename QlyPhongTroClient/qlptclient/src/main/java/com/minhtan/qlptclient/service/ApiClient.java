@@ -7,6 +7,7 @@ import com.minhtan.qlptclient.entity.Amenity;
 import com.minhtan.qlptclient.entity.Building;
 import com.minhtan.qlptclient.entity.BuildingFee;
 import com.minhtan.qlptclient.entity.Commission;
+import com.minhtan.qlptclient.entity.District;
 import com.minhtan.qlptclient.entity.Room;
 import com.minhtan.qlptclient.entity.RoomAmenity;
 import com.minhtan.qlptclient.entity.RoomMedia;
@@ -42,6 +43,11 @@ public class ApiClient {
 
     public List<TypeRoom> getTypeRooms() throws IOException, InterruptedException {
         return getList("/api/type-rooms", new TypeReference<List<TypeRoom>>() {
+        });
+    }
+
+    public List<District> getDistricts() throws IOException, InterruptedException {
+        return getList("/api/districts", new TypeReference<List<District>>() {
         });
     }
 
@@ -183,6 +189,12 @@ public class ApiClient {
 
     public List<Building> searchBuildingsByTrueAddress(String trueAddress) throws IOException, InterruptedException {
         return getList("/api/buildings/search/true-address?trueAddress=" + encode(trueAddress),
+                new TypeReference<List<Building>>() {
+                });
+    }
+
+    public List<Building> searchBuildingsByDistrictName(String districtName) throws IOException, InterruptedException {
+        return getList("/api/buildings/search/district-name/" + encode(districtName),
                 new TypeReference<List<Building>>() {
                 });
     }

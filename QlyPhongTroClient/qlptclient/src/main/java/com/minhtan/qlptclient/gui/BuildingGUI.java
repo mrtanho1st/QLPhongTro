@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
@@ -34,7 +35,7 @@ public class BuildingGUI extends BorderPane {
     private final ObservableList<Building> buildingItems = FXCollections.observableArrayList();
     private final ObservableList<District> districtItems = FXCollections.observableArrayList();
     private final TableView<Building> buildingList = new TableView<>(buildingItems);
-    private final ComboBox<District> districtComboBox = new ComboBox<>(districtItems);
+    private final ComboBox<District> districtBox = new ComboBox<>(districtItems);
     private final TextField buildingIdField = new TextField();
     private final TextField trueAddressField = new TextField();
     private final TextField fakeAddressField = new TextField();
@@ -75,11 +76,13 @@ public class BuildingGUI extends BorderPane {
         statusLabel.setStyle("-fx-text-fill: #4b5563;");
 
         configureBuildingTable();
+        configureDistrictComboBox();
 
         buildingList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         buildingIdField.setEditable(false);
         buildingIdField.setPromptText("Tự động");
+        districtBox.setPromptText("Chọn quận");
         trueAddressField.setPromptText("Địa chỉ thật");
         fakeAddressField.setPromptText("Địa chỉ hiển thị");
         noteField.setPromptText("Ghi chú");
@@ -117,10 +120,11 @@ public class BuildingGUI extends BorderPane {
         fieldColumn.setHgrow(Priority.ALWAYS);
         form.getColumnConstraints().addAll(labelColumn, fieldColumn);
         form.addRow(0, textFieldLabel("Building ID"), buildingIdField);
-        form.addRow(1, textFieldLabel("True Address"), trueAddressField);
-        form.addRow(2, textFieldLabel("Fake Address"), fakeAddressField);
-        form.addRow(3, textFieldLabel("Note"), noteField);
-        form.addRow(4, textFieldLabel("Owner Phone"), ownerPhoneField);
+        form.addRow(1, textFieldLabel("District"), districtBox);
+        form.addRow(2, textFieldLabel("True Address"), trueAddressField);
+        form.addRow(3, textFieldLabel("Fake Address"), fakeAddressField);
+        form.addRow(4, textFieldLabel("Note"), noteField);
+        form.addRow(5, textFieldLabel("Owner Phone"), ownerPhoneField);
         form.getChildren().stream()
                 .filter(node -> node instanceof TextField)
                 .forEach(node -> ((TextField) node).setMaxWidth(Double.MAX_VALUE));
@@ -155,6 +159,7 @@ public class BuildingGUI extends BorderPane {
 
         VBox leftPane = new VBox(12, searchBar, buildingList);
         leftPane.setMinWidth(430);
+        districtBox.setMaxWidth(Double.MAX_VALUE);
         VBox.setVgrow(buildingList, Priority.ALWAYS);
 
         VBox rightContent = new VBox(14,
@@ -184,7 +189,10 @@ public class BuildingGUI extends BorderPane {
         setStyle("-fx-background-color: #f3f6fb;");
         styleControls();
     }
-
+    private void configureDistrictComboBox(){
+        districtBox.setCellFactory(comboBox -> new DistrictListCell());
+        districtBox.setButtonCell(new DistrictListCell());
+    }
     private void configureBuildingTable() {
         TableColumn<Building, Integer> idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getBuildingId()));
@@ -238,6 +246,7 @@ public class BuildingGUI extends BorderPane {
     private void styleControls() {
         String fieldStyle = "-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;";
         buildingIdField.setStyle(fieldStyle);
+        districtBox.setStyle(fieldStyle);
         trueAddressField.setStyle(fieldStyle);
         fakeAddressField.setStyle(fieldStyle);
         noteField.setStyle(fieldStyle);
@@ -273,6 +282,23 @@ public class BuildingGUI extends BorderPane {
     private String secondaryButtonStyle() {
         return "-fx-background-color: white; -fx-text-fill: #1f2937; -fx-font-weight: bold; "
                 + "-fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 14;";
+    }
+
+    private class DistrictListCell extends ListCell<District> {
+        @Override
+        protected void updateItem(District district, boolean empty) {
+            super.updateItem(district, empty);
+            setText(empty || district == null ? null : districtText(district));
+        }
+    }
+
+    private String districtText(District district) {
+        if (district == null) {
+            return "";
+        }
+        String name = textOrEmpty(district.getDistrictName());
+        String id = district.getDistrictId() == null ? "" : String.valueOf(district.getDistrictId());
+        return id.isBlank() ? name : id + " - " + name;
     }
 
     public Label getStatusLabel() {
@@ -390,6 +416,14 @@ public class BuildingGUI extends BorderPane {
     public void setStatus(String text) {
         statusLabel.setText(text);
     }
+    
+    public ComboBox<District> getDistrictBox() {
+        return districtBox;
+    }
+
+    public ObservableList<District> getDistrictItems() {
+        return districtItems;
+    }
 
     public void clearForm() {
         buildingIdField.clear();
@@ -397,8 +431,9 @@ public class BuildingGUI extends BorderPane {
         fakeAddressField.clear();
         noteField.clear();
         ownerPhoneField.clear();
-        clearFeeForm();
+        districtBox.getSelectionModel().clearSelection();
         buildingList.getSelectionModel().clearSelection();
+        clearFeeForm();
     }
 
     public void clearFeeForm() {

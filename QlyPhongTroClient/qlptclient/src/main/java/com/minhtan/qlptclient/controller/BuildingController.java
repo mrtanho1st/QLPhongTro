@@ -2,6 +2,7 @@ package com.minhtan.qlptclient.controller;
 
 import com.minhtan.qlptclient.entity.Building;
 import com.minhtan.qlptclient.entity.BuildingFee;
+import com.minhtan.qlptclient.entity.District;
 import com.minhtan.qlptclient.gui.BuildingGUI;
 import com.minhtan.qlptclient.service.ApiClient;
 import javafx.application.Platform;
@@ -19,6 +20,7 @@ public class BuildingController {
         this.view = view;
         wireEvents();
         loadBuildings();
+        loadDistricts();
     }
 
     private void wireEvents() {
@@ -26,6 +28,7 @@ public class BuildingController {
             if (selected == null) {
                 return;
             }
+            selectDistrict(selected.getDistrictId());
             view.getBuildingIdField().setText(valueOrEmpty(selected.getBuildingId()));
             view.getTrueAddressField().setText(valueOrEmpty(selected.getTrueAddress()));
             view.getFakeAddressField().setText(valueOrEmpty(selected.getFakeAddress()));
@@ -51,6 +54,26 @@ public class BuildingController {
         runLoadTask("Đang tải /api/buildings...", apiClient::getBuildings);
     }
 
+    private void loadDistricts(){
+        Task<List<District>> task = new Task<>() {
+            @Override
+            protected List<District> call() throws Exception {
+                return apiClient.getDistricts();
+            }
+        };
+
+        task.setOnSucceeded(workerStateEvent -> {
+            List<District> districts = task.getValue();
+            view.getDistrictItems().setAll(districts);
+            view.setStatus("Tải thành công " + districts.size() + " district(s)");
+        });
+
+        task.setOnFailed(workerStateEvent -> handleTaskFailure(task, "Thất bại khi tải dữ liệu"));
+
+        view.setStatus("Đang tải /api/districts...");
+        startTask(task);
+    }
+
     private void searchBuildings() {
         String keyword = view.getSearchField().getText() == null ? "" : view.getSearchField().getText().trim();
         String mode = view.getSearchModeBox().getValue();
@@ -69,6 +92,7 @@ public class BuildingController {
             @Override
             protected List<Building> call() throws Exception {
                 return switch (mode) {
+                    case "District Name" -> apiClient.searchBuildingsByDistrictName(keyword);
                     case "True Address" -> apiClient.searchBuildingsByTrueAddress(keyword);
                     case "Fake Address" -> apiClient.searchBuildingsByFakeAddress(keyword);
                     case "Note" -> apiClient.searchBuildingsByNote(keyword);
@@ -340,6 +364,20 @@ public class BuildingController {
             alert.setContentText(message);
             alert.showAndWait();
         });
+    }
+
+    private void selectDistrict(Integer districtId) {
+        if (districtId == null) {
+            view.getDistrictBox().getSelectionModel().clearSelection();
+            return;
+        }
+
+        view.getDistrictItems().stream()
+                .filter(district -> districtId.equals(district.getDistrictId()))
+                .findFirst()
+                .ifPresentOrElse(
+                        district -> view.getDistrictBox().getSelectionModel().select(district),
+                        () -> view.getDistrictBox().getSelectionModel().clearSelection());
     }
 
     @FunctionalInterface

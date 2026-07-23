@@ -80,6 +80,7 @@ public class RoomController {
         task.setOnSucceeded(workerStateEvent -> {
             RoomPageData data = task.getValue();
             view.getBuildingItems().setAll(data.buildings());
+            view.getTypeRoomItems().setAll(data.typeRooms());
             allAmenities.clear();
             allAmenities.addAll(data.amenities());
             view.getAvailableAmenityItems().setAll(data.amenities());
