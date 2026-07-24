@@ -6,7 +6,6 @@ import com.minhtan.qlptclient.gui.CommissionGUI;
 import com.minhtan.qlptclient.service.ApiClient;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 

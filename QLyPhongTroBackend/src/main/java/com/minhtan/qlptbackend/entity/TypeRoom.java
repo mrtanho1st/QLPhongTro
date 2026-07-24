@@ -1,7 +1,9 @@
 package com.minhtan.qlptbackend.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.*;
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "TypeRooms")
 public class TypeRoom {

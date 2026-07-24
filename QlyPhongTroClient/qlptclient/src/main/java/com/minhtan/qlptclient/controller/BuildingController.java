@@ -276,6 +276,12 @@ public class BuildingController {
         if (!buildingIdText.isBlank()) {
             building.setBuildingId(Integer.valueOf(buildingIdText));
         }
+        District selectedDistrict = view.getDistrictBox().getValue();
+        if (selectedDistrict != null) {
+            building.setDistrictId(selectedDistrict.getDistrictId());
+        } else {
+            building.setDistrictId(null);
+        }
         building.setTrueAddress(textOf(view.getTrueAddressField().getText()));
         building.setFakeAddress(textOf(view.getFakeAddressField().getText()));
         building.setNote(textOf(view.getNoteField().getText()));
