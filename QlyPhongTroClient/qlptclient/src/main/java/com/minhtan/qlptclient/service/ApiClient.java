@@ -143,7 +143,7 @@ public class ApiClient {
     }
 
     public List<Room> searchRoomsByTypeRoomName(String typeRoomName) throws IOException, InterruptedException {
-        return getList("/api/rooms/search/type-room-name?name=" + encode(typeRoomName),
+        return getList("/api/rooms/search/type-room-name?typeRoomName=" + encode(typeRoomName),
                 new TypeReference<List<Room>>() {
                 });
     }
@@ -194,7 +194,7 @@ public class ApiClient {
     }
 
     public List<Building> searchBuildingsByDistrictName(String districtName) throws IOException, InterruptedException {
-        return getList("/api/buildings/search/district-name/" + encode(districtName),
+        return getList("/api/buildings/search/district-name?districtName=" + encode(districtName),
                 new TypeReference<List<Building>>() {
                 });
     }
@@ -356,7 +356,7 @@ public class ApiClient {
     }
 
     public List<District> searchDistrictsByName(String districtName) throws IOException, InterruptedException {
-        return getList("/api/districts/search/district-name/" + encode(districtName),
+        return getList("/api/districts/search/district-name?districtName=" + encode(districtName),
                 new TypeReference<List<District>>() {
                 });
     }

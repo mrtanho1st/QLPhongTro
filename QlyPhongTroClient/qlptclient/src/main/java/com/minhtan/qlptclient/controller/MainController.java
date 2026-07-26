@@ -5,15 +5,17 @@ import com.minhtan.qlptclient.gui.MainView;
 public class MainController {
 
     private final MainView view;
+    private final SearchRoomController searchRoomController;
 
     public MainController(MainView view) {
         this.view = view;
+        this.searchRoomController = new SearchRoomController(view.getSearchRoomGUI());
+        
         new BuildingController(view.getBuildingGUI());
         new RoomController(view.getRoomGUI());
         new AmenityController(view.getAmenityGUI());
         new CommissionController(view.getCommissionGUI());
         new HomeDashboardController(view.getHomeDashboardPane());
-        new SearchRoomController(view.getSearchRoomGUI());
         new DistrictController(view.getDistrictGUI());
         new TypeRoomController(view.getTypeRoomGUI());
         wireEvents();
@@ -61,5 +63,9 @@ public class MainController {
 
     private void showTypeRoom() {
         view.setPage("Quản lý loại phòng", view.getTypeRoomGUI(), view.getTypeRoomButton());
+    }
+    
+    public SearchRoomController getSearchRoomController() {
+        return this.searchRoomController;
     }
 }

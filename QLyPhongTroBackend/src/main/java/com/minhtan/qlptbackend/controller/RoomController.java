@@ -1,15 +1,20 @@
 package com.minhtan.qlptbackend.controller;
 
+import com.minhtan.qlptbackend.entity.Building;
+import com.minhtan.qlptbackend.entity.District;
 import com.minhtan.qlptbackend.entity.Room;
+import com.minhtan.qlptbackend.entity.TypeRoom;
 import com.minhtan.qlptbackend.service.RoomService;
+import com.minhtan.qlptbackend.service.TypeRoomService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -17,9 +22,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class RoomController {
 
     private final RoomService roomService;
+    private final TypeRoomService typeRoomService;
 
-    public RoomController(RoomService roomService) {
+    public RoomController(RoomService roomService, TypeRoomService typeRoomService) {
         this.roomService = roomService;
+        this.typeRoomService = typeRoomService;
     }
 
     @GetMapping
@@ -32,9 +39,15 @@ public class RoomController {
         return roomService.searchByBuildingId(buildingId);
     }
 
-    @GetMapping("/search/type-room-id/{typeRoomId}")
-    public List<Room> searchByTypeRoomId(@PathVariable Integer typeRoomId) {
-        return roomService.searchByTypeRoomId(typeRoomId);
+    @GetMapping("/search/type-room-name")
+    public List<Room> searchByTypeRoomName(@RequestParam String typeRoomName) {
+        List<TypeRoom> typeRooms = typeRoomService.searchByName(typeRoomName);
+        List<Room> rooms = new ArrayList<>();
+        for (TypeRoom typeRoom : typeRooms) {
+            List<Room> roomsWithTypeRoom = roomService.searchByTypeRoomId(typeRoom.getTypeRoomId());
+            rooms.addAll(roomsWithTypeRoom);
+        }
+        return rooms;
     }
 
     @GetMapping("/search/room-code")
@@ -52,19 +65,9 @@ public class RoomController {
         return roomService.searchByBedroom(bedroom);
     }
 
-    @GetMapping("/search/person-limit/{personLimit}")
-    public List<Room> searchByPersonLimit(@PathVariable Integer personLimit) {
-        return roomService.searchByPersonLimit(personLimit);
-    }
-
     @GetMapping("/search/person-limit-ge/{personLimit}")
     public List<Room> searchByPersonLimitGreaterThanEqual(@PathVariable Integer personLimit) {
         return roomService.searchByPersonLimitGreaterThanEqual(personLimit);
-    }
-
-    @GetMapping("/search/area")
-    public List<Room> searchByArea(@RequestParam BigDecimal area) {
-        return roomService.searchByArea(area);
     }
 
     @GetMapping("/search/area-ge")
@@ -79,7 +82,7 @@ public class RoomController {
     }
 
     @GetMapping("/search/available-date/{availableDate}")
-    public List<Room> searchByAvailableDate(@PathVariable java.time.LocalDate availableDate) {
+    public List<Room> searchByAvailableDate(@PathVariable LocalDate availableDate) {
         return roomService.searchByAvailableDate(availableDate);
     }
 

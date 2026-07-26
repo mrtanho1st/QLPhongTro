@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,15 +34,15 @@ public class BuildingController {
         return buildingService.searchByDistrictId(districtId);
     }
     
-    @GetMapping("/search/district-name/{districtName}")
-    public List<Building> searchByDistrictName(@PathVariable String districtName) {
+    @GetMapping("/search/district-name")
+    public List<Building> searchByDistrictName(@RequestParam String districtName) {
         List<District> districts = districtService.searchByName(districtName);
-        if (!districts.isEmpty()) {
-            return buildingService.searchByDistrictId(districts.get(0).getDistrictId());
-        } 
-        else {
-            return List.of();
+        List<Building> buildings = new ArrayList<>();
+        for (District district : districts) {
+            List<Building> buildingsInDistrict = buildingService.searchByDistrictId(district.getDistrictId());
+            buildings.addAll(buildingsInDistrict);
         }
+        return buildings;
     }
 
     @GetMapping("/search/true-address")

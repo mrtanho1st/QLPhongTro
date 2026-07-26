@@ -235,7 +235,7 @@ public class RoomMediaDialog {
         stage.setMinWidth(1100);
         stage.setMinHeight(700);
 
-        stage.setScene(new Scene(root, 1300, 800));
+        stage.setScene(new Scene(root, 900, 600));
     }
 
     public Stage getStage() {

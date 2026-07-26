@@ -22,7 +22,7 @@ public class TypeRoomService {
     }
 
     public List<TypeRoom> searchByName(String name) {
-        return typeRoomRepository.findByTypeRoomName(name);
+        return typeRoomRepository.findByTypeRoomNameContainingIgnoreCase(name);
     }
 
     public Optional<TypeRoom> getTypeRoomById(Integer typeRoomId) {

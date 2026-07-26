@@ -68,7 +68,7 @@ public class RoomService {
     }
 
     public List<Room> searchByNote(String note) {
-        return roomRepository.findByNote(note);
+        return roomRepository.findByNoteContainingIgnoreCase(note);
     }
 
     public Optional<Room> getRoomById(Integer roomId) {

@@ -12,7 +12,7 @@ public interface BuildingRepository extends JpaRepository<Building, Integer> {
 
     List<Building> findByFakeAddressContainingIgnoreCase(String fakeAddress);
 
-    List<Building> findByNote(String note);
+    List<Building> findByNoteContainingIgnoreCase(String note);
 
     List<Building> findByOwnerPhone(String ownerPhone);
 

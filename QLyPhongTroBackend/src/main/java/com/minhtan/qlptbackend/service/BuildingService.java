@@ -29,7 +29,7 @@ public class BuildingService {
     }
 
     public List<Building> searchByNote(String note) {
-        return buildingRepository.findByNote(note);
+        return buildingRepository.findByNoteContainingIgnoreCase(note);
     }
 
     public List<Building> searchByOwnerPhone(String ownerPhone) {

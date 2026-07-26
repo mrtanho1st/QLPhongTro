@@ -3,6 +3,7 @@ package com.minhtan.qlptclient.gui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -20,9 +21,14 @@ public class SearchRoomGUI extends BorderPane {
     private final TextField minPriceField = new TextField();
     private final TextField maxPriceField = new TextField();
     private final DatePicker availableDatePicker = new DatePicker();
+    private final ComboBox<String> typeRoomComboBox = new ComboBox<>();
+    private final ComboBox<String> districtComboBox = new ComboBox<>();
+    private final ComboBox<String> commissionComboBox = new ComboBox<>();
+    private final ComboBox<String> amenityComboBox = new ComboBox<>();
     private final Button searchButton = new Button("Tìm kiếm");
     private final Button resetButton = new Button("Đặt lại");
     private final Button refreshButton = new Button("Tải lại");
+    private final Button locationButton = new Button("Xem vị trí");
 
     private final VBox buildingListPane = new VBox(12);
     private final FlowPane roomCardsPane = new FlowPane();
@@ -45,16 +51,42 @@ public class SearchRoomGUI extends BorderPane {
         availableDatePicker.setPromptText("Ngày có sẵn");
         availableDatePicker.setMaxWidth(Double.MAX_VALUE);
 
+        typeRoomComboBox.setPromptText("Loại phòng");
+        typeRoomComboBox.setMaxWidth(Double.MAX_VALUE);
+
+        districtComboBox.setPromptText("Quận");
+        districtComboBox.setMaxWidth(Double.MAX_VALUE);
+
+        commissionComboBox.setPromptText("Hoa hồng");
+        commissionComboBox.setMaxWidth(Double.MAX_VALUE);
+
+        amenityComboBox.setPromptText("Tiện ích");
+        amenityComboBox.setMaxWidth(Double.MAX_VALUE);
+
         searchButton.setStyle("-fx-background-color:#2563eb; -fx-text-fill:white; -fx-font-weight:bold;");
         resetButton.setStyle("-fx-background-color:#e2e8f0; -fx-text-fill:#0f172a; -fx-font-weight:bold;");
         refreshButton.setStyle("-fx-background-color:#0f766e; -fx-text-fill:white; -fx-font-weight:bold;");
+        locationButton.setStyle("-fx-background-color:#16a34a; -fx-text-fill:white; -fx-font-weight:bold;");
+        locationButton.setMaxWidth(Double.MAX_VALUE);
 
-        HBox searchBar = new HBox(12, addressField, minPriceField, maxPriceField, availableDatePicker, searchButton,
-                resetButton, refreshButton);
-        searchBar.setAlignment(Pos.CENTER_LEFT);
+        HBox textFieldRow = new HBox(12, addressField, minPriceField, maxPriceField, availableDatePicker);
+        textFieldRow.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(addressField, Priority.ALWAYS);
         HBox.setHgrow(minPriceField, Priority.SOMETIMES);
         HBox.setHgrow(maxPriceField, Priority.SOMETIMES);
+        HBox.setHgrow(availableDatePicker, Priority.SOMETIMES);
+
+        HBox comboBoxRow = new HBox(12, typeRoomComboBox, districtComboBox, commissionComboBox, amenityComboBox);
+        comboBoxRow.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(typeRoomComboBox, Priority.SOMETIMES);
+        HBox.setHgrow(districtComboBox, Priority.SOMETIMES);
+        HBox.setHgrow(commissionComboBox, Priority.SOMETIMES);
+        HBox.setHgrow(amenityComboBox, Priority.SOMETIMES);
+
+        HBox buttonRow = new HBox(12, searchButton, resetButton, refreshButton);
+        buttonRow.setAlignment(Pos.CENTER_LEFT);
+
+        VBox searchBar = new VBox(10, textFieldRow, comboBoxRow, buttonRow);
 
         VBox topBar = new VBox(10, titleLabel, searchBar);
         topBar.setPadding(new Insets(18, 20, 12, 20));
@@ -62,7 +94,7 @@ public class SearchRoomGUI extends BorderPane {
 
         VBox leftPanel = buildPanel("Tòa nhà", buildingListPane);
         VBox middlePanel = buildPanel("Danh sách phòng", roomCardsPane);
-        VBox rightPanel = buildPanel("Thông tin phòng", detailPane);
+        VBox rightPanel = buildDetailPanel("Thông tin phòng", detailPane, locationButton);
 
         ScrollPane leftScroll = new ScrollPane(leftPanel);
         leftScroll.setFitToWidth(true);
@@ -118,6 +150,17 @@ public class SearchRoomGUI extends BorderPane {
         return box;
     }
 
+    private VBox buildDetailPanel(String title, VBox contentPane, Button extraButton) {
+        Label sectionTitle = new Label(title);
+        sectionTitle.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #334155;");
+
+        VBox box = new VBox(10, sectionTitle, contentPane, extraButton);
+        box.setPadding(new Insets(12));
+        box.setStyle(
+                "-fx-background-color:white; -fx-background-radius:12; -fx-border-radius:12; -fx-border-color:#e2e8f0;");
+        return box;
+    }
+
     public TextField getAddressField() {
         return addressField;
     }
@@ -134,6 +177,22 @@ public class SearchRoomGUI extends BorderPane {
         return availableDatePicker;
     }
 
+    public ComboBox<String> getTypeRoomComboBox() {
+        return typeRoomComboBox;
+    }
+
+    public ComboBox<String> getDistrictComboBox() {
+        return districtComboBox;
+    }
+
+    public ComboBox<String> getCommissionComboBox() {
+        return commissionComboBox;
+    }
+
+    public ComboBox<String> getAmenityComboBox() {
+        return amenityComboBox;
+    }
+
     public Button getSearchButton() {
         return searchButton;
     }
@@ -144,6 +203,10 @@ public class SearchRoomGUI extends BorderPane {
 
     public Button getRefreshButton() {
         return refreshButton;
+    }
+
+    public Button getLocationButton() {
+        return locationButton;
     }
 
     public VBox getBuildingListPane() {

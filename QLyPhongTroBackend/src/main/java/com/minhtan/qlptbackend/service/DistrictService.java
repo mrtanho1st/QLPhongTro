@@ -22,7 +22,7 @@ public class DistrictService {
     }
 
     public List<District> searchByName(String name) {
-        return districtRepository.findByDistrictName(name);
+        return districtRepository.findByDistrictNameContainingIgnoreCase(name);
     }
 
     public Optional<District> getDistrictById(Integer districtId) {

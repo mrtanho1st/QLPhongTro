@@ -1,8 +1,13 @@
 package com.minhtan.qlptclient.controller;
 
+import com.minhtan.qlptclient.entity.Amenity;
 import com.minhtan.qlptclient.entity.Building;
+import com.minhtan.qlptclient.entity.Commission;
+import com.minhtan.qlptclient.entity.District;
 import com.minhtan.qlptclient.entity.Room;
+import com.minhtan.qlptclient.entity.RoomAmenity;
 import com.minhtan.qlptclient.entity.RoomMedia;
+import com.minhtan.qlptclient.entity.TypeRoom;
 import com.minhtan.qlptclient.gui.RoomGUI;
 import com.minhtan.qlptclient.gui.RoomMediaDialog;
 import com.minhtan.qlptclient.gui.SearchRoomGUI;
@@ -19,7 +24,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javafx.application.HostServices;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,8 +41,15 @@ public class SearchRoomController {
     private final SearchRoomGUI view;
     private List<Building> allBuildings = new ArrayList<>();
     private List<Room> allRooms = new ArrayList<>();
+    private List<TypeRoom> allTypeRooms = new ArrayList<>();
+    private List<District> allDistricts = new ArrayList<>();
+    private List<Commission> allCommissions = new ArrayList<>();
+    private List<Amenity> allAmenities = new ArrayList<>();
+    private List<RoomAmenity> allRoomAmenities = new ArrayList<>();
     private Building selectedBuilding;
+    private Room currentRoom;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private HostServices hostServices;
 
     public SearchRoomController(SearchRoomGUI view) {
         this.view = view;
@@ -45,10 +61,15 @@ public class SearchRoomController {
         view.getSearchButton().setOnAction(event -> searchRooms());
         view.getResetButton().setOnAction(event -> resetFilters());
         view.getRefreshButton().setOnAction(event -> reloadData());
+        view.getLocationButton().setOnAction(event -> openLocationOnMap());
     }
 
     private void loadInitialData() {
         reloadData();
+        loadTypeRoomValues();
+        loadDistrictValues();
+        loadCommissionValues();
+        loadAmenityValues();
     }
 
     private void reloadData() {
@@ -119,6 +140,10 @@ public class SearchRoomController {
         view.getMinPriceField().clear();
         view.getMaxPriceField().clear();
         view.getAvailableDatePicker().setValue(null);
+        view.getTypeRoomComboBox().getSelectionModel().clearSelection();
+        view.getDistrictComboBox().getSelectionModel().clearSelection();
+        view.getCommissionComboBox().getSelectionModel().clearSelection();
+        view.getAmenityComboBox().getSelectionModel().clearSelection();
         renderRooms(filterRooms(allRooms));
         updateStatus("Đã đặt lại bộ lọc");
     }
@@ -132,12 +157,21 @@ public class SearchRoomController {
         BigDecimal minPrice = parsePrice(minPriceText);
         BigDecimal maxPrice = parsePrice(maxPriceText);
 
+        String selectedTypeRoom = view.getTypeRoomComboBox().getValue();
+        String selectedDistrict = view.getDistrictComboBox().getValue();
+        String selectedCommission = view.getCommissionComboBox().getValue();
+        String selectedAmenity = view.getAmenityComboBox().getValue();
+
         return rooms.stream()
                 .filter(room -> room != null)
                 .filter(room -> Boolean.FALSE.equals(room.getLocked()))
                 .filter(room -> filterByAddress(room, address))
                 .filter(room -> filterByPrice(room, minPrice, maxPrice))
                 .filter(room -> filterByAvailableDate(room, selectedDate))
+                .filter(room -> filterByTypeRoom(room, selectedTypeRoom))
+                .filter(room -> filterByDistrict(room, selectedDistrict))
+                .filter(room -> filterByCommission(room, selectedCommission))
+                .filter(room -> filterByAmenity(room, selectedAmenity))
                 .toList();
     }
 
@@ -164,6 +198,170 @@ public class SearchRoomController {
             return true;
         }
         return room.getAvailableDate() == null || !room.getAvailableDate().isAfter(selectedDate);
+    }
+
+    private boolean filterByTypeRoom(Room room, String value) {
+        if (value == null) {
+            return true;
+        }
+        return room.getTypeRoom() != null && value.equals(room.getTypeRoom().getTypeRoomName());
+    }
+
+    private boolean filterByDistrict(Room room, String value) {
+        if (value == null) {
+            return true;
+        }
+        Building building = findBuildingById(room.getBuildingId());
+        if (building == null || building.getDistrict() == null) {
+            return false;
+        }
+        return value.equals(building.getDistrict().getDistrictName());
+    }
+
+    private boolean filterByCommission(Room room, String value) {
+        if (value == null) {
+            return true;
+        }
+        return allCommissions.stream()
+                .filter(commission -> value.equals(formatCommission(commission)))
+                .anyMatch(commission -> Objects.equals(commission.getBuildingId(), room.getBuildingId()));
+    }
+
+    private boolean filterByAmenity(Room room, String value) {
+        if (value == null) {
+            return true;
+        }
+        Integer amenityId = allAmenities.stream()
+                .filter(amenity -> value.equals(amenity.getName()))
+                .map(Amenity::getAmenityId)
+                .findFirst()
+                .orElse(null);
+        if (amenityId == null) {
+            return false;
+        }
+        // LƯU Ý: giả định RoomAmenity có getRoomId() và getAmenityId(); chỉnh lại tên getter nếu khác.
+        return allRoomAmenities.stream()
+                .anyMatch(roomAmenity -> Objects.equals(roomAmenity.getAmenityId(), amenityId)
+                        && Objects.equals(roomAmenity.getRoomId(), room.getRoomId()));
+    }
+
+    private void loadTypeRoomValues() {
+        Task<List<TypeRoom>> task = new Task<>() {
+            @Override
+            protected List<TypeRoom> call() throws Exception {
+                return apiClient.getTypeRooms();
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            allTypeRooms = task.getValue();
+            List<String> values = allTypeRooms.stream()
+                    .filter(Objects::nonNull)
+                    .map(TypeRoom::getTypeRoomName)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .toList();
+            Platform.runLater(() -> view.getTypeRoomComboBox().getItems().setAll(values));
+        });
+
+        task.setOnFailed(event -> showAlert("Lỗi", buildFailureMessage(task, "Không tải được loại phòng")));
+
+        startTask(task);
+    }
+
+    private void loadDistrictValues() {
+        Task<List<District>> task = new Task<>() {
+            @Override
+            protected List<District> call() throws Exception {
+                return apiClient.getDistricts();
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            allDistricts = task.getValue();
+            List<String> values = allDistricts.stream()
+                    .filter(Objects::nonNull)
+                    .map(District::getDistrictName)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .toList();
+            Platform.runLater(() -> view.getDistrictComboBox().getItems().setAll(values));
+        });
+
+        task.setOnFailed(event -> showAlert("Lỗi", buildFailureMessage(task, "Không tải được quận")));
+
+        startTask(task);
+    }
+
+    private void loadCommissionValues() {
+        Task<List<Commission>> task = new Task<>() {
+            @Override
+            protected List<Commission> call() throws Exception {
+                return apiClient.getCommissions();
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            allCommissions = task.getValue();
+            List<String> values = allCommissions.stream()
+                    .filter(Objects::nonNull)
+                    .map(this::formatCommission)
+                    .distinct()
+                    .toList();
+            Platform.runLater(() -> view.getCommissionComboBox().getItems().setAll(values));
+        });
+
+        task.setOnFailed(event -> showAlert("Lỗi", buildFailureMessage(task, "Không tải được hoa hồng")));
+
+        startTask(task);
+    }
+
+    private String formatCommission(Commission commission) {
+        String contractMonth = commission.getContractMonth() == null ? "" : commission.getContractMonth().toString();
+        String deposit = commission.getDeposit() == null ? "" : commission.getDeposit().stripTrailingZeros().toPlainString();
+        String commissionPercent = commission.getCommissionPercent() == null ? ""
+                : commission.getCommissionPercent().stripTrailingZeros().toPlainString() + "%";
+        return contractMonth + " - " + deposit + " - " + commissionPercent;
+    }
+
+    private void loadAmenityValues() {
+        Task<List<Amenity>> task = new Task<>() {
+            @Override
+            protected List<Amenity> call() throws Exception {
+                return apiClient.getAmenities();
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            allAmenities = task.getValue();
+            List<String> values = allAmenities.stream()
+                    .filter(Objects::nonNull)
+                    .map(Amenity::getName)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .toList();
+            Platform.runLater(() -> view.getAmenityComboBox().getItems().setAll(values));
+            loadRoomAmenities();
+        });
+
+        task.setOnFailed(event -> showAlert("Lỗi", buildFailureMessage(task, "Không tải được tiện ích")));
+
+        startTask(task);
+    }
+
+    private void loadRoomAmenities() {
+        Task<List<RoomAmenity>> task = new Task<>() {
+            @Override
+            protected List<RoomAmenity> call() throws Exception {
+                return apiClient.getRoomAmenities();
+            }
+        };
+
+        task.setOnSucceeded(event -> allRoomAmenities = task.getValue());
+
+        task.setOnFailed(event -> showAlert("Lỗi", buildFailureMessage(task, "Không tải được tiện ích của phòng")));
+
+        startTask(task);
     }
 
     private void renderBuildings(List<Building> buildings) {
@@ -267,6 +465,7 @@ public class SearchRoomController {
     }
 
     private void showRoomDetail(Room room) {
+        currentRoom = room;
         view.getDetailPane().getChildren().clear();
         if (room == null) {
             view.getDetailPane().getChildren().add(new Label("Chọn phòng để xem thông tin"));
@@ -276,9 +475,19 @@ public class SearchRoomController {
         Building building = findBuildingById(room.getBuildingId());
         Label title = new Label(textOf(room.getRoomCode()));
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
+        String str_trueAddress = "";
+        String str_fakeAddress = "";
+        String str_districtName = "";
+        if (building != null) {
+            str_trueAddress = textOf(building.getTrueAddress());
+            str_fakeAddress = textOf(building.getFakeAddress());
+            str_districtName = building.getDistrict() == null ? "" : textOf(building.getDistrict().getDistrictName());
+        }
 
-        Label buildingName = new Label("Tòa nhà: " + (building == null ? "" : textOf(building.getTrueAddress())));
-        Label fakeAddress = new Label("Địa chỉ ảo: " + (building == null ? "" : textOf(building.getFakeAddress())));
+        Label buildingName = new Label("Tòa nhà: " + str_trueAddress);
+        Label fakeAddress = new Label("Địa chỉ ảo: " + str_fakeAddress);
+        Label districtName = new Label("Khu vực: " + str_districtName);
+        Label typeRoom = new Label("Loại phòng: " + textOf(room.getTypeRoom() == null ? "" : room.getTypeRoom().getTypeRoomName()));
         Label price = new Label("Giá: " + formatPrice(room.getPrice()));
         Label area = new Label("Diện tích: " + (room.getArea() == null ? "" : room.getArea().toPlainString()));
         Label bedroom = new Label("Phòng ngủ: " + (room.getBedroom() == null ? "" : room.getBedroom()));
@@ -286,10 +495,8 @@ public class SearchRoomController {
         Label availableDate = new Label(
                 "Ngày có sẵn: " + (room.getAvailableDate() == null ? "" : room.getAvailableDate().format(formatter)));
         Label note = new Label("Ghi chú: " + textOf(room.getNote()));
-        Label description = new Label("Mô tả: " + textOf(room.getNote()));
 
-        VBox infoBox = new VBox(6, title, buildingName, fakeAddress, price, area, bedroom, people, availableDate, note,
-                description);
+        VBox infoBox = new VBox(6, title, buildingName, fakeAddress, districtName, typeRoom, price, area, bedroom, people, availableDate, note);
         infoBox.setPadding(new Insets(12));
         infoBox.setStyle(
                 "-fx-background-color:#f8fafc; -fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#e2e8f0;");
@@ -343,7 +550,7 @@ public class SearchRoomController {
 
         Stage stage = new Stage();
         stage.setTitle("Chi tiết phòng " + textOf(room.getRoomCode()));
-        stage.setScene(new Scene(roomView, 1400, 800));
+        stage.setScene(new Scene(roomView, 900, 600));
         stage.show();
     }
 
@@ -352,6 +559,49 @@ public class SearchRoomController {
             return;
         }
         new RoomMediaDialog(room, apiClient).show();
+    }
+
+    private void openLocationOnMap() {
+        if (currentRoom == null) {
+            showAlert("Thông báo", "Vui lòng chọn một phòng để xem vị trí");
+            return;
+        }
+
+        Building building = findBuildingById(currentRoom.getBuildingId());
+
+        String fakeAddress = building == null
+                ? null
+                : building.getFakeAddress();
+
+        if (fakeAddress == null || fakeAddress.isBlank()) {
+            showAlert("Thông báo", "Phòng này chưa có địa chỉ để xem vị trí");
+            return;
+        }
+
+        if (hostServices == null) {
+            showAlert("Lỗi", "HostServices chưa được khởi tạo");
+            return;
+        }
+
+        try {
+            String query = URLEncoder.encode(
+                    fakeAddress,
+                    StandardCharsets.UTF_8
+            );
+
+            String mapUrl =
+                    "https://www.google.com/maps/search/?api=1&query="
+                    + query;
+
+            hostServices.showDocument(mapUrl);
+
+        } catch (Exception exception) {
+            showAlert(
+                    "Lỗi",
+                    "Không thể mở Google Maps: "
+                    + exception.getMessage()
+            );
+        }
     }
 
     private Building findBuildingById(Integer buildingId) {
@@ -408,4 +658,9 @@ public class SearchRoomController {
             alert.showAndWait();
         });
     }
+
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+
 }

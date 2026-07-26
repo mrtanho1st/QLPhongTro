@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.minhtan.qlptbackend.entity.TypeRoom;
 
 public interface TypeRoomRepository extends JpaRepository<TypeRoom, Integer> {
-    List<TypeRoom> findByTypeRoomName(String typeRoomName);
+    List<TypeRoom> findByTypeRoomNameContainingIgnoreCase(String typeRoomName);
 }
