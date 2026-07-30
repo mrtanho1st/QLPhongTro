@@ -28,7 +28,6 @@ import javafx.application.HostServices;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -60,7 +59,7 @@ public class SearchRoomController {
     private void wireEvents() {
         view.getSearchButton().setOnAction(event -> searchRooms());
         view.getResetButton().setOnAction(event -> resetFilters());
-        view.getRefreshButton().setOnAction(event -> reloadData());
+        view.getRefreshButton().setOnAction(event -> loadInitialData());
         view.getLocationButton().setOnAction(event -> openLocationOnMap());
     }
 
