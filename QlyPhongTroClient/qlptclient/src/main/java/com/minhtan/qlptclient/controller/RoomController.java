@@ -8,6 +8,8 @@ import com.minhtan.qlptclient.entity.TypeRoom;
 import com.minhtan.qlptclient.gui.RoomGUI;
 import com.minhtan.qlptclient.gui.RoomMediaDialog;
 import com.minhtan.qlptclient.service.ApiClient;
+import com.minhtan.qlptclient.service.MethodAmenity;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
@@ -115,7 +117,8 @@ public class RoomController {
                     case "Room Code" -> ApiClient.getInstance().searchRoomsByRoomCode(keyword);
                     case "Price" -> ApiClient.getInstance().searchRoomsByPrice(keyword);
                     case "Bedroom" -> ApiClient.getInstance().searchRoomsByBedroom(Integer.valueOf(keyword));
-                    case "Person Limit" -> ApiClient.getInstance().searchRoomsByPersonLimitGreaterThanEqual(Integer.valueOf(keyword));
+                    case "Person Limit" ->
+                        ApiClient.getInstance().searchRoomsByPersonLimitGreaterThanEqual(Integer.valueOf(keyword));
                     case "Area" -> ApiClient.getInstance().searchRoomsByAreaGreaterThanEqual(keyword);
                     case "Locked" -> ApiClient.getInstance().searchRoomsByLocked(Boolean.valueOf(keyword));
                     case "Available Date" -> ApiClient.getInstance().searchRoomsByAvailableDate(keyword);
@@ -278,7 +281,8 @@ public class RoomController {
         }
 
         runAmenityMutationTask("Đang xóa tiện ích...",
-                () -> ApiClient.getInstance().deleteRoomAmenity(selectedRoom.getRoomId(), selectedAmenity.getAmenityId()));
+                () -> ApiClient.getInstance().deleteRoomAmenity(selectedRoom.getRoomId(),
+                        selectedAmenity.getAmenityId()));
     }
 
     private void openMediaDialog() {
@@ -336,7 +340,10 @@ public class RoomController {
         room.setTypeRoomId(selectedTypeRoom.getTypeRoomId());
         room.setTypeRoom(null);
         room.setRoomCode(textOf(view.getRoomCodeField().getText()));
-        room.setPrice(decimalOrNull(view.getPriceField().getText(), "Price"));
+        room.setPrice(
+                MethodAmenity.convertToVnd(decimalOrNull(
+                        view.getPriceField().getText(),
+                        "Price")));
         room.setBedroom(integerOrNull(view.getBedroomField().getText(), "Bedroom"));
         room.setPersonLimit(integerOrNull(view.getPersonLimitField().getText(), "Person Limit"));
         room.setArea(decimalOrNull(view.getAreaField().getText(), "Area"));

@@ -4,6 +4,8 @@ import com.minhtan.qlptclient.entity.Room;
 import com.minhtan.qlptclient.entity.RoomMedia;
 import com.minhtan.qlptclient.gui.RoomMediaDialog;
 import com.minhtan.qlptclient.service.ApiClient;
+import com.minhtan.qlptclient.service.MethodAmenity;
+
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -222,7 +224,7 @@ public class RoomMediaDialogController {
         }
 
         try {
-            URI uri = URI.create(selected.getUrl());
+            URI uri = URI.create(MethodAmenity.resolveMediaUrl(selected.getUrl()));
             if ("file".equalsIgnoreCase(uri.getScheme())) {
                 Files.copy(Path.of(uri), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
@@ -264,7 +266,7 @@ public class RoomMediaDialogController {
         String url = selected.getUrl();
         if (isImageUrl(url)) {
             try {
-                view.getPreviewImage().setImage(new Image(resolveMediaUrl(url)));
+                view.getPreviewImage().setImage(new Image(MethodAmenity.resolveMediaUrl(url)));
                 view.getPreviewLabel().setText("Ảnh");
             } catch (Exception exception) {
                 view.getPreviewLabel().setText("Không thể xem trước ảnh: " + exception.getMessage());
@@ -273,25 +275,6 @@ public class RoomMediaDialogController {
             view.getPreviewImage().setImage(null);
             view.getPreviewLabel().setText("Video: " + fileNameFromUrl(url));
         }
-    }
-
-    public static String resolveMediaUrl(String url) {
-
-        if (url == null || url.isBlank()) {
-            return "";
-        }
-
-        if (url.startsWith("http://")
-                || url.startsWith("https://")
-                || url.startsWith("file:")) {
-            return url;
-        }
-
-        if (url.startsWith("/uploads/")) {
-            return ApiClient.getInstance().getBaseUrl() + url;
-        }
-
-        return ApiClient.getInstance().getBaseUrl() + "/uploads/" + url;
     }
 
     private boolean isImageUrl(String url) {

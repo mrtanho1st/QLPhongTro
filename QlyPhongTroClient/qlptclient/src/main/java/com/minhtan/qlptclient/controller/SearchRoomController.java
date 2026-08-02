@@ -12,6 +12,8 @@ import com.minhtan.qlptclient.gui.RoomGUI;
 import com.minhtan.qlptclient.gui.RoomMediaDialog;
 import com.minhtan.qlptclient.gui.SearchRoomGUI;
 import com.minhtan.qlptclient.service.ApiClient;
+import com.minhtan.qlptclient.service.MethodAmenity;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -31,6 +33,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -433,7 +436,7 @@ public class SearchRoomController {
         String imageUrl = firstImageUrl(room);
         if (imageUrl != null) {
             try {
-                imageView.setImage(new Image(RoomMediaDialogController.resolveMediaUrl(imageUrl)));
+                imageView.setImage(new Image(MethodAmenity.resolveMediaUrl(imageUrl)));
             } catch (Exception ignored) {
             }
         }
@@ -452,13 +455,15 @@ public class SearchRoomController {
     private String firstImageUrl(Room room) {
         try {
             List<RoomMedia> media = ApiClient.getInstance().searchRoomMediaByRoomId(room.getRoomId());
+
             return media.stream()
-                    .filter(item -> item != null && item.getMediaType() != null && item.getMediaType() == 1)
-                    .filter(item -> item.getSortOrder() != null && item.getSortOrder() == 1)
+                    .filter(item -> item != null)
+                    .filter(item -> item.getMediaType() != null && item.getMediaType() == 1)
+                    .filter(item -> item.getSortOrder() != null)
+                    .min(Comparator.comparing(RoomMedia::getSortOrder))
                     .map(RoomMedia::getUrl)
-                    .filter(Objects::nonNull)
-                    .findFirst()
                     .orElse(null);
+
         } catch (Exception ignored) {
             return null;
         }

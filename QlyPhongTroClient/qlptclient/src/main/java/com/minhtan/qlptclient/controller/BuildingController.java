@@ -5,6 +5,8 @@ import com.minhtan.qlptclient.entity.BuildingFee;
 import com.minhtan.qlptclient.entity.District;
 import com.minhtan.qlptclient.gui.BuildingGUI;
 import com.minhtan.qlptclient.service.ApiClient;
+import com.minhtan.qlptclient.service.MethodAmenity;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
@@ -14,28 +16,30 @@ import java.util.List;
 public class BuildingController {
 
     private final BuildingGUI view;
+    
 
     public BuildingController(BuildingGUI view) {
         this.view = view;
         wireEvents();
         loadBuildingPage();
-        
+
     }
 
     private void wireEvents() {
-        view.getBuildingList().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, selected) -> {
-            if (selected == null) {
-                return;
-            }
-            selectDistrict(selected.getDistrictId());
-            view.getBuildingIdField().setText(valueOrEmpty(selected.getBuildingId()));
-            view.getTrueAddressField().setText(valueOrEmpty(selected.getTrueAddress()));
-            view.getFakeAddressField().setText(valueOrEmpty(selected.getFakeAddress()));
-            view.getNoteField().setText(valueOrEmpty(selected.getNote()));
-            view.getOwnerPhoneField().setText(valueOrEmpty(selected.getOwnerPhone()));
-            view.getFeeBuildingIdField().setText(valueOrEmpty(selected.getBuildingId()));
-            loadBuildingFee(selected.getBuildingId());
-        });
+        view.getBuildingList().getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, selected) -> {
+                    if (selected == null) {
+                        return;
+                    }
+                    selectDistrict(selected.getDistrictId());
+                    view.getBuildingIdField().setText(valueOrEmpty(selected.getBuildingId()));
+                    view.getTrueAddressField().setText(valueOrEmpty(selected.getTrueAddress()));
+                    view.getFakeAddressField().setText(valueOrEmpty(selected.getFakeAddress()));
+                    view.getNoteField().setText(valueOrEmpty(selected.getNote()));
+                    view.getOwnerPhoneField().setText(valueOrEmpty(selected.getOwnerPhone()));
+                    view.getFeeBuildingIdField().setText(valueOrEmpty(selected.getBuildingId()));
+                    loadBuildingFee(selected.getBuildingId());
+                });
 
         view.getRefreshButton().setOnAction(event -> loadBuildingPage());
         view.getSearchButton().setOnAction(event -> searchBuildings());
@@ -54,7 +58,7 @@ public class BuildingController {
         runLoadTask("Đang tải /api/buildings...", ApiClient.getInstance()::getBuildings);
     }
 
-    private void loadDistricts(){
+    private void loadDistricts() {
         Task<List<District>> task = new Task<>() {
             @Override
             protected List<District> call() throws Exception {
@@ -128,8 +132,8 @@ public class BuildingController {
             return;
         }
 
-        runMutationTask("Đang cập nhật building...", () ->
-                ApiClient.getInstance().updateBuilding(Integer.valueOf(view.getBuildingIdField().getText()), readForm()));
+        runMutationTask("Đang cập nhật building...", () -> ApiClient.getInstance()
+                .updateBuilding(Integer.valueOf(view.getBuildingIdField().getText()), readForm()));
     }
 
     private void deleteBuilding() {
@@ -138,8 +142,8 @@ public class BuildingController {
             return;
         }
 
-        runMutationTask("Đang xóa building...", () ->
-                ApiClient.getInstance().deleteBuilding(Integer.valueOf(view.getBuildingIdField().getText())));
+        runMutationTask("Đang xóa building...",
+                () -> ApiClient.getInstance().deleteBuilding(Integer.valueOf(view.getBuildingIdField().getText())));
     }
 
     private void loadBuildingFee(Integer buildingId) {
@@ -187,8 +191,8 @@ public class BuildingController {
             return;
         }
 
-        runMutationTask("Đang cập nhật phí dịch vụ...", () ->
-                ApiClient.getInstance().updateBuildingFee(Integer.valueOf(view.getFeeIdField().getText()), readFeeForm()));
+        runMutationTask("Đang cập nhật phí dịch vụ...", () -> ApiClient.getInstance()
+                .updateBuildingFee(Integer.valueOf(view.getFeeIdField().getText()), readFeeForm()));
     }
 
     private void deleteBuildingFee() {
@@ -198,8 +202,8 @@ public class BuildingController {
         }
 
         Integer buildingId = integerOrNull(view.getFeeBuildingIdField().getText(), "Building ID");
-        runMutationTask("Đang xóa phí dịch vụ...", () ->
-                ApiClient.getInstance().deleteBuildingFee(Integer.valueOf(view.getFeeIdField().getText())));
+        runMutationTask("Đang xóa phí dịch vụ...",
+                () -> ApiClient.getInstance().deleteBuildingFee(Integer.valueOf(view.getFeeIdField().getText())));
         if (buildingId != null) {
             view.getFeeBuildingIdField().setText(String.valueOf(buildingId));
         }
@@ -271,7 +275,8 @@ public class BuildingController {
 
     private Building readForm() {
         Building building = new Building();
-        String buildingIdText = view.getBuildingIdField().getText() == null ? "" : view.getBuildingIdField().getText().trim();
+        String buildingIdText = view.getBuildingIdField().getText() == null ? ""
+                : view.getBuildingIdField().getText().trim();
         if (!buildingIdText.isBlank()) {
             building.setBuildingId(Integer.valueOf(buildingIdText));
         }
@@ -288,26 +293,62 @@ public class BuildingController {
         return building;
     }
 
+    
+
     private BuildingFee readFeeForm() {
-        Integer buildingId = integerOrNull(view.getFeeBuildingIdField().getText(), "Building ID");
+
+        Integer buildingId = integerOrNull(
+                view.getFeeBuildingIdField().getText(),
+                "Building ID");
+
         if (buildingId == null) {
             showAlert("Lỗi", "Hãy chọn tòa nhà trước khi tạo phí dịch vụ.");
             throw new IllegalArgumentException("Hãy chọn tòa nhà trước khi tạo phí dịch vụ.");
         }
 
         BuildingFee buildingFee = new BuildingFee();
-        Integer feeId = integerOrNull(view.getFeeIdField().getText(), "Fee ID");
+
+        Integer feeId = integerOrNull(
+                view.getFeeIdField().getText(),
+                "Fee ID");
+
         if (feeId != null) {
             buildingFee.setFeeId(feeId);
         }
+
         buildingFee.setBuildingId(buildingId);
         buildingFee.setBuilding(null);
-        buildingFee.setElectricityPrice(decimalOrNull(view.getElectricityPriceField().getText(), "Electricity Price"));
-        buildingFee.setWaterPrice(decimalOrNull(view.getWaterPriceField().getText(), "Water Price"));
-        buildingFee.setServiceFee(decimalOrNull(view.getServiceFeeField().getText(), "Service Fee"));
-        buildingFee.setParkingFee(decimalOrNull(view.getParkingFeeField().getText(), "Parking Fee"));
-        buildingFee.setOtherFee(decimalOrNull(view.getOtherFeeField().getText(), "Other Fee"));
-        buildingFee.setFreeParking(integerOrNull(view.getFreeParkingField().getText(), "Free Parking"));
+
+        buildingFee.setElectricityPrice(
+                MethodAmenity.convertToVnd(decimalOrNull(
+                        view.getElectricityPriceField().getText(),
+                        "Electricity Price")));
+
+        buildingFee.setWaterPrice(
+                MethodAmenity.convertToVnd(decimalOrNull(
+                        view.getWaterPriceField().getText(),
+                        "Water Price")));
+
+        buildingFee.setServiceFee(
+                MethodAmenity.convertToVnd(decimalOrNull(
+                        view.getServiceFeeField().getText(),
+                        "Service Fee")));
+
+        buildingFee.setParkingFee(
+                MethodAmenity.convertToVnd(decimalOrNull(
+                        view.getParkingFeeField().getText(),
+                        "Parking Fee")));
+
+        buildingFee.setOtherFee(
+                MethodAmenity.convertToVnd(decimalOrNull(
+                        view.getOtherFeeField().getText(),
+                        "Other Fee")));
+
+        buildingFee.setFreeParking(
+                integerOrNull(
+                        view.getFreeParkingField().getText(),
+                        "Free Parking"));
+
         return buildingFee;
     }
 
@@ -364,7 +405,8 @@ public class BuildingController {
 
     private void showAlert(String title, String message) {
         Platform.runLater(() -> {
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.ERROR);
             alert.setTitle(title);
             alert.setHeaderText(null);
             alert.setContentText(message);

@@ -1,10 +1,9 @@
-const vndrate = 1000
 export function formatCurrency(value) {
   const numberValue = Number(value || 0);
 
   return `${new Intl.NumberFormat('vi-VN', {
     maximumFractionDigits: 0,
-  }).format(numberValue*vndrate)}đ`;
+  }).format(numberValue)}đ`;
 }
 
 export function formatArea(value) {
