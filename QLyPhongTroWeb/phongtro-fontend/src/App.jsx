@@ -1,10 +1,7 @@
+import Home from './pages/Home/Home.jsx';
+
 function App() {
-  return (
-    <div>
-      <h1>Website Phòng Trọ</h1>
-      <p>Chào mừng đến với website tìm phòng trọ cho sinh viên.</p>
-    </div>
-  );
+  return <Home />;
 }
 
 export default App;

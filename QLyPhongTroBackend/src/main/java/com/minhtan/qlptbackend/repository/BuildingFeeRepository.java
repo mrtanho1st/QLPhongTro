@@ -22,4 +22,6 @@ public interface BuildingFeeRepository extends JpaRepository<BuildingFee, Intege
     List<BuildingFee> findByOtherFee(BigDecimal otherFee);
 
     List<BuildingFee> findByFreeParking(Integer freeParking);
+
+    void deleteByBuildingId(Integer buildingId);
 }

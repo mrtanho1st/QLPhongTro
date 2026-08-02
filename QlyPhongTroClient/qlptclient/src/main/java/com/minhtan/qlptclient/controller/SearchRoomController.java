@@ -36,7 +36,6 @@ import java.util.Objects;
 
 public class SearchRoomController {
 
-    private final ApiClient apiClient = new ApiClient("http://localhost:8080");
     private final SearchRoomGUI view;
     private List<Building> allBuildings = new ArrayList<>();
     private List<Room> allRooms = new ArrayList<>();
@@ -86,7 +85,7 @@ public class SearchRoomController {
         Task<List<Building>> buildingsTask = new Task<>() {
             @Override
             protected List<Building> call() throws Exception {
-                return apiClient.getBuildings();
+                return ApiClient.getInstance().getBuildings();
             }
         };
 
@@ -106,7 +105,7 @@ public class SearchRoomController {
         Task<List<Room>> roomsTask = new Task<>() {
             @Override
             protected List<Room> call() throws Exception {
-                return apiClient.getRooms();
+                return ApiClient.getInstance().getRooms();
             }
         };
 
@@ -238,7 +237,8 @@ public class SearchRoomController {
         if (amenityId == null) {
             return false;
         }
-        // LƯU Ý: giả định RoomAmenity có getRoomId() và getAmenityId(); chỉnh lại tên getter nếu khác.
+        // LƯU Ý: giả định RoomAmenity có getRoomId() và getAmenityId(); chỉnh lại tên
+        // getter nếu khác.
         return allRoomAmenities.stream()
                 .anyMatch(roomAmenity -> Objects.equals(roomAmenity.getAmenityId(), amenityId)
                         && Objects.equals(roomAmenity.getRoomId(), room.getRoomId()));
@@ -248,7 +248,7 @@ public class SearchRoomController {
         Task<List<TypeRoom>> task = new Task<>() {
             @Override
             protected List<TypeRoom> call() throws Exception {
-                return apiClient.getTypeRooms();
+                return ApiClient.getInstance().getTypeRooms();
             }
         };
 
@@ -272,7 +272,7 @@ public class SearchRoomController {
         Task<List<District>> task = new Task<>() {
             @Override
             protected List<District> call() throws Exception {
-                return apiClient.getDistricts();
+                return ApiClient.getInstance().getDistricts();
             }
         };
 
@@ -296,7 +296,7 @@ public class SearchRoomController {
         Task<List<Commission>> task = new Task<>() {
             @Override
             protected List<Commission> call() throws Exception {
-                return apiClient.getCommissions();
+                return ApiClient.getInstance().getCommissions();
             }
         };
 
@@ -317,7 +317,8 @@ public class SearchRoomController {
 
     private String formatCommission(Commission commission) {
         String contractMonth = commission.getContractMonth() == null ? "" : commission.getContractMonth().toString();
-        String deposit = commission.getDeposit() == null ? "" : commission.getDeposit().stripTrailingZeros().toPlainString();
+        String deposit = commission.getDeposit() == null ? ""
+                : commission.getDeposit().stripTrailingZeros().toPlainString();
         String commissionPercent = commission.getCommissionPercent() == null ? ""
                 : commission.getCommissionPercent().stripTrailingZeros().toPlainString() + "%";
         return contractMonth + " - " + deposit + " - " + commissionPercent;
@@ -327,7 +328,7 @@ public class SearchRoomController {
         Task<List<Amenity>> task = new Task<>() {
             @Override
             protected List<Amenity> call() throws Exception {
-                return apiClient.getAmenities();
+                return ApiClient.getInstance().getAmenities();
             }
         };
 
@@ -352,7 +353,7 @@ public class SearchRoomController {
         Task<List<RoomAmenity>> task = new Task<>() {
             @Override
             protected List<RoomAmenity> call() throws Exception {
-                return apiClient.getRoomAmenities();
+                return ApiClient.getInstance().getRoomAmenities();
             }
         };
 
@@ -432,7 +433,7 @@ public class SearchRoomController {
         String imageUrl = firstImageUrl(room);
         if (imageUrl != null) {
             try {
-                imageView.setImage(new Image(imageUrl));
+                imageView.setImage(new Image(RoomMediaDialogController.resolveMediaUrl(imageUrl)));
             } catch (Exception ignored) {
             }
         }
@@ -450,7 +451,7 @@ public class SearchRoomController {
 
     private String firstImageUrl(Room room) {
         try {
-            List<RoomMedia> media = apiClient.searchRoomMediaByRoomId(room.getRoomId());
+            List<RoomMedia> media = ApiClient.getInstance().searchRoomMediaByRoomId(room.getRoomId());
             return media.stream()
                     .filter(item -> item != null && item.getMediaType() != null && item.getMediaType() == 1)
                     .filter(item -> item.getSortOrder() != null && item.getSortOrder() == 1)
@@ -486,7 +487,8 @@ public class SearchRoomController {
         Label buildingName = new Label("Tòa nhà: " + str_trueAddress);
         Label fakeAddress = new Label("Địa chỉ ảo: " + str_fakeAddress);
         Label districtName = new Label("Khu vực: " + str_districtName);
-        Label typeRoom = new Label("Loại phòng: " + textOf(room.getTypeRoom() == null ? "" : room.getTypeRoom().getTypeRoomName()));
+        Label typeRoom = new Label(
+                "Loại phòng: " + textOf(room.getTypeRoom() == null ? "" : room.getTypeRoom().getTypeRoomName()));
         Label price = new Label("Giá: " + formatPrice(room.getPrice()));
         Label area = new Label("Diện tích: " + (room.getArea() == null ? "" : room.getArea().toPlainString()));
         Label bedroom = new Label("Phòng ngủ: " + (room.getBedroom() == null ? "" : room.getBedroom()));
@@ -495,7 +497,8 @@ public class SearchRoomController {
                 "Ngày có sẵn: " + (room.getAvailableDate() == null ? "" : room.getAvailableDate().format(formatter)));
         Label note = new Label("Ghi chú: " + textOf(room.getNote()));
 
-        VBox infoBox = new VBox(6, title, buildingName, fakeAddress, districtName, typeRoom, price, area, bedroom, people, availableDate, note);
+        VBox infoBox = new VBox(6, title, buildingName, fakeAddress, districtName, typeRoom, price, area, bedroom,
+                people, availableDate, note);
         infoBox.setPadding(new Insets(12));
         infoBox.setStyle(
                 "-fx-background-color:#f8fafc; -fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#e2e8f0;");
@@ -557,7 +560,7 @@ public class SearchRoomController {
         if (room == null || room.getRoomId() == null) {
             return;
         }
-        new RoomMediaDialog(room, apiClient).show();
+        new RoomMediaDialog(room, ApiClient.getInstance()).show();
     }
 
     private void openLocationOnMap() {
@@ -585,11 +588,9 @@ public class SearchRoomController {
         try {
             String query = URLEncoder.encode(
                     fakeAddress,
-                    StandardCharsets.UTF_8
-            );
+                    StandardCharsets.UTF_8);
 
-            String mapUrl =
-                    "https://www.google.com/maps/search/?api=1&query="
+            String mapUrl = "https://www.google.com/maps/search/?api=1&query="
                     + query;
 
             hostServices.showDocument(mapUrl);
@@ -598,8 +599,7 @@ public class SearchRoomController {
             showAlert(
                     "Lỗi",
                     "Không thể mở Google Maps: "
-                    + exception.getMessage()
-            );
+                            + exception.getMessage());
         }
     }
 

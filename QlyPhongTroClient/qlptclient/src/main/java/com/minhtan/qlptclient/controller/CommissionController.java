@@ -17,7 +17,6 @@ import java.util.Optional;
 public class CommissionController {
 
     private final CommissionGUI view;
-    private final ApiClient apiClient = new ApiClient("http://localhost:8080");
     private List<Commission> allCommissions = new ArrayList<>();
     private List<Building> allBuildings = new ArrayList<>();
 
@@ -47,7 +46,7 @@ public class CommissionController {
         Task<List<Building>> task = new Task<>() {
             @Override
             protected List<Building> call() throws Exception {
-                return apiClient.getBuildings();
+                return ApiClient.getInstance().getBuildings();
             }
         };
 
@@ -71,7 +70,7 @@ public class CommissionController {
         Task<List<Commission>> task = new Task<>() {
             @Override
             protected List<Commission> call() throws Exception {
-                return apiClient.getCommissions();
+                return ApiClient.getInstance().getCommissions();
             }
         };
 
@@ -119,7 +118,7 @@ public class CommissionController {
             Task<Commission> task = new Task<Commission>() {
                 @Override
                 protected Commission call() throws Exception {
-                    return apiClient.createCommission(commission);
+                    return ApiClient.getInstance().createCommission(commission);
                 }
             };
 
@@ -176,7 +175,7 @@ public class CommissionController {
             Task<Commission> task = new Task<Commission>() {
                 @Override
                 protected Commission call() throws Exception {
-                    return apiClient.updateCommission(selected.getCommissionId(), selected);
+                    return ApiClient.getInstance().updateCommission(selected.getCommissionId(), selected);
                 }
             };
 
@@ -216,7 +215,7 @@ public class CommissionController {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    apiClient.deleteCommission(selected.getCommissionId());
+                    ApiClient.getInstance().deleteCommission(selected.getCommissionId());
                     return null;
                 }
             };

@@ -13,7 +13,6 @@ import java.util.List;
 
 public class BuildingController {
 
-    private final ApiClient apiClient = new ApiClient("http://localhost:8080");
     private final BuildingGUI view;
 
     public BuildingController(BuildingGUI view) {
@@ -52,14 +51,14 @@ public class BuildingController {
 
     private void loadBuildingPage() {
         loadDistricts();
-        runLoadTask("Đang tải /api/buildings...", apiClient::getBuildings);
+        runLoadTask("Đang tải /api/buildings...", ApiClient.getInstance()::getBuildings);
     }
 
     private void loadDistricts(){
         Task<List<District>> task = new Task<>() {
             @Override
             protected List<District> call() throws Exception {
-                return apiClient.getDistricts();
+                return ApiClient.getInstance().getDistricts();
             }
         };
 
@@ -93,12 +92,12 @@ public class BuildingController {
             @Override
             protected List<Building> call() throws Exception {
                 return switch (mode) {
-                    case "District Name" -> apiClient.searchBuildingsByDistrictName(keyword);
-                    case "True Address" -> apiClient.searchBuildingsByTrueAddress(keyword);
-                    case "Fake Address" -> apiClient.searchBuildingsByFakeAddress(keyword);
-                    case "Note" -> apiClient.searchBuildingsByNote(keyword);
-                    case "Owner Phone" -> apiClient.searchBuildingsByOwnerPhone(keyword);
-                    default -> apiClient.getBuildings();
+                    case "District Name" -> ApiClient.getInstance().searchBuildingsByDistrictName(keyword);
+                    case "True Address" -> ApiClient.getInstance().searchBuildingsByTrueAddress(keyword);
+                    case "Fake Address" -> ApiClient.getInstance().searchBuildingsByFakeAddress(keyword);
+                    case "Note" -> ApiClient.getInstance().searchBuildingsByNote(keyword);
+                    case "Owner Phone" -> ApiClient.getInstance().searchBuildingsByOwnerPhone(keyword);
+                    default -> ApiClient.getInstance().getBuildings();
                 };
             }
         };
@@ -119,7 +118,7 @@ public class BuildingController {
         runMutationTask("Đang tạo building mới...", () -> {
             Building building = readForm();
             building.setBuildingId(null);
-            apiClient.createBuilding(building);
+            ApiClient.getInstance().createBuilding(building);
         });
     }
 
@@ -130,7 +129,7 @@ public class BuildingController {
         }
 
         runMutationTask("Đang cập nhật building...", () ->
-                apiClient.updateBuilding(Integer.valueOf(view.getBuildingIdField().getText()), readForm()));
+                ApiClient.getInstance().updateBuilding(Integer.valueOf(view.getBuildingIdField().getText()), readForm()));
     }
 
     private void deleteBuilding() {
@@ -140,7 +139,7 @@ public class BuildingController {
         }
 
         runMutationTask("Đang xóa building...", () ->
-                apiClient.deleteBuilding(Integer.valueOf(view.getBuildingIdField().getText())));
+                ApiClient.getInstance().deleteBuilding(Integer.valueOf(view.getBuildingIdField().getText())));
     }
 
     private void loadBuildingFee(Integer buildingId) {
@@ -152,7 +151,7 @@ public class BuildingController {
         Task<List<BuildingFee>> task = new Task<>() {
             @Override
             protected List<BuildingFee> call() throws Exception {
-                return apiClient.searchBuildingFeesByBuildingId(buildingId);
+                return ApiClient.getInstance().searchBuildingFeesByBuildingId(buildingId);
             }
         };
 
@@ -178,7 +177,7 @@ public class BuildingController {
         runMutationTask("Đang tạo phí dịch vụ...", () -> {
             BuildingFee buildingFee = readFeeForm();
             buildingFee.setFeeId(null);
-            apiClient.createBuildingFee(buildingFee);
+            ApiClient.getInstance().createBuildingFee(buildingFee);
         });
     }
 
@@ -189,7 +188,7 @@ public class BuildingController {
         }
 
         runMutationTask("Đang cập nhật phí dịch vụ...", () ->
-                apiClient.updateBuildingFee(Integer.valueOf(view.getFeeIdField().getText()), readFeeForm()));
+                ApiClient.getInstance().updateBuildingFee(Integer.valueOf(view.getFeeIdField().getText()), readFeeForm()));
     }
 
     private void deleteBuildingFee() {
@@ -200,7 +199,7 @@ public class BuildingController {
 
         Integer buildingId = integerOrNull(view.getFeeBuildingIdField().getText(), "Building ID");
         runMutationTask("Đang xóa phí dịch vụ...", () ->
-                apiClient.deleteBuildingFee(Integer.valueOf(view.getFeeIdField().getText())));
+                ApiClient.getInstance().deleteBuildingFee(Integer.valueOf(view.getFeeIdField().getText())));
         if (buildingId != null) {
             view.getFeeBuildingIdField().setText(String.valueOf(buildingId));
         }

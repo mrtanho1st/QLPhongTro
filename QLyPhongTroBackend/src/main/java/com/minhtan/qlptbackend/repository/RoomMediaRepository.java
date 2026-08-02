@@ -15,4 +15,6 @@ public interface RoomMediaRepository extends JpaRepository<RoomMedia, Integer> {
     List<RoomMedia> findByUrl(String url);
 
     List<RoomMedia> findBySortOrder(Integer sortOrder);
+
+    void deleteByRoomId(Integer roomId);
 }

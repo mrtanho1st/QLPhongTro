@@ -11,56 +11,123 @@ import java.util.Optional;
 public class RoomMediaService {
 
     private final RoomMediaRepository roomMediaRepository;
+    private final FileStorageService fileStorageService;
 
-    public RoomMediaService(RoomMediaRepository roomMediaRepository) {
+    public RoomMediaService(RoomMediaRepository roomMediaRepository,
+            FileStorageService fileStorageService) {
         this.roomMediaRepository = roomMediaRepository;
+        this.fileStorageService = fileStorageService;
+    }
+
+    /**
+     * Chuyển url trong entity thành URL public.
+     */
+    private RoomMedia toPublic(RoomMedia roomMedia) {
+
+        if (roomMedia != null && roomMedia.getUrl() != null) {
+            roomMedia.setUrl(fileStorageService.toPublicUrl(roomMedia.getUrl()));
+        }
+
+        return roomMedia;
     }
 
     public List<RoomMedia> getAllRoomMedia() {
-        return roomMediaRepository.findAll();
+
+        List<RoomMedia> medias = roomMediaRepository.findAll();
+
+        medias.forEach(this::toPublic);
+
+        return medias;
     }
 
     public List<RoomMedia> searchByRoomId(Integer roomId) {
-        return roomMediaRepository.findByRoomId(roomId);
+
+        List<RoomMedia> medias = roomMediaRepository.findByRoomId(roomId);
+
+        medias.forEach(this::toPublic);
+
+        return medias;
     }
 
     public List<RoomMedia> searchByMediaType(Byte mediaType) {
-        return roomMediaRepository.findByMediaType(mediaType);
+
+        List<RoomMedia> medias = roomMediaRepository.findByMediaType(mediaType);
+
+        medias.forEach(this::toPublic);
+
+        return medias;
     }
 
-    public List<RoomMedia> searchByUrl(String url) {
-        return roomMediaRepository.findByUrl(url);
+    public List<RoomMedia> searchByUrl(String absolutePath) {
+
+        String relativePath = fileStorageService.toRelativePath(absolutePath);
+
+        List<RoomMedia> medias = roomMediaRepository.findByUrl(relativePath);
+
+        medias.forEach(this::toPublic);
+
+        return medias;
     }
 
     public List<RoomMedia> searchBySortOrder(Integer sortOrder) {
-        return roomMediaRepository.findBySortOrder(sortOrder);
+
+        List<RoomMedia> medias = roomMediaRepository.findBySortOrder(sortOrder);
+
+        medias.forEach(this::toPublic);
+
+        return medias;
     }
 
     public Optional<RoomMedia> getRoomMediaById(Integer mediaId) {
-        return roomMediaRepository.findById(mediaId);
+
+        return roomMediaRepository.findById(mediaId)
+                .map(this::toPublic);
     }
 
+    /**
+     * Lưu vào database dưới dạng đường dẫn tương đối.
+     */
     public RoomMedia createRoomMedia(RoomMedia roomMedia) {
+
         roomMedia.setMediaId(null);
-        return roomMediaRepository.save(roomMedia);
+
+        roomMedia.setUrl(
+                fileStorageService.toRelativePath(roomMedia.getUrl()));
+
+        RoomMedia saved = roomMediaRepository.save(roomMedia);
+
+        return toPublic(saved);
     }
 
-    public Optional<RoomMedia> updateRoomMedia(Integer mediaId, RoomMedia roomMediaRequest) {
+    /**
+     * Cập nhật và lưu đường dẫn tương đối.
+     */
+    public Optional<RoomMedia> updateRoomMedia(Integer mediaId,
+            RoomMedia roomMediaRequest) {
+
         return roomMediaRepository.findById(mediaId).map(existingRoomMedia -> {
+
             existingRoomMedia.setRoomId(roomMediaRequest.getRoomId());
             existingRoomMedia.setMediaType(roomMediaRequest.getMediaType());
-            existingRoomMedia.setUrl(roomMediaRequest.getUrl());
             existingRoomMedia.setSortOrder(roomMediaRequest.getSortOrder());
-            return roomMediaRepository.save(existingRoomMedia);
+
+            existingRoomMedia.setUrl(
+                    fileStorageService.toRelativePath(roomMediaRequest.getUrl()));
+
+            RoomMedia saved = roomMediaRepository.save(existingRoomMedia);
+
+            return toPublic(saved);
         });
     }
 
     public boolean deleteRoomMedia(Integer mediaId) {
+
         if (!roomMediaRepository.existsById(mediaId)) {
             return false;
         }
 
         roomMediaRepository.deleteById(mediaId);
+
         return true;
     }
 }

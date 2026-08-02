@@ -137,7 +137,7 @@ public class RoomMediaDialogController {
             RoomMedia newMedia = new RoomMedia();
             newMedia.setRoomId(room == null ? null : room.getRoomId());
             newMedia.setMediaType(type.equalsIgnoreCase("Video") ? (byte) 2 : (byte) 1);
-            newMedia.setUrl(selectedFile.toURI().toString());
+            newMedia.setUrl(selectedFile.getAbsolutePath());
             newMedia.setSortOrder(mediaItems.size() + 1);
             mediaItems.add(newMedia);
             lastAddedMedia = newMedia;
@@ -264,7 +264,7 @@ public class RoomMediaDialogController {
         String url = selected.getUrl();
         if (isImageUrl(url)) {
             try {
-                view.getPreviewImage().setImage(new Image(url));
+                view.getPreviewImage().setImage(new Image(resolveMediaUrl(url)));
                 view.getPreviewLabel().setText("Ảnh");
             } catch (Exception exception) {
                 view.getPreviewLabel().setText("Không thể xem trước ảnh: " + exception.getMessage());
@@ -273,6 +273,25 @@ public class RoomMediaDialogController {
             view.getPreviewImage().setImage(null);
             view.getPreviewLabel().setText("Video: " + fileNameFromUrl(url));
         }
+    }
+
+    public static String resolveMediaUrl(String url) {
+
+        if (url == null || url.isBlank()) {
+            return "";
+        }
+
+        if (url.startsWith("http://")
+                || url.startsWith("https://")
+                || url.startsWith("file:")) {
+            return url;
+        }
+
+        if (url.startsWith("/uploads/")) {
+            return ApiClient.getInstance().getBaseUrl() + url;
+        }
+
+        return ApiClient.getInstance().getBaseUrl() + "/uploads/" + url;
     }
 
     private boolean isImageUrl(String url) {

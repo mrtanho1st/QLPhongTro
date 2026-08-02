@@ -1,7 +1,5 @@
 package com.minhtan.qlptbackend.controller;
 
-import com.minhtan.qlptbackend.entity.Building;
-import com.minhtan.qlptbackend.entity.District;
 import com.minhtan.qlptbackend.entity.Room;
 import com.minhtan.qlptbackend.entity.TypeRoom;
 import com.minhtan.qlptbackend.service.RoomService;

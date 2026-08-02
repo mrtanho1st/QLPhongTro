@@ -20,7 +20,6 @@ import java.util.Set;
 
 public class RoomController {
 
-    private final ApiClient apiClient = new ApiClient("http://localhost:8080");
     private final RoomGUI view;
     private final List<Amenity> allAmenities = new ArrayList<>();
 
@@ -69,10 +68,10 @@ public class RoomController {
         Task<RoomPageData> task = new Task<>() {
             @Override
             protected RoomPageData call() throws Exception {
-                List<Building> buildings = apiClient.getBuildings();
-                List<TypeRoom> typeRooms = apiClient.getTypeRooms();
-                List<Room> rooms = apiClient.getRooms();
-                List<Amenity> amenities = apiClient.getAmenities();
+                List<Building> buildings = ApiClient.getInstance().getBuildings();
+                List<TypeRoom> typeRooms = ApiClient.getInstance().getTypeRooms();
+                List<Room> rooms = ApiClient.getInstance().getRooms();
+                List<Amenity> amenities = ApiClient.getInstance().getAmenities();
                 return new RoomPageData(rooms, buildings, amenities, typeRooms);
             }
         };
@@ -111,17 +110,17 @@ public class RoomController {
             @Override
             protected List<Room> call() throws Exception {
                 return switch (mode) {
-                    case "Building ID" -> apiClient.searchRoomsByBuildingId(Integer.valueOf(keyword));
-                    case "Type Room Name" -> apiClient.searchRoomsByTypeRoomName(keyword);
-                    case "Room Code" -> apiClient.searchRoomsByRoomCode(keyword);
-                    case "Price" -> apiClient.searchRoomsByPrice(keyword);
-                    case "Bedroom" -> apiClient.searchRoomsByBedroom(Integer.valueOf(keyword));
-                    case "Person Limit" -> apiClient.searchRoomsByPersonLimitGreaterThanEqual(Integer.valueOf(keyword));
-                    case "Area" -> apiClient.searchRoomsByAreaGreaterThanEqual(keyword);
-                    case "Locked" -> apiClient.searchRoomsByLocked(Boolean.valueOf(keyword));
-                    case "Available Date" -> apiClient.searchRoomsByAvailableDate(keyword);
-                    case "Note" -> apiClient.searchRoomsByNote(keyword);
-                    default -> apiClient.getRooms();
+                    case "Building ID" -> ApiClient.getInstance().searchRoomsByBuildingId(Integer.valueOf(keyword));
+                    case "Type Room Name" -> ApiClient.getInstance().searchRoomsByTypeRoomName(keyword);
+                    case "Room Code" -> ApiClient.getInstance().searchRoomsByRoomCode(keyword);
+                    case "Price" -> ApiClient.getInstance().searchRoomsByPrice(keyword);
+                    case "Bedroom" -> ApiClient.getInstance().searchRoomsByBedroom(Integer.valueOf(keyword));
+                    case "Person Limit" -> ApiClient.getInstance().searchRoomsByPersonLimitGreaterThanEqual(Integer.valueOf(keyword));
+                    case "Area" -> ApiClient.getInstance().searchRoomsByAreaGreaterThanEqual(keyword);
+                    case "Locked" -> ApiClient.getInstance().searchRoomsByLocked(Boolean.valueOf(keyword));
+                    case "Available Date" -> ApiClient.getInstance().searchRoomsByAvailableDate(keyword);
+                    case "Note" -> ApiClient.getInstance().searchRoomsByNote(keyword);
+                    default -> ApiClient.getInstance().getRooms();
                 };
             }
         };
@@ -139,7 +138,7 @@ public class RoomController {
         runMutationTask("Đang tạo phòng mới...", () -> {
             Room room = readForm();
             room.setRoomId(null);
-            apiClient.createRoom(room);
+            ApiClient.getInstance().createRoom(room);
         });
     }
 
@@ -150,7 +149,7 @@ public class RoomController {
         }
 
         runMutationTask("Đang cập nhật phòng...",
-                () -> apiClient.updateRoom(Integer.valueOf(view.getRoomIdField().getText()), readForm()));
+                () -> ApiClient.getInstance().updateRoom(Integer.valueOf(view.getRoomIdField().getText()), readForm()));
     }
 
     private void deleteRoom() {
@@ -160,7 +159,7 @@ public class RoomController {
         }
 
         runMutationTask("Đang xóa phòng...",
-                () -> apiClient.deleteRoom(Integer.valueOf(view.getRoomIdField().getText())));
+                () -> ApiClient.getInstance().deleteRoom(Integer.valueOf(view.getRoomIdField().getText())));
     }
 
     private void runMutationTask(String statusText, Mutation mutation) {
@@ -199,7 +198,7 @@ public class RoomController {
         Task<List<RoomAmenity>> task = new Task<>() {
             @Override
             protected List<RoomAmenity> call() throws Exception {
-                return apiClient.searchRoomAmenitiesByRoomId(roomId);
+                return ApiClient.getInstance().searchRoomAmenitiesByRoomId(roomId);
             }
         };
 
@@ -261,7 +260,7 @@ public class RoomController {
             return;
         }
 
-        runAmenityMutationTask("Đang thêm tiện ích...", () -> apiClient.createRoomAmenity(
+        runAmenityMutationTask("Đang thêm tiện ích...", () -> ApiClient.getInstance().createRoomAmenity(
                 new RoomAmenity(selectedRoom.getRoomId(), selectedAmenity.getAmenityId(), null, null)));
     }
 
@@ -279,7 +278,7 @@ public class RoomController {
         }
 
         runAmenityMutationTask("Đang xóa tiện ích...",
-                () -> apiClient.deleteRoomAmenity(selectedRoom.getRoomId(), selectedAmenity.getAmenityId()));
+                () -> ApiClient.getInstance().deleteRoomAmenity(selectedRoom.getRoomId(), selectedAmenity.getAmenityId()));
     }
 
     private void openMediaDialog() {
@@ -289,7 +288,7 @@ public class RoomController {
             return;
         }
 
-        RoomMediaDialog dialog = new RoomMediaDialog(selectedRoom, apiClient);
+        RoomMediaDialog dialog = new RoomMediaDialog(selectedRoom, ApiClient.getInstance());
         dialog.show();
     }
 

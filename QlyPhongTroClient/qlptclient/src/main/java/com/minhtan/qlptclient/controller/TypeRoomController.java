@@ -10,7 +10,6 @@ import java.util.List;
 
 public class TypeRoomController {
 
-    private final ApiClient apiClient = new ApiClient("http://localhost:8080");
     private final TypeRoomGUI view;
 
     public TypeRoomController(TypeRoomGUI view) {
@@ -38,7 +37,7 @@ public class TypeRoomController {
     }
 
     private void loadTypeRooms() {
-        runLoadTask("Đang tải /api/type-rooms...", apiClient::getTypeRooms);
+        runLoadTask("Đang tải /api/type-rooms...", ApiClient.getInstance()::getTypeRooms);
     }
 
     private void searchTypeRooms() {
@@ -59,8 +58,8 @@ public class TypeRoomController {
             @Override
             protected List<TypeRoom> call() throws Exception {
                 return switch (mode) {
-                    case "Type Room Name" -> apiClient.searchTypeRoomsByName(keyword);
-                    default -> apiClient.getTypeRooms();
+                    case "Type Room Name" -> ApiClient.getInstance().searchTypeRoomsByName(keyword);
+                    default -> ApiClient.getInstance().getTypeRooms();
                 };
             }
         };
@@ -78,7 +77,7 @@ public class TypeRoomController {
         runMutationTask("Đang tạo type room mới...", () -> {
             TypeRoom typeRoom = readForm();
             typeRoom.setTypeRoomId(null);
-            apiClient.createTypeRoom(typeRoom);
+            ApiClient.getInstance().createTypeRoom(typeRoom);
         });
     }
 
@@ -89,7 +88,7 @@ public class TypeRoomController {
         }
 
         runMutationTask("Đang cập nhật type room...", () ->
-                apiClient.updateTypeRoom(Integer.valueOf(view.getTypeRoomIdField().getText()), readForm()));
+                ApiClient.getInstance().updateTypeRoom(Integer.valueOf(view.getTypeRoomIdField().getText()), readForm()));
     }
 
     private void deleteTypeRoom() {
@@ -99,7 +98,7 @@ public class TypeRoomController {
         }
 
         runMutationTask("Đang xóa type room...", () ->
-                apiClient.deleteTypeRoom(Integer.valueOf(view.getTypeRoomIdField().getText())));
+                ApiClient.getInstance().deleteTypeRoom(Integer.valueOf(view.getTypeRoomIdField().getText())));
     }
 
     private void runLoadTask(String statusText, Loader loader) {

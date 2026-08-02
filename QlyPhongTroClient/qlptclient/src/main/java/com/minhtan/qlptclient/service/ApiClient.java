@@ -26,8 +26,9 @@ public class ApiClient {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final String baseUrl;
+    private final static ApiClient INSTANCE = new ApiClient("http://localhost:8080");
 
-    public ApiClient(String baseUrl) {
+    private ApiClient(String baseUrl) {
         this.baseUrl = stripTrailingSlash(baseUrl);
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
@@ -431,5 +432,13 @@ public class ApiClient {
             return value.substring(0, value.length() - 1);
         }
         return value;
+    }
+
+    public static ApiClient getInstance() {
+        return INSTANCE;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 }

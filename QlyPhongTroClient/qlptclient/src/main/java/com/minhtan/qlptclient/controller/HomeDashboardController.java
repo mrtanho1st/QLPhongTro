@@ -11,7 +11,6 @@ import java.util.List;
 
 public class HomeDashboardController {
 
-    private final ApiClient apiClient = new ApiClient("http://localhost:8080");
     private final HomeDashboardPane view;
 
     public HomeDashboardController(HomeDashboardPane view) {
@@ -28,8 +27,8 @@ public class HomeDashboardController {
         Task<DashboardStats> task = new Task<>() {
             @Override
             protected DashboardStats call() throws Exception {
-                List<Building> buildings = apiClient.getBuildings();
-                List<Room> rooms = apiClient.getRooms();
+                List<Building> buildings = ApiClient.getInstance().getBuildings();
+                List<Room> rooms = ApiClient.getInstance().getRooms();
                 long lockedRooms = rooms.stream().filter(room -> Boolean.TRUE.equals(room.getLocked())).count();
                 long availableRooms = rooms.stream().filter(room -> !Boolean.TRUE.equals(room.getLocked())).count();
                 return new DashboardStats(buildings.size(), availableRooms, lockedRooms);

@@ -10,7 +10,6 @@ import java.util.List;
 
 public class DistrictController {
 
-    private final ApiClient apiClient = new ApiClient("http://localhost:8080");
     private final DistrictGUI view;
 
     public DistrictController(DistrictGUI view) {
@@ -38,7 +37,7 @@ public class DistrictController {
     }
 
     private void loadDistricts() {
-        runLoadTask("Đang tải /api/districts...", apiClient::getDistricts);
+        runLoadTask("Đang tải /api/districts...", ApiClient.getInstance()::getDistricts);
     }
 
     private void searchDistricts() {
@@ -59,8 +58,8 @@ public class DistrictController {
             @Override
             protected List<District> call() throws Exception {
                 return switch (mode) {
-                    case "District Name" -> apiClient.searchDistrictsByName(keyword);
-                    default -> apiClient.getDistricts();
+                    case "District Name" -> ApiClient.getInstance().searchDistrictsByName(keyword);
+                    default -> ApiClient.getInstance().getDistricts();
                 };
             }
         };
@@ -78,7 +77,7 @@ public class DistrictController {
         runMutationTask("Đang tạo district mới...", () -> {
             District district = readForm();
             district.setDistrictId(null);
-            apiClient.createDistrict(district);
+            ApiClient.getInstance().createDistrict(district);
         });
     }
 
@@ -89,7 +88,7 @@ public class DistrictController {
         }
 
         runMutationTask("Đang cập nhật district...", () ->
-                apiClient.updateDistrict(Integer.valueOf(view.getDistrictIdField().getText()), readForm()));
+                ApiClient.getInstance().updateDistrict(Integer.valueOf(view.getDistrictIdField().getText()), readForm()));
     }
 
     private void deleteDistrict() {
@@ -99,7 +98,7 @@ public class DistrictController {
         }
 
         runMutationTask("Đang xóa district...", () ->
-                apiClient.deleteDistrict(Integer.valueOf(view.getDistrictIdField().getText())));
+                ApiClient.getInstance().deleteDistrict(Integer.valueOf(view.getDistrictIdField().getText())));
     }
 
     private void runLoadTask(String statusText, Loader loader) {

@@ -1,0 +1,235 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 14px 0 0;
+}
+
+.navbar__shell {
+  position: relative;
+  width: min(1440px, calc(100% - 48px));
+  margin: 0 auto;
+  border-radius: 28px;
+  border: 1px solid rgba(132, 153, 189, 0.16);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-sm);
+  padding: 12px 16px 14px;
+}
+
+.navbar__top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.navbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar__brand-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+  box-shadow: 0 16px 28px rgba(31, 94, 255, 0.2);
+}
+
+.navbar__brand-mark svg {
+  width: 26px;
+  height: 26px;
+}
+
+.navbar__brand-text {
+  display: grid;
+  line-height: 1.05;
+}
+
+.navbar__brand-text strong,
+.navbar__brand-text span {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+.navbar__brand-text strong {
+  font-size: 1rem;
+}
+
+.navbar__brand-text span {
+  color: var(--primary);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.navbar__desktop-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.navbar__picker-wrap {
+  position: relative;
+}
+
+.navbar__picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 13px 16px;
+  background: var(--surface);
+  color: var(--muted-strong);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.navbar__picker svg {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+.navbar__search-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.navbar__link,
+.navbar__icon-button,
+.navbar__chip {
+  border: 0;
+  background: transparent;
+}
+
+.navbar__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 14px;
+  padding: 11px 13px;
+  color: var(--muted-strong);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.navbar__link:hover {
+  background: rgba(31, 94, 255, 0.06);
+  color: var(--primary-dark);
+}
+
+.navbar__link svg {
+  width: 18px;
+  height: 18px;
+}
+
+.navbar__mobile-row,
+.navbar__mobile-chips,
+.navbar__mobile-search {
+  display: none;
+}
+
+@media (max-width: 1120px) {
+  .navbar__top {
+    display: block;
+  }
+
+  .navbar__desktop-row {
+    display: none;
+  }
+
+  .navbar__mobile-row,
+  .navbar__mobile-chips,
+  .navbar__mobile-search {
+    display: flex;
+  }
+
+  .navbar__mobile-row {
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .navbar__icon-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: var(--muted-strong);
+    background: var(--surface-soft);
+  }
+
+  .navbar__icon-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .navbar__mobile-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .navbar__brand-mark--mobile {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .navbar__mobile-brand strong,
+  .navbar__mobile-brand small {
+    display: block;
+    line-height: 1.05;
+  }
+
+  .navbar__mobile-brand strong {
+    font-size: 0.86rem;
+    letter-spacing: 0.06em;
+  }
+
+  .navbar__mobile-brand small {
+    color: var(--primary);
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+
+  .navbar__mobile-chips {
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .navbar__chip {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 14px;
+    padding: 12px 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--muted-strong);
+  }
+
+  .navbar__chip svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .navbar__mobile-search {
+    margin-top: 12px;
+  }
+}

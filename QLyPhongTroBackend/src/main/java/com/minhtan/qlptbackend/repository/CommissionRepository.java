@@ -16,4 +16,6 @@ public interface CommissionRepository extends JpaRepository<Commission, Integer>
     List<Commission> findByCommissionPercent(BigDecimal commissionPercent);
 
     List<Commission> findByDeposit(BigDecimal deposit);
+
+    void deleteByBuildingId(Integer buildingId);
 }

@@ -9,5 +9,7 @@ public interface RoomAmenityRepository extends JpaRepository<RoomAmenity, RoomAm
     List<RoomAmenity> findByRoomId(Integer roomId);
 
     List<RoomAmenity> findByAmenityId(Integer amenityId);
-    
+
+    void deleteByRoomId(Integer roomId);
+
 }

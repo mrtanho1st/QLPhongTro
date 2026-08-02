@@ -9,8 +9,7 @@ import javafx.concurrent.Task;
 import java.util.List;
 
 public class AmenityController {
-
-    private final ApiClient apiClient = new ApiClient("http://localhost:8080");
+    
     private final AmenityGUI view;
 
     public AmenityController(AmenityGUI view) {
@@ -38,7 +37,7 @@ public class AmenityController {
     }
 
     private void loadAmenities() {
-        runLoadTask("Đang tải /api/amenities...", apiClient::getAmenities);
+        runLoadTask("Đang tải /api/amenities...", ApiClient.getInstance()::getAmenities);
     }
 
     private void searchAmenities() {
@@ -59,8 +58,8 @@ public class AmenityController {
             @Override
             protected List<Amenity> call() throws Exception {
                 return switch (mode) {
-                    case "Name" -> apiClient.searchAmenitiesByName(keyword);
-                    default -> apiClient.getAmenities();
+                    case "Name" -> ApiClient.getInstance().searchAmenitiesByName(keyword);
+                    default -> ApiClient.getInstance().getAmenities();
                 };
             }
         };
@@ -78,7 +77,7 @@ public class AmenityController {
         runMutationTask("Đang tạo amenity mới...", () -> {
             Amenity amenity = readForm();
             amenity.setAmenityId(null);
-            apiClient.createAmenity(amenity);
+            ApiClient.getInstance().createAmenity(amenity);
         });
     }
 
@@ -89,7 +88,7 @@ public class AmenityController {
         }
 
         runMutationTask("Đang cập nhật amenity...", () ->
-                apiClient.updateAmenity(Integer.valueOf(view.getAmenityIdField().getText()), readForm()));
+                ApiClient.getInstance().updateAmenity(Integer.valueOf(view.getAmenityIdField().getText()), readForm()));
     }
 
     private void deleteAmenity() {
@@ -99,7 +98,7 @@ public class AmenityController {
         }
 
         runMutationTask("Đang xóa amenity...", () ->
-                apiClient.deleteAmenity(Integer.valueOf(view.getAmenityIdField().getText())));
+                ApiClient.getInstance().deleteAmenity(Integer.valueOf(view.getAmenityIdField().getText())));
     }
 
     private void runLoadTask(String statusText, Loader loader) {

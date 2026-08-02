@@ -1,8 +1,13 @@
 package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.Room;
-import com.minhtan.qlptbackend.entity.TypeRoom;
+import com.minhtan.qlptbackend.entity.RoomMedia;
+import com.minhtan.qlptbackend.repository.RoomAmenityRepository;
+import com.minhtan.qlptbackend.repository.RoomMediaRepository;
 import com.minhtan.qlptbackend.repository.RoomRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,9 +19,16 @@ import java.time.LocalDate;
 public class RoomService {
 
     private final RoomRepository roomRepository;
+    private final RoomMediaRepository roomMediaRepository;
+    private final RoomAmenityRepository roomAmenityRepository;
+    private final FileStorageService fileStorageService;
 
-    public RoomService(RoomRepository roomRepository) {
+    public RoomService(RoomRepository roomRepository, RoomMediaRepository roomMediaRepository,
+            RoomAmenityRepository roomAmenityRepository, FileStorageService fileStorageService) {
         this.roomRepository = roomRepository;
+        this.roomMediaRepository = roomMediaRepository;
+        this.roomAmenityRepository = roomAmenityRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     public List<Room> getAllRooms() {
@@ -94,12 +106,19 @@ public class RoomService {
             existingRoom.setNote(roomRequest.getNote());
             return roomRepository.save(existingRoom);
         });
-    }
-
+    }   
+    @Transactional
     public boolean deleteRoom(Integer roomId) {
         if (!roomRepository.existsById(roomId)) {
             return false;
         }
+
+        List<RoomMedia> medias = roomMediaRepository.findByRoomId(roomId);
+        for (RoomMedia media : medias) {
+            fileStorageService.delete(media.getUrl());
+        }
+        roomMediaRepository.deleteByRoomId(roomId);
+        roomAmenityRepository.deleteByRoomId(roomId);
 
         roomRepository.deleteById(roomId);
         return true;

@@ -1,7 +1,14 @@
 package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.Building;
+import com.minhtan.qlptbackend.entity.Room;
+import com.minhtan.qlptbackend.entity.RoomMedia;
+import com.minhtan.qlptbackend.repository.BuildingFeeRepository;
 import com.minhtan.qlptbackend.repository.BuildingRepository;
+import com.minhtan.qlptbackend.repository.CommissionRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +18,16 @@ import java.util.Optional;
 public class BuildingService {
 
     private final BuildingRepository buildingRepository;
+    private final RoomService roomService;
+    private final BuildingFeeRepository buildingFeeRepository;
+    private final CommissionRepository commissionRepository;
 
-    public BuildingService(BuildingRepository buildingRepository) {
+    public BuildingService(BuildingRepository buildingRepository, RoomService roomService,
+            BuildingFeeRepository buildingFeeRepository, CommissionRepository commissionRepository) {
         this.buildingRepository = buildingRepository;
+        this.roomService = roomService;
+        this.buildingFeeRepository = buildingFeeRepository;
+        this.commissionRepository = commissionRepository;
     }
 
     public List<Building> getAllBuildings() {
@@ -39,7 +53,7 @@ public class BuildingService {
     public List<Building> searchByDistrictId(Integer districtId) {
         return buildingRepository.findByDistrictId(districtId);
     }
-    
+
     public Optional<Building> getBuildingById(Integer buildingId) {
         return buildingRepository.findById(buildingId);
     }
@@ -60,11 +74,18 @@ public class BuildingService {
         });
     }
 
+    @Transactional
     public boolean deleteBuilding(Integer buildingId) {
         if (!buildingRepository.existsById(buildingId)) {
             return false;
         }
+        List<Room> rooms = roomService.searchByBuildingId(buildingId);
 
+        for (Room room : rooms) {
+            roomService.deleteRoom(room.getRoomId());
+        }
+        commissionRepository.deleteByBuildingId(buildingId);
+        buildingFeeRepository.deleteByBuildingId(buildingId);
         buildingRepository.deleteById(buildingId);
         return true;
     }
