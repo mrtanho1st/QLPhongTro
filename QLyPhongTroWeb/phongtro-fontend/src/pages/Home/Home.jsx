@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar.jsx';
 import SidebarFilter from '../../components/SidebarFilter/SidebarFilter.jsx';
 import RoomCard from '../../components/RoomCard/RoomCard.jsx';
 import Pagination from '../../components/Pagination/Pagination.jsx';
 import Footer from '../../components/Footer/Footer.jsx';
 import MobileBottomNav from '../../components/Common/MobileBottomNav.jsx';
-import { AREA_BANDS, PRICE_BANDS } from '../../components/Navbar/Navbar.jsx';
+import { AREA_BANDS, PRICE_BANDS, AMENITY_BANDS, AMENITY_BAND_MATCHES } from '../../components/Navbar/Navbar.jsx';
+import { geocodeAddress, reverseGeocode, getCurrentPosition, getDistanceKm } from '../../services/geocodeService.js';
 import {
   getAmenities,
   getBuildings,
@@ -25,6 +26,7 @@ const initialFilters = {
   typeRoomId: 'all',
   priceBand: 'all',
   areaBand: 'all',
+  amenityBand: 'all',
   amenityIds: [],
   onlyAvailable: false,
 };
@@ -44,6 +46,14 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [addressOpen, setAddressOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [address, setAddress] = useState('');
+  const [radius, setRadius] = useState('');
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState('');
+  const [applyingDistance, setApplyingDistance] = useState(false);
+  const [distanceError, setDistanceError] = useState('');
+  const [distanceFilter, setDistanceFilter] = useState(null); // { origin: {lat, lng}, radiusKm }
+  const buildingCoordsRef = useRef(new Map()); // cache buildingId -> {lat,lng} | null
   useEffect(() => {
     let isMounted = true;
 
@@ -201,10 +211,32 @@ function Home() {
 
         const matchesPrice = matchesBand(Number(room.price || 0), filters.priceBand);
         const matchesArea = matchesBand(Number(room.area || 0), filters.areaBand);
-        const matchesAmenity =
+        const matchesAmenity = matchesAmenityBand(room.amenityNames, filters.amenityBand);
+        const matchesAmenityIds =
           filters.amenityIds.length === 0 ||
           filters.amenityIds.every((amenityId) => roomAmenityMap.get(String(room.roomId))?.includes(amenityId));
         const matchesAvailability = !filters.onlyAvailable || !room.locked;
+
+        const matchesDistance = (() => {
+          if (!distanceFilter) {
+            return true;
+          }
+
+          const coords = buildingCoordsRef.current.get(String(room.buildingId));
+
+          if (!coords) {
+            return false;
+          }
+
+          const distanceKm = getDistanceKm(
+            distanceFilter.origin.lat,
+            distanceFilter.origin.lng,
+            coords.lat,
+            coords.lng,
+          );
+
+          return distanceKm <= distanceFilter.radiusKm;
+        })();
 
         return (
           matchesKeyword &&
@@ -213,11 +245,13 @@ function Home() {
           matchesPrice &&
           matchesArea &&
           matchesAmenity &&
-          matchesAvailability
+          matchesAmenityIds &&
+          matchesAvailability &&
+          matchesDistance
         );
       })
       .sort((left, right) => Number(left.price || 0) - Number(right.price || 0));
-  }, [filters, normalizedRooms, roomAmenityMap, searchValue]);
+  }, [distanceFilter,filters, normalizedRooms, roomAmenityMap, searchValue]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRooms.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -243,6 +277,101 @@ function Home() {
       });
       return nextFilters;
     });
+  };
+  
+  const handleUseCurrentLocation = async () => {
+    setLocationError('');
+    setLocating(true);
+
+    try {
+      const { lat, lng } = await getCurrentPosition();
+      const formattedAddress = await reverseGeocode(lat, lng);
+      setAddress(formattedAddress);
+    } catch (locationErr) {
+      setLocationError(locationErr.message || 'Không thể xác định vị trí hiện tại.');
+    } finally {
+      setLocating(false);
+    }
+  };
+
+  const handleAddressChange = (value) => {
+    setAddress(value);
+    setLocationError('');
+
+    if (filters.districtId !== 'all') {
+      handleFiltersChange({ districtId: 'all' });
+    }
+  };
+
+  const handleRadiusChange = (value) => {
+    setRadius(value);
+
+    if (filters.districtId !== 'all') {
+      handleFiltersChange({ districtId: 'all' });
+    }
+  };
+
+  const handleSelectDistrict = (districtId) => {
+    handleFiltersChange({ districtId });
+    setAddress('');
+    setRadius('');
+    setDistanceFilter(null);
+    setDistanceError('');
+  };
+
+  const handleClearAddressFilter = () => {
+    setAddress('');
+    setRadius('');
+    setDistanceFilter(null);
+    setDistanceError('');
+    handleFiltersReset(['districtId']);
+  };
+
+  const handleApplyAddressFilter = async () => {
+    setDistanceError('');
+
+    const trimmedAddress = address.trim();
+    const radiusValue = Number(radius);
+
+    if (!trimmedAddress || !radiusValue || radiusValue <= 0) {
+      setDistanceFilter(null);
+      setAddressOpen(false);
+      return;
+    }
+
+    setApplyingDistance(true);
+
+    try {
+      const origin = await geocodeAddress(trimmedAddress);
+
+      const buildingsToGeocode = buildings.filter(
+        (building) => !buildingCoordsRef.current.has(String(building.buildingId)),
+      );
+
+      for (const building of buildingsToGeocode) {
+        const key = String(building.buildingId);
+        const buildingAddress = building.trueAddress || building.fakeAddress;
+
+        if (!buildingAddress) {
+          buildingCoordsRef.current.set(key, null);
+          continue;
+        }
+
+        try {
+          const coords = await geocodeAddress(buildingAddress);
+          buildingCoordsRef.current.set(key, coords);
+        } catch {
+          buildingCoordsRef.current.set(key, null);
+        }
+      }
+
+      setDistanceFilter({ origin, radiusKm: radiusValue });
+      setAddressOpen(false);
+    } catch (applyError) {
+      setDistanceError(applyError.message || 'Không thể xác định tọa độ. Vui lòng kiểm tra lại địa chỉ.');
+    } finally {
+      setApplyingDistance(false);
+    }
   };
 
   const handleRoomOpen = () => {
@@ -292,6 +421,18 @@ function Home() {
           setFilterOpen(false);
         }}
         onSearchFocus={() => document.getElementById('navbar-search-input')?.focus()}
+        onSelectDistrict={handleSelectDistrict}
+        onClear={handleClearAddressFilter}
+        address={address}
+        onAddressChange={handleAddressChange}
+        onUseCurrentLocation={handleUseCurrentLocation}
+        locating={locating}
+        locationError={locationError}
+        radius={radius}
+        onRadiusChange={handleRadiusChange}
+        onApply={handleApplyAddressFilter}
+        applying={applyingDistance}
+        applyError={distanceError}
       />
 
       <main className="home" id="top">
@@ -354,7 +495,7 @@ function Home() {
               onChange={handleFiltersChange}
               onReset={() => handleFiltersReset()}
               typeRooms={typeRooms}
-              amenities={amenities}
+              amenityBands={AMENITY_BANDS}
               priceBands={PRICE_BANDS}
               areaBands={AREA_BANDS}
             />
@@ -369,6 +510,16 @@ function Home() {
       />
     </div>
   );
+}
+
+function matchesAmenityBand(roomAmenityNames, bandId) {
+  const requiredNames = AMENITY_BAND_MATCHES[bandId] || [];
+
+  if (requiredNames.length === 0) {
+    return true;
+  }
+
+  return requiredNames.every((name) => roomAmenityNames.includes(name));
 }
 
 function matchesBand(value, bandId) {

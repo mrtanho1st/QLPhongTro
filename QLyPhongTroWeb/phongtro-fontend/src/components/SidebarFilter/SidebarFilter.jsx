@@ -1,16 +1,7 @@
 import { FilterIcon } from '../Common/Icons.jsx';
 import './SidebarFilter.css';
 
-function SidebarFilter({ filters, onChange, onReset, typeRooms, amenities, priceBands, areaBands }) {
-  const toggleAmenity = (amenityId) => {
-    const amenityKey = String(amenityId);
-    const nextAmenities = filters.amenityIds.includes(amenityKey)
-      ? filters.amenityIds.filter((currentId) => currentId !== amenityKey)
-      : [...filters.amenityIds, amenityKey];
-
-    onChange({ amenityIds: nextAmenities });
-  };
-
+function SidebarFilter({ filters, onChange, onReset, typeRooms, amenityBands, priceBands, areaBands }) {
   return (
     <aside className="sidebar-filter" aria-label="Bộ lọc bên phải">
       <div className="sidebar-filter__hero">
@@ -81,16 +72,16 @@ function SidebarFilter({ filters, onChange, onReset, typeRooms, amenities, price
 
       <section className="sidebar-filter__section">
         <h4>Tiện ích nổi bật</h4>
-        <div className="sidebar-filter__stack sidebar-filter__stack--dense">
-          {amenities.map((amenity) => (
-            <label key={amenity.amenityId} className="sidebar-filter__checkbox">
-              <input
-                type="checkbox"
-                checked={filters.amenityIds.includes(String(amenity.amenityId))}
-                onChange={() => toggleAmenity(amenity.amenityId)}
-              />
-              <span>{amenity.name}</span>
-            </label>
+        <div className="sidebar-filter__stack">
+          {amenityBands.map((band) => (
+            <button
+              key={band.id}
+              type="button"
+              className={`sidebar-filter__option ${filters.amenityBand === band.id ? 'is-active' : ''}`}
+              onClick={() => onChange({ amenityBand: band.id })}
+            >
+              {band.label}
+            </button>
           ))}
         </div>
       </section>

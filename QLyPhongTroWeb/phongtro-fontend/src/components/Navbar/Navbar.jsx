@@ -20,7 +20,37 @@ function Navbar({
   onToggleFilter,
   onClosePanels,
   onSearchFocus,
+  onSelectDistrict,
+  onClear,
+  address,
+  onAddressChange,
+  onUseCurrentLocation,
+  locating,
+  locationError,
+  radius,
+  onRadiusChange,
+  onApply,
+  applying,
+  applyError,
 }) {
+  const addressDropdownProps = {
+    open: addressOpen,
+    districts,
+    selectedDistrictId: filters.districtId,
+    onSelectDistrict,
+    onClear,
+    onClose: onClosePanels,
+    address,
+    onAddressChange,
+    onUseCurrentLocation,
+    locating,
+    locationError,
+    radius,
+    onRadiusChange,
+    onApply,
+    applying,
+    applyError,
+  };
   return (
     <header className="navbar" id="home">
       <div className="navbar__shell">
@@ -42,14 +72,7 @@ function Navbar({
                 <span>Chọn địa chỉ</span>
                 <ChevronDownIcon />
               </button>
-              <AddressDropdown
-                open={addressOpen}
-                districts={districts}
-                selectedDistrictId={filters.districtId}
-                onSelectDistrict={(districtId) => onFiltersChange({ districtId })}
-                onClear={() => onFiltersReset(['districtId'])}
-                onClose={onClosePanels}
-              />
+              <AddressDropdown {...addressDropdownProps} />
             </div>
 
             <div className="navbar__picker-wrap">
@@ -145,14 +168,7 @@ function Navbar({
         </div>
 
         <div className="navbar__mobile-panels">
-          <AddressDropdown
-            open={addressOpen}
-            districts={districts}
-            selectedDistrictId={filters.districtId}
-            onSelectDistrict={(districtId) => onFiltersChange({ districtId })}
-            onClear={() => onFiltersReset(['districtId'])}
-            onClose={onClosePanels}
-          />
+          <AddressDropdown {...addressDropdownProps} />
           <FilterDropdown
             open={filterOpen}
             filters={filters}
@@ -187,6 +203,38 @@ const AREA_BANDS = [
   { id: 'over-40', label: 'Trên 40 m²' },
 ];
 
-export { PRICE_BANDS, AREA_BANDS };
+const AMENITY_BANDS = [
+  { id: 'all', label: 'Tất cả tiện ích' },
+  { id: 'low', label: 'Có điều hoà' },
+  { id: 'medium', label: 'Máy lạnh, tủ lạnh, tủ đồ, cửa sổ' },
+  { id: 'high', label: 'Máy lạnh, máy giặt, tủ bếp, tủ đồ, cửa sổ' },
+  { id: 'full', label: 'Đầy đủ nội thất' },
+];
+
+const AMENITY_BAND_MATCHES = {
+  all: [],
+  low: ['Máy lạnh'],
+  medium: ['Máy lạnh', 'Tủ lạnh', 'Tủ đồ', 'Cửa sổ trời', 'Cửa sổ hành lang'],
+  high: [
+    'Máy lạnh',
+    'Máy giặt (chung)',
+    'Máy giặt (riêng)',
+    'Tủ bếp',
+    'Tủ đồ',
+    'Cửa sổ trời',
+    'Cửa sổ hành lang',
+  ],
+  full: [
+    'Máy lạnh',
+    'Tủ lạnh',
+    'Máy giặt (riêng)',
+    'Tủ bếp',
+    'Tủ đồ',
+    'Giường nệm',
+    'Bàn ghế',
+  ],
+};
+
+export { PRICE_BANDS, AREA_BANDS, AMENITY_BANDS, AMENITY_BAND_MATCHES };
 
 export default Navbar;

@@ -12,8 +12,12 @@ function AddressDropdown({
   onAddressChange,
   onUseCurrentLocation,
   locating,
+  locationError,
   radius,
   onRadiusChange,
+  onApply,
+  applying,
+  applyError,
 }) {
   if (!open) {
     return null;
@@ -51,6 +55,7 @@ function AddressDropdown({
             <LocateIcon />
             <span>{locating ? 'Đang xác định vị trí…' : 'Dùng vị trí hiện tại'}</span>
           </button>
+          {locationError ? <p className="address-dropdown__error">{locationError}</p> : null}
         </label>
 
         <label className="address-dropdown__field">
@@ -67,6 +72,8 @@ function AddressDropdown({
             <span className="address-dropdown__unit">km</span>
           </div>
         </label>
+
+        {applyError ? <p className="address-dropdown__error">{applyError}</p> : null}
       </div>
 
       <div className="address-dropdown__quick-list">
@@ -96,8 +103,8 @@ function AddressDropdown({
         <button className="address-dropdown__ghost" type="button" onClick={onClear}>
           Xóa lọc
         </button>
-        <button className="address-dropdown__primary" type="button" onClick={onClose}>
-          Áp dụng
+        <button className="address-dropdown__primary" type="button" onClick={onApply} disabled={applying}>
+          {applying ? 'Đang áp dụng…' : 'Áp dụng'}
         </button>
       </div>
     </section>
