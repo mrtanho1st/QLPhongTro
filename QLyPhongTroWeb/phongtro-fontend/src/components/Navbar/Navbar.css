@@ -143,7 +143,7 @@
 
 @media (max-width: 1120px) {
   .navbar__top {
-    display: block;
+    display: none;
   }
 
   .navbar__desktop-row {

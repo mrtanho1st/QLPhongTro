@@ -18,7 +18,7 @@ function AddressDropdown({
       <div className="address-dropdown__header">
         <div>
           <p className="address-dropdown__eyebrow">Tìm quanh địa chỉ</p>
-          <h3 className="address-dropdown__title">Khu vực bạn muốn thuê</h3>
+          <h3 className="address-dropdown__title">Tất cả khu vực</h3>
         </div>
         <button className="address-dropdown__close" type="button" onClick={onClose}>
           <CloseIcon />
@@ -43,20 +43,6 @@ function AddressDropdown({
           >
             <span>{district.districtName}</span>
             <ChevronDownIcon />
-          </button>
-        ))}
-      </div>
-
-      <div className="address-dropdown__list">
-        {districts.map((district) => (
-          <button
-            key={district.districtId}
-            className={`address-dropdown__row ${String(selectedDistrictId) === String(district.districtId) ? 'is-selected' : ''}`}
-            type="button"
-            onClick={() => onSelectDistrict(district.districtId)}
-          >
-            <span>{district.districtName}</span>
-            <span className="address-dropdown__count">#{district.districtId}</span>
           </button>
         ))}
       </div>

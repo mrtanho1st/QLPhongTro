@@ -154,11 +154,8 @@ function Home() {
       const preferredMedia = mediaList.find((media) => Number(media.mediaType) === 1) || mediaList[0] || null;
 
       const addressLabel = [
-        building?.trueAddress || building?.fakeAddress || room.note,
-        district?.districtName,
+        building?.fakeAddress || building?.trueAddress || room.note
       ]
-        .filter(Boolean)
-        .join(' • ');
 
       return {
         ...room,
