@@ -12,7 +12,7 @@
   box-shadow: var(--shadow-lg);
   padding: 18px;
   backdrop-filter: blur(18px);
-  z-index: 30;
+  z-index: 120;
 }
 
 .address-dropdown__header,
@@ -133,9 +133,121 @@
 
 @media (max-width: 768px) {
   .address-dropdown {
+    position: fixed;
+    top: 180%;
     left: 50%;
-    transform: translateX(-50%);
-    width: calc(100vw - 24px);
-    max-height: calc(100vh - 24px);
+    transform: translate(-50%, -50%);
+    width: min(420px, calc(100vw - 24px));
+    max-height: min(78vh, calc(100vh - 24px));
+    margin: 0;
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(19, 36, 77, 0.24);
   }
+}
+
+.address-dropdown__fields {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.address-dropdown__field {
+  display: grid;
+  gap: 6px;
+}
+
+.address-dropdown__field-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted-strong);
+}
+
+.address-dropdown__field-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 10px 14px;
+}
+
+.address-dropdown__field-input:focus-within {
+  border-color: rgba(31, 94, 255, 0.4);
+}
+
+.address-dropdown__field-input svg {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  flex: none;
+}
+
+.address-dropdown__field-input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.address-dropdown__field-input--radius input {
+  text-align: left;
+}
+
+.address-dropdown__unit {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  flex: none;
+}
+
+.address-dropdown__locate {
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.address-dropdown__locate:hover {
+  text-decoration: underline;
+}
+
+.address-dropdown__locate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+  border: 1px dashed rgba(31, 94, 255, 0.4);
+  border-radius: 12px;
+  background: rgba(31, 94, 255, 0.05);
+  color: var(--primary);
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  transition: background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+}
+
+.address-dropdown__locate-btn svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.address-dropdown__locate-btn:hover:not(:disabled) {
+  background: rgba(31, 94, 255, 0.1);
+  border-color: rgba(31, 94, 255, 0.55);
+}
+
+.address-dropdown__locate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

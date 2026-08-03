@@ -88,7 +88,8 @@ a {
 
 .app-shell {
   position: relative;
-  overflow: clip;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .app-shell__glow {

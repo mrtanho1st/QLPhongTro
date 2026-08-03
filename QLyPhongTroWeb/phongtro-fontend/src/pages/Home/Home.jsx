@@ -140,7 +140,9 @@ function Home() {
   }, [roomAmenities]);
 
   const normalizedRooms = useMemo(() => {
-    return rooms.map((room) => {
+    return rooms
+      .filter((room) => room.locked === false)
+      .map((room) => {
       const building = buildingMap.get(String(room.buildingId)) || room.building || null;
       const typeRoom = typeRoomMap.get(String(room.typeRoomId)) || room.typeRoom || null;
       const district = building ? districtMap.get(String(building.districtId)) || building.district || null : null;

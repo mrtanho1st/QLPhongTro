@@ -10,8 +10,8 @@ function Footer() {
           <HomeIcon />
         </div>
         <div>
-          <h2>TÂN EzHouse</h2>
-          <p>Nền tảng tìm phòng trọ cho các bạn sinh viên, nhân viên văn phòng, người lao động</p>
+          <h2>TANEzHouse</h2>
+          <p>Phòng đẹp giá rẻ</p>
         </div>
       </div>
 

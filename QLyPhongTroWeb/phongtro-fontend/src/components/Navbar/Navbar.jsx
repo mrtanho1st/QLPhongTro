@@ -31,7 +31,7 @@ function Navbar({
             </span>
             <span className="navbar__brand-text">
               <strong>TANEzHouse</strong>
-              <span>Phòng đẹp-Giá rẻ</span>
+              <span>Phòng đẹp giá rẻ</span>
             </span>
           </a>
 
@@ -109,8 +109,8 @@ function Navbar({
               <BrandIcon />
             </span>
             <span>
-              <strong>PHONGTRO</strong>
-              <small>GIÁ RẺ</small>
+              <strong>TANEzHouse</strong>
+              <small>Phòng đẹp giá rẻ</small>
             </span>
           </a>
 
@@ -141,6 +141,28 @@ function Navbar({
             onChange={onSearchChange}
             onSubmit={onSearchSubmit}
             placeholder="Tìm theo từ khóa, địa chỉ, tiện ích..."
+          />
+        </div>
+
+        <div className="navbar__mobile-panels">
+          <AddressDropdown
+            open={addressOpen}
+            districts={districts}
+            selectedDistrictId={filters.districtId}
+            onSelectDistrict={(districtId) => onFiltersChange({ districtId })}
+            onClear={() => onFiltersReset(['districtId'])}
+            onClose={onClosePanels}
+          />
+          <FilterDropdown
+            open={filterOpen}
+            filters={filters}
+            onChange={onFiltersChange}
+            onReset={onFiltersReset}
+            onClose={onClosePanels}
+            typeRooms={typeRooms}
+            amenities={amenities}
+            priceBands={PRICE_BANDS}
+            areaBands={AREA_BANDS}
           />
         </div>
       </div>

@@ -8,6 +8,10 @@ function RoomCard({ room, onOpen }) {
   const [imageFailed, setImageFailed] = useState(false);
   const imageUrl = room.imageUrl ? resolveBackendUrl(room.imageUrl) : '';
   const hasImage = Boolean(imageUrl) && !imageFailed;
+  const availableDateValue = String(room.availableDate || '').slice(0, 10);
+  const todayValue = new Date().toISOString().slice(0, 10);
+  const isAvailableNow = !availableDateValue || availableDateValue <= todayValue;
+  const availabilityLabel = isAvailableNow ? 'Còn trống' : formatDate(room.availableDate);
 
   return (
     <article className="room-card">
@@ -54,14 +58,14 @@ function RoomCard({ room, onOpen }) {
           </span>
           <span>
             <CalendarIcon />
-            {room.locked ? 'Đang giữ' : formatDate(room.availableDate)}
+            {availabilityLabel}
           </span>
         </div>
 
         <div className="room-card__tags">
           {room.typeRoomName ? <span className="room-card__tag room-card__tag--primary">{room.typeRoomName}</span> : null}
           {room.districtName ? <span className="room-card__tag">{room.districtName}</span> : null}
-          {!room.locked ? <span className="room-card__tag room-card__tag--success">Còn trống</span> : null}
+          {isAvailableNow ? <span className="room-card__tag room-card__tag--success">Còn trống</span> : null}
         </div>
 
         {room.amenityNames.length > 0 ? (

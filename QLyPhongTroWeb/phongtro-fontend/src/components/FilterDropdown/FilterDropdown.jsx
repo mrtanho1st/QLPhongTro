@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CloseIcon } from '../Common/Icons.jsx';
 import './FilterDropdown.css';
 
@@ -12,6 +13,13 @@ function FilterDropdown({
   priceBands,
   areaBands,
 }) {
+  const [priceMin, setPriceMin] = useState('');
+  const [priceMax, setPriceMax] = useState('');
+  const [areaMin, setAreaMin] = useState('');
+  const [areaMax, setAreaMax] = useState('');
+  const [availabilityMode, setAvailabilityMode] = useState('now');
+  const [availableFrom, setAvailableFrom] = useState('');
+
   if (!open) {
     return null;
   }
@@ -23,6 +31,24 @@ function FilterDropdown({
       : [...filters.amenityIds, amenityKey];
 
     onChange({ amenityIds: nextAmenities });
+  };
+
+  const toggleTypeRoom = (typeRoomId) => {
+    onChange({ typeRoomId: String(filters.typeRoomId) === String(typeRoomId) ? 'all' : typeRoomId });
+  };
+
+  const resetLocalInputs = () => {
+    setPriceMin('');
+    setPriceMax('');
+    setAreaMin('');
+    setAreaMax('');
+    setAvailabilityMode('now');
+    setAvailableFrom('');
+  };
+
+  const handleReset = () => {
+    resetLocalInputs();
+    onReset();
   };
 
   return (
@@ -37,90 +63,137 @@ function FilterDropdown({
         </button>
       </div>
 
-      <div className="filter-dropdown__grid">
-        <div className="filter-dropdown__block">
+      <div className="filter-dropdown__sections">
+        <section className="filter-dropdown__section">
           <h4>Loại phòng</h4>
-          <div className="filter-dropdown__chips">
-            <button
-              className={`filter-dropdown__chip ${filters.typeRoomId === 'all' ? 'is-active' : ''}`}
-              type="button"
-              onClick={() => onChange({ typeRoomId: 'all' })}
-            >
-              Tất cả
-            </button>
+          <div className="filter-dropdown__choice-list">
+            <label className="filter-dropdown__choice">
+              <input
+                type="checkbox"
+                checked={filters.typeRoomId === 'all'}
+                onChange={() => onChange({ typeRoomId: 'all' })}
+              />
+              <span>Tất cả</span>
+            </label>
             {typeRooms.map((typeRoom) => (
-              <button
-                key={typeRoom.typeRoomId}
-                className={`filter-dropdown__chip ${String(filters.typeRoomId) === String(typeRoom.typeRoomId) ? 'is-active' : ''}`}
-                type="button"
-                onClick={() => onChange({ typeRoomId: typeRoom.typeRoomId })}
-              >
-                {typeRoom.typeRoomName}
-              </button>
+              <label key={typeRoom.typeRoomId} className="filter-dropdown__choice">
+                <input
+                  type="checkbox"
+                  checked={String(filters.typeRoomId) === String(typeRoom.typeRoomId)}
+                  onChange={() => toggleTypeRoom(typeRoom.typeRoomId)}
+                />
+                <span>{typeRoom.typeRoomName}</span>
+              </label>
             ))}
           </div>
-        </div>
+        </section>
 
-        <div className="filter-dropdown__block">
-          <h4>Giá (đ/tháng)</h4>
-          <div className="filter-dropdown__chips filter-dropdown__chips--stacked">
-            {priceBands.map((band) => (
-              <button
-                key={band.id}
-                className={`filter-dropdown__chip ${filters.priceBand === band.id ? 'is-active' : ''}`}
-                type="button"
-                onClick={() => onChange({ priceBand: band.id })}
-              >
-                {band.label}
-              </button>
-            ))}
+        <section className="filter-dropdown__section">
+          <h4>Giá (đồng)</h4>
+          <div className="filter-dropdown__range-row">
+            <label className="filter-dropdown__field">
+              <span>Từ</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="Nhập min"
+                value={priceMin}
+                onChange={(event) => setPriceMin(event.target.value)}
+              />
+            </label>
+            <label className="filter-dropdown__field">
+              <span>Đến</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="Nhập max"
+                value={priceMax}
+                onChange={(event) => setPriceMax(event.target.value)}
+              />
+            </label>
           </div>
-        </div>
+        </section>
 
-        <div className="filter-dropdown__block">
+        <section className="filter-dropdown__section">
           <h4>Diện tích</h4>
-          <div className="filter-dropdown__chips filter-dropdown__chips--stacked">
-            {areaBands.map((band) => (
-              <button
-                key={band.id}
-                className={`filter-dropdown__chip ${filters.areaBand === band.id ? 'is-active' : ''}`}
-                type="button"
-                onClick={() => onChange({ areaBand: band.id })}
-              >
-                {band.label}
-              </button>
-            ))}
+          <div className="filter-dropdown__range-row">
+            <label className="filter-dropdown__field">
+              <span>Từ</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="Nhập min"
+                value={areaMin}
+                onChange={(event) => setAreaMin(event.target.value)}
+              />
+            </label>
+            <label className="filter-dropdown__field">
+              <span>Đến</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                placeholder="Nhập max"
+                value={areaMax}
+                onChange={(event) => setAreaMax(event.target.value)}
+              />
+            </label>
           </div>
-        </div>
+        </section>
 
-        <div className="filter-dropdown__block">
-          <h4>Tiện ích nổi bật</h4>
-          <div className="filter-dropdown__chips filter-dropdown__chips--stacked">
+        <section className="filter-dropdown__section">
+          <h4>Tiện ích</h4>
+          <div className="filter-dropdown__amenities-grid">
             {amenities.map((amenity) => (
-              <button
+              <label
                 key={amenity.amenityId}
-                className={`filter-dropdown__chip ${filters.amenityIds.includes(String(amenity.amenityId)) ? 'is-active' : ''}`}
-                type="button"
-                onClick={() => toggleAmenity(amenity.amenityId)}
+                className="filter-dropdown__choice filter-dropdown__choice--inline"
               >
-                {amenity.name}
-              </button>
+                <input
+                  type="checkbox"
+                  checked={filters.amenityIds.includes(String(amenity.amenityId))}
+                  onChange={() => toggleAmenity(amenity.amenityId)}
+                />
+                <span>{amenity.name}</span>
+              </label>
             ))}
           </div>
-        </div>
+        </section>
+
+        <section className="filter-dropdown__section">
+          <h4>Ngày phòng trống</h4>
+          <div className="filter-dropdown__availability">
+            <label className="filter-dropdown__radio-row">
+              <input
+                type="radio"
+                name="availability-mode"
+                checked={availabilityMode === 'now'}
+                onChange={() => setAvailabilityMode('now')}
+              />
+              <span>Trống liền</span>
+            </label>
+
+            <label className="filter-dropdown__radio-row filter-dropdown__radio-row--date">
+              <input
+                type="radio"
+                name="availability-mode"
+                checked={availabilityMode === 'date'}
+                onChange={() => setAvailabilityMode('date')}
+              />
+              <span>Ngày khác</span>
+              <input
+                className="filter-dropdown__date-input"
+                type="date"
+                value={availableFrom}
+                onChange={(event) => setAvailableFrom(event.target.value)}
+                disabled={availabilityMode !== 'date'}
+              />
+            </label>
+          </div>
+        </section>
       </div>
 
-      <label className="filter-dropdown__check">
-        <input
-          type="checkbox"
-          checked={Boolean(filters.onlyAvailable)}
-          onChange={(event) => onChange({ onlyAvailable: event.target.checked })}
-        />
-        Chỉ hiển thị phòng còn trống
-      </label>
-
       <div className="filter-dropdown__footer">
-        <button className="filter-dropdown__ghost" type="button" onClick={onReset}>
+        <button className="filter-dropdown__ghost" type="button" onClick={handleReset}>
           Xóa lọc
         </button>
         <button className="filter-dropdown__primary" type="button" onClick={onClose}>
