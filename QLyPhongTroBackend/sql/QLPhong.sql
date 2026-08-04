@@ -34,6 +34,8 @@ CREATE TABLE Buildings
     DistrictId INT,
     Note NVARCHAR(MAX),
     OwnerPhone NVARCHAR(20),
+    Latitude DECIMAL(10,8),
+    Longitude DECIMAL(11,8),
     FOREIGN KEY (DistrictId) REFERENCES Districts(DistrictId)
 );
 GO
@@ -108,3 +110,44 @@ CREATE TABLE RoomMedia
     FOREIGN KEY(RoomId) REFERENCES Rooms(RoomId)
 );
 GO
+
+CREATE TABLE Landmarks
+(
+    LandmarkId INT IDENTITY PRIMARY KEY,
+
+    Name NVARCHAR(200) NOT NULL,
+
+    LandmarkTypesId INT NOT NULL,
+
+    Address NVARCHAR(300),
+
+    Latitude DECIMAL(10,8) NOT NULL,
+
+    Longitude DECIMAL(11,8) NOT NULL,
+
+    Description NVARCHAR(500),
+
+    IsActive BIT DEFAULT 1
+
+    FOREIGN KEY(LandmarkTypesId) REFERENCES LandmarkTypes(LandmarkTypesId)
+);
+GO
+
+CREATE TABLE LandmarkTypes
+(
+    LandmarkTypesId INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(100)
+);
+GO
+
+CREATE TABLE SaleOffs
+(
+    SaleOffId INT IDENTITY(1,1) PRIMARY KEY,
+	RoomId INT NOT NULL,
+    SaleOffName NVARCHAR(100) NOT NULL,      -- Ví dụ: Khuyến mãi tháng 8
+    DiscountAmount DECIMAL(18,2) NOT NULL,   -- Giảm theo số tiền
+    StartDate DATETIME NOT NULL,
+    EndDate DATETIME NOT NULL,
+    IsActive BIT NOT NULL DEFAULT 1,         -- Bật/Tắt khuyến mãi
+    FOREIGN KEY(RoomId) REFERENCES Rooms(RoomId)
+);

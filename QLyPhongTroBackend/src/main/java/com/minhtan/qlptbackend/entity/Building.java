@@ -1,5 +1,7 @@
 package com.minhtan.qlptbackend.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -29,16 +31,24 @@ public class Building {
     @Column(name = "OwnerPhone", length = 20)
     private String ownerPhone;
 
+    @Column(name = "Latitude", precision = 10, scale = 8)
+    private BigDecimal latitude;
+
+    @Column(name = "Longitude", precision = 11, scale = 8)
+    private BigDecimal longitude;
+
     public Building() {
     }
 
-    public Building(Integer buildingId, Integer districtId, String trueAddress, String fakeAddress, String note, String ownerPhone) {
+    public Building(Integer buildingId, Integer districtId, String trueAddress, String fakeAddress, String note, String ownerPhone, BigDecimal latitude, BigDecimal longitude) {
         this.buildingId = buildingId;
         this.districtId = districtId;
         this.trueAddress = trueAddress;
         this.fakeAddress = fakeAddress;
         this.note = note;
         this.ownerPhone = ownerPhone;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Integer getBuildingId() {
@@ -97,6 +107,22 @@ public class Building {
         this.ownerPhone = ownerPhone;
     }
 
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
     @Override
     public String toString() {
         return "Building{" +
@@ -106,6 +132,8 @@ public class Building {
                 ", fakeAddress='" + fakeAddress + '\'' +
                 ", note='" + note + '\'' +
                 ", ownerPhone='" + ownerPhone + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 '}';
     }
 }
