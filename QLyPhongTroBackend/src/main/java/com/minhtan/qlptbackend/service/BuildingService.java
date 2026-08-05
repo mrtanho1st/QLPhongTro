@@ -2,7 +2,6 @@ package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.Building;
 import com.minhtan.qlptbackend.entity.Room;
-import com.minhtan.qlptbackend.entity.RoomMedia;
 import com.minhtan.qlptbackend.repository.BuildingFeeRepository;
 import com.minhtan.qlptbackend.repository.BuildingRepository;
 import com.minhtan.qlptbackend.repository.CommissionRepository;
@@ -70,6 +69,8 @@ public class BuildingService {
             existingBuilding.setDistrictId(buildingRequest.getDistrictId());
             existingBuilding.setNote(buildingRequest.getNote());
             existingBuilding.setOwnerPhone(buildingRequest.getOwnerPhone());
+            existingBuilding.setLatitude(buildingRequest.getLatitude());
+            existingBuilding.setLongitude(buildingRequest.getLongitude());
             return buildingRepository.save(existingBuilding);
         });
     }

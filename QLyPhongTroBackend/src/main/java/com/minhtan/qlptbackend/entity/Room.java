@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "Rooms")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,7 +56,8 @@ public class Room {
     public Room() {
     }
 
-    public Room(Integer roomId, Integer buildingId, Building building, Integer typeRoomId, TypeRoom typeRoom, String roomCode, BigDecimal price,
+    public Room(Integer roomId, Integer buildingId, Building building, Integer typeRoomId, TypeRoom typeRoom,
+            String roomCode, BigDecimal price,
             Integer bedroom, Integer personLimit, BigDecimal area, Boolean locked, LocalDate availableDate,
             String note) {
         this.roomId = roomId;

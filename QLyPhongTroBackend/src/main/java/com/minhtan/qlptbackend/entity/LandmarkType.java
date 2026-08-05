@@ -1,9 +1,6 @@
 package com.minhtan.qlptbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "LandmarkTypes")
 public class LandmarkType {

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "Districts")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class District {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

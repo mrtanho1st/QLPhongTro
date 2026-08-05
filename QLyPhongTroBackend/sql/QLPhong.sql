@@ -111,6 +111,13 @@ CREATE TABLE RoomMedia
 );
 GO
 
+CREATE TABLE LandmarkTypes
+(
+    LandmarkTypesId INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(100)
+);
+GO
+
 CREATE TABLE Landmarks
 (
     LandmarkId INT IDENTITY PRIMARY KEY,
@@ -119,7 +126,7 @@ CREATE TABLE Landmarks
 
     LandmarkTypesId INT NOT NULL,
 
-    Address NVARCHAR(300),
+    Address NVARCHAR(300) NOT NULL,
 
     Latitude DECIMAL(10,8) NOT NULL,
 
@@ -133,21 +140,24 @@ CREATE TABLE Landmarks
 );
 GO
 
-CREATE TABLE LandmarkTypes
-(
-    LandmarkTypesId INT IDENTITY PRIMARY KEY,
-    Name NVARCHAR(100)
-);
-GO
-
 CREATE TABLE SaleOffs
 (
     SaleOffId INT IDENTITY(1,1) PRIMARY KEY,
-	RoomId INT NOT NULL,
     SaleOffName NVARCHAR(100) NOT NULL,      -- Ví dụ: Khuyến mãi tháng 8
     DiscountAmount DECIMAL(18,2) NOT NULL,   -- Giảm theo số tiền
     StartDate DATETIME NOT NULL,
     EndDate DATETIME NOT NULL,
     IsActive BIT NOT NULL DEFAULT 1,         -- Bật/Tắt khuyến mãi
-    FOREIGN KEY(RoomId) REFERENCES Rooms(RoomId)
+);
+
+CREATE TABLE RoomSaleOffs
+(
+    RoomId INT NOT NULL,
+    SaleOffId INT NOT NULL,
+
+    PRIMARY KEY(RoomId, SaleOffId),
+
+    FOREIGN KEY(RoomId) REFERENCES Rooms(RoomId) ON DELETE CASCADE,
+
+    FOREIGN KEY(SaleOffId) REFERENCES SaleOffs(SaleOffId) ON DELETE CASCADE
 );

@@ -7,34 +7,34 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "RoomAmenities")
-@IdClass(RoomAmenity.RoomAmenityId.class)
+@Table(name = "RoomSaleOffs")
+@IdClass(RoomSaleOff.RoomSaleOffId.class)
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-public class RoomAmenity {
+public class RoomSaleOff {
     @Id
     @Column(name = "RoomId")
     private Integer roomId;
 
     @Id
-    @Column(name = "AmenityId")
-    private Integer amenityId;
+    @Column(name = "SaleOffId")
+    private Integer saleOffId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RoomId", insertable = false, updatable = false)
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "AmenityId", insertable = false, updatable = false)
-    private Amenity amenity;
+    @JoinColumn(name = "SaleOffId", insertable = false, updatable = false)
+    private SaleOff saleOff;
 
-    public RoomAmenity() {
+    public RoomSaleOff() {
     }
 
-    public RoomAmenity(Integer roomId, Integer amenityId, Room room, Amenity amenity) {
+    public RoomSaleOff(Integer roomId, Integer saleOffId, Room room, SaleOff saleOff) {
         this.roomId = roomId;
-        this.amenityId = amenityId;
+        this.saleOffId = saleOffId;
         this.room = room;
-        this.amenity = amenity;
+        this.saleOff = saleOff;
     }
 
     public Integer getRoomId() {
@@ -45,12 +45,12 @@ public class RoomAmenity {
         this.roomId = roomId;
     }
 
-    public Integer getAmenityId() {
-        return amenityId;
+    public Integer getSaleOffId() {
+        return saleOffId;
     }
 
-    public void setAmenityId(Integer amenityId) {
-        this.amenityId = amenityId;
+    public void setSaleOffId(Integer saleOffId) {
+        this.saleOffId = saleOffId;
     }
 
     public Room getRoom() {
@@ -61,32 +61,32 @@ public class RoomAmenity {
         this.room = room;
     }
 
-    public Amenity getAmenity() {
-        return amenity;
+    public SaleOff getSaleOff() {
+        return saleOff;
     }
 
-    public void setAmenity(Amenity amenity) {
-        this.amenity = amenity;
+    public void setSaleOff(SaleOff saleOff) {
+        this.saleOff = saleOff;
     }
 
     @Override
     public String toString() {
-        return "RoomAmenity{" +
+        return "RoomSaleOff{" +
                 "roomId=" + roomId +
-                ", amenityId=" + amenityId +
+                ", saleOffId=" + saleOffId +
                 '}';
     }
 
-    public static class RoomAmenityId implements Serializable {
+    public static class RoomSaleOffId implements Serializable {
         private Integer roomId;
-        private Integer amenityId;
+        private Integer saleOffId;
 
-        public RoomAmenityId() {
+        public RoomSaleOffId() {
         }
 
-        public RoomAmenityId(Integer roomId, Integer amenityId) {
+        public RoomSaleOffId(Integer roomId, Integer saleOffId) {
             this.roomId = roomId;
-            this.amenityId = amenityId;
+            this.saleOffId = saleOffId;
         }
 
         public Integer getRoomId() {
@@ -97,12 +97,12 @@ public class RoomAmenity {
             this.roomId = roomId;
         }
 
-        public Integer getAmenityId() {
-            return amenityId;
+        public Integer getSaleOffId() {
+            return saleOffId;
         }
 
-        public void setAmenityId(Integer amenityId) {
-            this.amenityId = amenityId;
+        public void setSaleOffId(Integer saleOffId) {
+            this.saleOffId = saleOffId;
         }
 
         @Override
@@ -114,18 +114,18 @@ public class RoomAmenity {
                 return false;
             }
 
-            RoomAmenityId that = (RoomAmenityId) o;
+            RoomSaleOffId that = (RoomSaleOffId) o;
 
             if (roomId != null ? !roomId.equals(that.roomId) : that.roomId != null) {
                 return false;
             }
-            return amenityId != null ? amenityId.equals(that.amenityId) : that.amenityId == null;
+            return saleOffId != null ? saleOffId.equals(that.saleOffId) : that.saleOffId == null;
         }
 
         @Override
         public int hashCode() {
             int result = roomId != null ? roomId.hashCode() : 0;
-            result = 31 * result + (amenityId != null ? amenityId.hashCode() : 0);
+            result = 31 * result + (saleOffId != null ? saleOffId.hashCode() : 0);
             return result;
         }
     }
