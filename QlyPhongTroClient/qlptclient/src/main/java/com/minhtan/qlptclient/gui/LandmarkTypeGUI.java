@@ -2,6 +2,6 @@ package com.minhtan.qlptclient.gui;
 
 import javafx.scene.layout.BorderPane;
 
-public class SaleOffGUI extends BorderPane {
+public class LandmarkTypeGUI extends BorderPane {
 
 }

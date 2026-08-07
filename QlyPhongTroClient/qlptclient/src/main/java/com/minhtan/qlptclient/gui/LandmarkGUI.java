@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
@@ -47,7 +48,8 @@ public class LandmarkGUI extends BorderPane {
     private final TextField latitudeField = new TextField();
     private final TextField longitudeField = new TextField();
     private final TextArea descriptionField = new TextArea();
-    private final ComboBox<Boolean> isActiveComboBox = new ComboBox<>(FXCollections.observableArrayList(Boolean.TRUE, Boolean.FALSE));
+    private final ComboBox<Boolean> isActiveComboBox = new ComboBox<>(
+            FXCollections.observableArrayList(Boolean.TRUE, Boolean.FALSE));
 
     private final ComboBox<String> searchModeBox = new ComboBox<>(FXCollections.observableArrayList(
             "All",
@@ -111,14 +113,14 @@ public class LandmarkGUI extends BorderPane {
         ColumnConstraints fieldColumn = new ColumnConstraints();
         fieldColumn.setHgrow(Priority.ALWAYS);
         form.getColumnConstraints().addAll(labelColumn, fieldColumn);
-        form.addRow(0, new Label("Landmark ID"), landmarkIdField);
-        form.addRow(1, new Label("Name"), landmarkNameField);
-        form.addRow(2, new Label("Landmark Type"), landmarkTypeComboBox);
-        form.addRow(3, new Label("Address"), addressField);
-        form.addRow(4, new Label("Latitude"), latitudeField);
-        form.addRow(5, new Label("Longitude"), longitudeField);
-        form.addRow(6, new Label("Description"), descriptionField);
-        form.addRow(7, new Label("Is Active"), isActiveComboBox);
+        form.addRow(0, fieldLabel("Landmark ID"), landmarkIdField);
+        form.addRow(1, fieldLabel("Name"), landmarkNameField);
+        form.addRow(2, fieldLabel("Landmark Type"), landmarkTypeComboBox);
+        form.addRow(3, fieldLabel("Address"), addressField);
+        form.addRow(4, fieldLabel("Latitude"), latitudeField);
+        form.addRow(5, fieldLabel("Longitude"), longitudeField);
+        form.addRow(6, fieldLabel("Description"), descriptionField);
+        form.addRow(7, fieldLabel("Is Active"), isActiveComboBox);
 
         form.getChildren().stream()
                 .filter(node -> node instanceof TextField)
@@ -136,10 +138,18 @@ public class LandmarkGUI extends BorderPane {
 
         VBox rightPane = new VBox(14, sectionLabel("Thông tin địa danh"), form, actionBar, new Separator(), detailArea);
         rightPane.setMinWidth(360);
+        rightPane.setPadding(new Insets(2, 12, 12, 2));
         detailArea.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(detailArea, Priority.ALWAYS);
 
-        SplitPane splitPane = new SplitPane(leftPane, rightPane);
+        ScrollPane rightScrollPane = new ScrollPane(rightPane);
+        rightScrollPane.setFitToWidth(true);
+        rightScrollPane.setMinWidth(360);
+        rightScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        rightScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        rightScrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        SplitPane splitPane = new SplitPane(leftPane, rightScrollPane);
         splitPane.setDividerPositions(0.58);
         splitPane.setStyle("-fx-background-color: transparent;");
 
@@ -192,14 +202,13 @@ public class LandmarkGUI extends BorderPane {
 
     private void configureLandmarkTable() {
         TableColumn<Landmark, Integer> idColumn = new TableColumn<>("ID");
-        idColumn.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(cellData.getValue().getLandmarkId()));
+        idColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getLandmarkId()));
         idColumn.setPrefWidth(60);
         idColumn.setMinWidth(50);
 
         TableColumn<Landmark, String> nameColumn = new TableColumn<>("Name");
-        nameColumn.setCellValueFactory(cellData ->
-                new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getLandmarkName())));
+        nameColumn.setCellValueFactory(
+                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getLandmarkName())));
         nameColumn.setPrefWidth(180);
 
         TableColumn<Landmark, String> typeColumn = new TableColumn<>("LandmarkType");
@@ -207,8 +216,8 @@ public class LandmarkGUI extends BorderPane {
         typeColumn.setPrefWidth(140);
 
         TableColumn<Landmark, String> addressColumn = new TableColumn<>("Address");
-        addressColumn.setCellValueFactory(cellData ->
-                new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getAddress())));
+        addressColumn.setCellValueFactory(
+                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getAddress())));
         addressColumn.setPrefWidth(220);
 
         TableColumn<Landmark, String> activeColumn = new TableColumn<>("Active");
@@ -221,7 +230,8 @@ public class LandmarkGUI extends BorderPane {
         landmarkList.getColumns().setAll(List.of(idColumn, nameColumn, typeColumn, addressColumn, activeColumn));
         landmarkList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         landmarkList.setPlaceholder(new Label("Chưa có dữ liệu địa danh"));
-        landmarkList.setStyle("-fx-background-color: white; -fx-border-color: #d8dee9; -fx-border-radius: 8; -fx-background-radius: 8;");
+        landmarkList.setStyle(
+                "-fx-background-color: white; -fx-border-color: #d8dee9; -fx-border-radius: 8; -fx-background-radius: 8;");
     }
 
     private String resolveTypeName(Landmark landmark) {
@@ -238,6 +248,12 @@ public class LandmarkGUI extends BorderPane {
         return text == null ? "" : text;
     }
 
+    private Label fieldLabel(String text) {
+        Label label = new Label(text);
+        label.setStyle("-fx-text-fill: black;");
+        return label;
+    }
+
     private Label sectionLabel(String text) {
         Label label = new Label(text);
         label.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1f2937;");
@@ -245,17 +261,18 @@ public class LandmarkGUI extends BorderPane {
     }
 
     private void styleControls() {
-        String fieldStyle = "-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;";
+        String fieldStyle = "-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-text-fill: black;";
+        String comboBoxStyle = fieldStyle + " -fx-mark-color: black;";
         landmarkIdField.setStyle(fieldStyle);
         landmarkNameField.setStyle(fieldStyle);
         addressField.setStyle(fieldStyle);
         latitudeField.setStyle(fieldStyle);
         longitudeField.setStyle(fieldStyle);
         descriptionField.setStyle(fieldStyle);
-        landmarkTypeComboBox.setStyle(fieldStyle);
-        isActiveComboBox.setStyle(fieldStyle);
+        landmarkTypeComboBox.setStyle(comboBoxStyle);
+        isActiveComboBox.setStyle(comboBoxStyle);
         searchField.setStyle(fieldStyle);
-        searchModeBox.setStyle(fieldStyle);
+        searchModeBox.setStyle(comboBoxStyle);
         detailArea.setStyle(fieldStyle);
 
         createButton.setStyle(primaryButtonStyle("#2563eb"));
@@ -350,7 +367,8 @@ public class LandmarkGUI extends BorderPane {
 
     /**
      * Đổ danh sách LandmarkType (lấy từ ApiClient.getInstance().getLandmarkTypes())
-     * vào combo box của form và cập nhật cache tên hiển thị cho cột "LandmarkType" trong bảng.
+     * vào combo box của form và cập nhật cache tên hiển thị cho cột "LandmarkType"
+     * trong bảng.
      */
     public void setLandmarkTypes(List<LandmarkType> types) {
         landmarkTypeComboBox.getItems().setAll(types);
