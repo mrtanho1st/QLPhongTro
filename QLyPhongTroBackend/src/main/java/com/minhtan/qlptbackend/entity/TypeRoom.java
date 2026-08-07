@@ -1,8 +1,11 @@
 package com.minhtan.qlptbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 @Entity
 @Table(name = "TypeRooms")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class TypeRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

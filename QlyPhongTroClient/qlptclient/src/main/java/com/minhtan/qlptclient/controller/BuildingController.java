@@ -37,6 +37,8 @@ public class BuildingController {
                     view.getFakeAddressField().setText(valueOrEmpty(selected.getFakeAddress()));
                     view.getNoteField().setText(valueOrEmpty(selected.getNote()));
                     view.getOwnerPhoneField().setText(valueOrEmpty(selected.getOwnerPhone()));
+                    view.getLatitudeField().setText(valueOrEmpty(selected.getLatitude()));
+                    view.getLongitudeField().setText(valueOrEmpty(selected.getLongitude()));
                     view.getFeeBuildingIdField().setText(valueOrEmpty(selected.getBuildingId()));
                     loadBuildingFee(selected.getBuildingId());
                 });
@@ -290,10 +292,10 @@ public class BuildingController {
         building.setFakeAddress(textOf(view.getFakeAddressField().getText()));
         building.setNote(textOf(view.getNoteField().getText()));
         building.setOwnerPhone(textOf(view.getOwnerPhoneField().getText()));
+        building.setLatitude(decimalOrNull(view.getLatitudeField().getText(), "Latitude"));
+        building.setLongitude(decimalOrNull(view.getLongitudeField().getText(), "Longitude"));
         return building;
     }
-
-    
 
     private BuildingFee readFeeForm() {
 

@@ -1,4 +1,6 @@
 package com.minhtan.qlptclient.entity;
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -11,11 +13,13 @@ public class Building {
     private String fakeAddress;
     private String note;
     private String ownerPhone;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 
     public Building() {
     }
 
-    public Building(Integer buildingId, Integer districtId, District district, String trueAddress, String fakeAddress, String note, String ownerPhone) {
+    public Building(Integer buildingId, Integer districtId, District district, String trueAddress, String fakeAddress, String note, String ownerPhone, BigDecimal latitude, BigDecimal longitude) {
         this.buildingId = buildingId;
         this.districtId = districtId;
         this.district = district;
@@ -23,6 +27,8 @@ public class Building {
         this.fakeAddress = fakeAddress;
         this.note = note;
         this.ownerPhone = ownerPhone;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Integer getBuildingId() {
@@ -81,6 +87,22 @@ public class Building {
         this.district = district;
     }
 
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
     @Override
     public String toString() {
         return "Building{" +
@@ -89,6 +111,8 @@ public class Building {
                 ", fakeAddress='" + fakeAddress + '\'' +
                 ", note='" + note + '\'' +
                 ", ownerPhone='" + ownerPhone + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 '}';
     }
 }

@@ -1,5 +1,8 @@
 package com.minhtan.qlptclient.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class District {
 
     private Integer districtId;

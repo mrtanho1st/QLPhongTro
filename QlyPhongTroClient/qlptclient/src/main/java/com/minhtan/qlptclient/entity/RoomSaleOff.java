@@ -3,21 +3,24 @@ package com.minhtan.qlptclient.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RoomAmenity {
+public class RoomSaleOff {
 
     private Integer roomId;
-    private Integer amenityId;
-    private Room room;
-    private Amenity amenity;
 
-    public RoomAmenity() {
+    private Integer saleOffId;
+
+    private Room room;
+
+    private SaleOff saleOff;
+
+    public RoomSaleOff() {
     }
 
-    public RoomAmenity(Integer roomId, Integer amenityId, Room room, Amenity amenity) {
+    public RoomSaleOff(Integer roomId, Integer saleOffId, Room room, SaleOff saleOff) {
         this.roomId = roomId;
-        this.amenityId = amenityId;
+        this.saleOffId = saleOffId;
         this.room = room;
-        this.amenity = amenity;
+        this.saleOff = saleOff;
     }
 
     public Integer getRoomId() {
@@ -28,12 +31,12 @@ public class RoomAmenity {
         this.roomId = roomId;
     }
 
-    public Integer getAmenityId() {
-        return amenityId;
+    public Integer getSaleOffId() {
+        return saleOffId;
     }
 
-    public void setAmenityId(Integer amenityId) {
-        this.amenityId = amenityId;
+    public void setSaleOffId(Integer saleOffId) {
+        this.saleOffId = saleOffId;
     }
 
     public Room getRoom() {
@@ -44,19 +47,20 @@ public class RoomAmenity {
         this.room = room;
     }
 
-    public Amenity getAmenity() {
-        return amenity;
+    public SaleOff getSaleOff() {
+        return saleOff;
     }
 
-    public void setAmenity(Amenity amenity) {
-        this.amenity = amenity;
+    public void setSaleOff(SaleOff saleOff) {
+        this.saleOff = saleOff;
     }
 
     @Override
     public String toString() {
-        return "RoomAmenity{" +
+        return "RoomSaleOff{" +
                 "roomId=" + roomId +
-                ", amenityId=" + amenityId +
+                ", saleOffId=" + saleOffId +
                 '}';
     }
+
 }

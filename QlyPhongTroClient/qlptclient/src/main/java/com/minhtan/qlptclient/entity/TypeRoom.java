@@ -3,6 +3,7 @@ package com.minhtan.qlptclient.entity;
 public class TypeRoom {
     
     private Integer typeRoomId;
+    
     private String typeRoomName;
 
     public TypeRoom() {

@@ -41,6 +41,8 @@ public class BuildingGUI extends BorderPane {
     private final TextField fakeAddressField = new TextField();
     private final TextField noteField = new TextField();
     private final TextField ownerPhoneField = new TextField();
+    private final TextField latitudeField = new TextField();
+    private final TextField longitudeField = new TextField();
     private final ComboBox<String> searchModeBox = new ComboBox<>(FXCollections.observableArrayList(
             "All",
             "District Name",
@@ -87,6 +89,8 @@ public class BuildingGUI extends BorderPane {
         fakeAddressField.setPromptText("Địa chỉ hiển thị");
         noteField.setPromptText("Ghi chú");
         ownerPhoneField.setPromptText("Số điện thoại chủ nhà");
+        latitudeField.setPromptText("Vĩ độ");
+        longitudeField.setPromptText("Kinh độ");
         searchModeBox.getSelectionModel().selectFirst();
         searchField.setPromptText("Nhập giá trị tìm kiếm");
 
@@ -125,6 +129,8 @@ public class BuildingGUI extends BorderPane {
         form.addRow(3, textFieldLabel("Fake Address"), fakeAddressField);
         form.addRow(4, textFieldLabel("Note"), noteField);
         form.addRow(5, textFieldLabel("Owner Phone"), ownerPhoneField);
+        form.addRow(6, textFieldLabel("Latitude"), latitudeField);
+        form.addRow(7, textFieldLabel("Longitude"), longitudeField);
         form.getChildren().stream()
                 .filter(node -> node instanceof TextField)
                 .forEach(node -> ((TextField) node).setMaxWidth(Double.MAX_VALUE));
@@ -226,8 +232,18 @@ public class BuildingGUI extends BorderPane {
                 cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getOwnerPhone())));
         ownerPhoneColumn.setPrefWidth(140);
 
+        TableColumn<Building, String> latitudeColumn = new TableColumn<>("Latitude");
+        latitudeColumn.setCellValueFactory(
+                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getLatitude() != null ? cellData.getValue().getLatitude().toString() : "")));
+        latitudeColumn.setPrefWidth(140);
+
+        TableColumn<Building, String> longitudeColumn = new TableColumn<>("Longitude");
+        longitudeColumn.setCellValueFactory(
+                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getLongitude() != null ? cellData.getValue().getLongitude().toString() : "")));
+        longitudeColumn.setPrefWidth(140);
+
         buildingList.getColumns().setAll(List.of(idColumn, districtColumn, trueAddressColumn, fakeAddressColumn, noteColumn,
-                ownerPhoneColumn));
+                ownerPhoneColumn, latitudeColumn, longitudeColumn));
         buildingList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         buildingList.setPlaceholder(new Label("Chưa có dữ liệu tòa nhà"));
         buildingList.setStyle(
@@ -258,6 +274,8 @@ public class BuildingGUI extends BorderPane {
         fakeAddressField.setStyle(fieldStyle);
         noteField.setStyle(fieldStyle);
         ownerPhoneField.setStyle(fieldStyle);
+        latitudeField.setStyle(fieldStyle);
+        longitudeField.setStyle(fieldStyle);
         feeIdField.setStyle(fieldStyle);
         feeBuildingIdField.setStyle(fieldStyle);
         electricityPriceField.setStyle(fieldStyle);
@@ -432,12 +450,22 @@ public class BuildingGUI extends BorderPane {
         return districtItems;
     }
 
+    public TextField getLatitudeField() {
+        return latitudeField;
+    }
+
+    public TextField getLongitudeField() {
+        return longitudeField;
+    }
+
     public void clearForm() {
         buildingIdField.clear();
         trueAddressField.clear();
         fakeAddressField.clear();
         noteField.clear();
         ownerPhoneField.clear();
+        latitudeField.clear();
+        latitudeField.clear();
         districtBox.getSelectionModel().clearSelection();
         buildingList.getSelectionModel().clearSelection();
         clearFeeForm();
