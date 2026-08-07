@@ -14,4 +14,6 @@ public interface LandmarkRepository extends JpaRepository<Landmark, Integer> {
     List<Landmark> findByLandmarkNameContainingIgnoreCase(String keyword);
 
     List<Landmark> findByAddressContainingIgnoreCase(String keyword);
+
+    List<Landmark> findByIsActive(Boolean isActive);
 }

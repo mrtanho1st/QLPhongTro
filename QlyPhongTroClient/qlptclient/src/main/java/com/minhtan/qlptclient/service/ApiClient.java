@@ -8,6 +8,8 @@ import com.minhtan.qlptclient.entity.Building;
 import com.minhtan.qlptclient.entity.BuildingFee;
 import com.minhtan.qlptclient.entity.Commission;
 import com.minhtan.qlptclient.entity.District;
+import com.minhtan.qlptclient.entity.Landmark;
+import com.minhtan.qlptclient.entity.LandmarkType;
 import com.minhtan.qlptclient.entity.Room;
 import com.minhtan.qlptclient.entity.RoomAmenity;
 import com.minhtan.qlptclient.entity.RoomMedia;
@@ -26,7 +28,7 @@ public class ApiClient {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final String baseUrl;
-    private final static ApiClient INSTANCE = new ApiClient("http://localhost:8080");
+    private final static ApiClient INSTANCE = new ApiClient("http://192.168.1.243:8080");
 
     private ApiClient(String baseUrl) {
         this.baseUrl = stripTrailingSlash(baseUrl);
@@ -386,6 +388,68 @@ public class ApiClient {
         return getList("/api/type-rooms/search/name?name=" + encode(typeRoomName),
                 new TypeReference<List<TypeRoom>>() {
                 });
+    }
+
+    // LandmarkType api
+    public List<LandmarkType> getLandmarkTypes() throws IOException, InterruptedException {
+        return getList("/api/landmark-types", new TypeReference<List<LandmarkType>>() {
+        });
+    }
+
+    // Landmark api
+
+    public List<Landmark> getLandmarks() throws IOException, InterruptedException {
+        return getList("/api/landmarks", new TypeReference<List<Landmark>>() {
+        });
+    }
+
+    public List<Landmark> searchLandmarksByName(String keyword) throws IOException, InterruptedException {
+        return getList("/api/landmarks/search/name?keyword=" + encode(keyword),
+                new TypeReference<List<Landmark>>() {
+                });
+    }
+
+    public List<Landmark> searchLandmarksByTypeId(Integer typeId) throws IOException, InterruptedException {
+        return getList("/api/landmarks/type/" + typeId,
+                new TypeReference<List<Landmark>>() {
+                });
+    }
+
+    public List<Landmark> searchLandmarksByAddress(String keyword) throws IOException, InterruptedException {
+        return getList("/api/landmarks/search/address?keyword=" + encode(keyword),
+                new TypeReference<List<Landmark>>() {
+                });
+    }
+
+    public List<Landmark> getLandmarksActive() throws IOException, InterruptedException {
+        return getList("/api/landmarks/active",
+                new TypeReference<List<Landmark>>() {
+                });
+    }
+
+    public List<Landmark> searchLandmarksByActive(Boolean isActive) throws IOException, InterruptedException {
+        return getList("/api/landmarks/search/is-active?keyword=" + isActive,
+                new TypeReference<List<Landmark>>() {
+                });
+    }
+
+    public Landmark createLandmark(Landmark landmark) throws IOException, InterruptedException {
+        return sendJson("/api/landmarks", "POST", landmark, Landmark.class);
+    }
+
+    public Landmark updateLandmark(Integer landmarkId, Landmark landmark) throws IOException, InterruptedException {
+        return sendJson("/api/landmarks/" + landmarkId, "PUT", landmark, Landmark.class);
+    }
+
+    public void deleteLandmark(Integer landmarkId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/api/landmarks/" + landmarkId))
+                .timeout(Duration.ofSeconds(20))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        ensureSuccess(response);
     }
 
     // Ensures the HTTP response is successful

@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/landmarks")
@@ -127,4 +129,12 @@ public class LandmarkController {
 
         return ResponseEntity.ok(landmarkService.searchByAddress(keyword));
     }
+
+    @GetMapping("/search/is-active")
+    public ResponseEntity<List<Landmark>> searchByActive(
+            @RequestParam Boolean keyword) {
+
+        return ResponseEntity.ok(landmarkService.searchByActive(keyword));
+    }
+
 }

@@ -18,6 +18,7 @@ public class MainController {
         new HomeDashboardController(view.getHomeDashboardPane());
         new DistrictController(view.getDistrictGUI());
         new TypeRoomController(view.getTypeRoomGUI());
+        new LandmarkController(view.getLandmarkGUI());
         wireEvents();
         showHome();
     }
@@ -31,6 +32,7 @@ public class MainController {
         view.getSearchButton().setOnAction(event -> showSearchRoom());
         view.getDistrictButton().setOnAction(event -> showDistrict());
         view.getTypeRoomButton().setOnAction(event -> showTypeRoom());
+        view.getLandmarkButton().setOnAction(event -> showLandmark());
     }
 
     private void showHome() {
@@ -63,6 +65,10 @@ public class MainController {
 
     private void showTypeRoom() {
         view.setPage("Quản lý loại phòng", view.getTypeRoomGUI(), view.getTypeRoomButton());
+    }
+
+    private void showLandmark() {
+        view.setPage("Quản lý cột mốc", view.getLandmarkGUI(), view.getLandmarkButton());
     }
     
     public SearchRoomController getSearchRoomController() {

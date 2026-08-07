@@ -95,6 +95,10 @@ public class LandmarkService {
         return landmarkRepository.findByAddressContainingIgnoreCase(keyword);
     }
 
+    public List<Landmark> searchByActive(Boolean isActive) {
+        return landmarkRepository.findByIsActive(isActive);
+    }
+
     /**
      * Kiểm tra dữ liệu
      */

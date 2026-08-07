@@ -24,6 +24,7 @@ public class MainView extends BorderPane {
     private final SearchRoomGUI searchRoomGUI = new SearchRoomGUI();
     private final DistrictGUI districtGUI = new DistrictGUI();
     private final TypeRoomGUI typeRoomGUI = new TypeRoomGUI();
+    private final LandmarkGUI landmarkGUI = new LandmarkGUI();
     private final Button homeButton = navButton("Trang chủ");
     private final Button buildingButton = navButton("Tòa nhà");
     private final Button roomButton = navButton("Phòng");
@@ -32,8 +33,9 @@ public class MainView extends BorderPane {
     private final Button districtButton = navButton("Khu vực");
     private final Button typeRoomButton = navButton("Loại phòng");
     private final Button searchButton = navButton("Tìm kiếm");
+    private final Button landmarkButton = navButton("Cột mốc");
     private final List<Button> navButtons = List.of(homeButton, buildingButton, roomButton, amenityButton,
-            commissionButton, districtButton, typeRoomButton, searchButton);
+            commissionButton, districtButton, typeRoomButton, searchButton, landmarkButton);
 
     public MainView() {
         buildUi();
@@ -51,7 +53,8 @@ public class MainView extends BorderPane {
                 commissionButton,
                 districtButton,
                 typeRoomButton,
-                searchButton);
+                searchButton,
+                landmarkButton);
         sidebar.setPadding(new Insets(18));
         sidebar.setPrefWidth(220);
         sidebar.setStyle("-fx-background-color: #111827;");
@@ -142,6 +145,10 @@ public class MainView extends BorderPane {
         return typeRoomGUI;
     }
 
+    public LandmarkGUI getLandmarkGUI() {
+        return landmarkGUI;
+    }
+
     public Button getHomeButton() {
         return homeButton;
     }
@@ -173,4 +180,9 @@ public class MainView extends BorderPane {
     public Button getTypeRoomButton() {
         return typeRoomButton;
     }
+
+    public Button getLandmarkButton() {
+        return landmarkButton;
+    }
+
 }

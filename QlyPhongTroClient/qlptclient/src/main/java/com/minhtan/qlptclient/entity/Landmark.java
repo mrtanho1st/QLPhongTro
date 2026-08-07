@@ -21,11 +21,12 @@ public class Landmark {
     private String description;
 
     private Boolean isActive;
-    
+
     public Landmark() {
     }
 
-    public Landmark(Integer landmarkId, String landmarkName, Integer landmarkTypesId, LandmarkType landmarkType, String address, BigDecimal latitude, BigDecimal longitude, String description, Boolean isActive) {
+    public Landmark(Integer landmarkId, String landmarkName, Integer landmarkTypesId, LandmarkType landmarkType,
+            String address, BigDecimal latitude, BigDecimal longitude, String description, Boolean isActive) {
         this.landmarkId = landmarkId;
         this.landmarkName = landmarkName;
         this.landmarkTypesId = landmarkTypesId;
