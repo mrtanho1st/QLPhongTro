@@ -396,6 +396,32 @@ public class ApiClient {
         });
     }
 
+    public List<LandmarkType> searchLandmarkTypesByName(String keyword) throws IOException, InterruptedException {
+        return getList("/api/landmark-types/search/name?keyword=" + encode(keyword),
+                new TypeReference<List<LandmarkType>>() {
+                });
+    }
+
+    public LandmarkType createLandmarkType(LandmarkType landmarkType) throws IOException, InterruptedException {
+        return sendJson("/api/landmark-types", "POST", landmarkType, LandmarkType.class);
+    }
+
+    public LandmarkType updateLandmarkType(Integer landmarkTypeId, LandmarkType landmarkType)
+            throws IOException, InterruptedException {
+        return sendJson("/api/landmark-types/" + landmarkTypeId, "PUT", landmarkType, LandmarkType.class);
+    }
+
+    public void deleteLandmarkType(Integer landmarkTypeId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/api/landmark-types/" + landmarkTypeId))
+                .timeout(Duration.ofSeconds(20))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        ensureSuccess(response);
+    }
+
     // Landmark api
 
     public List<Landmark> getLandmarks() throws IOException, InterruptedException {

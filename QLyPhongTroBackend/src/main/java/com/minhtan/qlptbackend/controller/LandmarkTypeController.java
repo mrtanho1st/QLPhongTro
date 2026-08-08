@@ -90,4 +90,10 @@ public class LandmarkTypeController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search/name")
+    public ResponseEntity<List<LandmarkType>> searchLandmarkTypesByName(@RequestParam String keyword) {
+        List<LandmarkType> landmarkTypes = landmarkTypeService.findByName(keyword);
+        return ResponseEntity.ok(landmarkTypes);
+    }
 }

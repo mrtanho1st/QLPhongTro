@@ -29,6 +29,10 @@ public class LandmarkTypeService {
         return landmarkTypeRepository.findById(id).orElse(null);
     }
 
+    public List<LandmarkType> findByName(String keyword) {
+        return landmarkTypeRepository.findByLandmarkTypeNameContainingIgnoreCase(keyword);
+    }
+
     /**
      * Thêm mới
      */
@@ -37,7 +41,7 @@ public class LandmarkTypeService {
                 landmarkType.getLandmarkTypeName().trim())) {
             throw new IllegalArgumentException("Loại địa điểm đã tồn tại.");
         }
-        
+
         validate(landmarkType);
 
         landmarkType.setLandmarkTypeId(null);

@@ -85,8 +85,8 @@ public class LandmarkTypeGUI extends BorderPane {
         ColumnConstraints fieldColumn = new ColumnConstraints();
         fieldColumn.setHgrow(Priority.ALWAYS);
         form.getColumnConstraints().addAll(labelColumn, fieldColumn);
-        form.addRow(0, new Label("Type Room ID"), typeRoomIdField);
-        form.addRow(1, new Label("Type Room Name"), nameField);
+        form.addRow(0, new Label("Landmark Type ID"), landmarkTypeIdField);
+        form.addRow(1, new Label("Landmark Type Name"), nameField);
         form.getChildren().stream()
                 .filter(node -> node instanceof TextField)
                 .forEach(node -> ((TextField) node).setMaxWidth(Double.MAX_VALUE));
@@ -95,11 +95,12 @@ public class LandmarkTypeGUI extends BorderPane {
         actionBar.setAlignment(Pos.CENTER_LEFT);
         actionBar.setPadding(new Insets(4, 0, 0, 0));
 
-        VBox leftPane = new VBox(12, searchBar, typeRoomList);
+        VBox leftPane = new VBox(12, searchBar, landmarkTypeList);
         leftPane.setMinWidth(430);
-        VBox.setVgrow(typeRoomList, Priority.ALWAYS);
+        VBox.setVgrow(landmarkTypeList, Priority.ALWAYS);
 
-        VBox rightPane = new VBox(14, sectionLabel("Thông tin loại phòng"), form, actionBar, new Separator(), detailArea);
+        VBox rightPane = new VBox(14, sectionLabel("Thông tin loại địa điểm"), form, actionBar, new Separator(),
+                detailArea);
         rightPane.setMinWidth(340);
         detailArea.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(detailArea, Priority.ALWAYS);
@@ -124,13 +125,13 @@ public class LandmarkTypeGUI extends BorderPane {
 
         TableColumn<LandmarkType, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setCellValueFactory(
-                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getTypeRoomName())));
+                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getLandmarkTypeName())));
         nameColumn.setPrefWidth(260);
 
-        typeRoomList.getColumns().setAll(List.of(idColumn, nameColumn));
-        typeRoomList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        typeRoomList.setPlaceholder(new Label("Chưa có dữ liệu loại phòng"));
-        typeRoomList.setStyle(
+        landmarkTypeList.getColumns().setAll(List.of(idColumn, nameColumn));
+        landmarkTypeList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        landmarkTypeList.setPlaceholder(new Label("Chưa có dữ liệu loại địa điểm"));
+        landmarkTypeList.setStyle(
                 "-fx-background-color: white; -fx-border-color: #d8dee9; -fx-border-radius: 8; -fx-background-radius: 8;");
     }
 
@@ -146,7 +147,7 @@ public class LandmarkTypeGUI extends BorderPane {
 
     private void styleControls() {
         String fieldStyle = "-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;";
-        typeRoomIdField.setStyle(fieldStyle);
+        landmarkTypeIdField.setStyle(fieldStyle);
         nameField.setStyle(fieldStyle);
         searchField.setStyle(fieldStyle);
         searchModeBox.setStyle(fieldStyle);
@@ -170,12 +171,12 @@ public class LandmarkTypeGUI extends BorderPane {
                 + "-fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 14;";
     }
 
-    public TableView<TypeRoom> getTypeRoomList() {
-        return typeRoomList;
+    public TableView<LandmarkType> getLandmarkTypeList() {
+        return landmarkTypeList;
     }
 
-    public TextField getTypeRoomIdField() {
-        return typeRoomIdField;
+    public TextField getLandmarkTypeIdField() {
+        return landmarkTypeIdField;
     }
 
     public TextField getNameField() {
@@ -214,8 +215,8 @@ public class LandmarkTypeGUI extends BorderPane {
         return clearButton;
     }
 
-    public ObservableList<TypeRoom> getTypeRoomItems() {
-        return typeRoomItems;
+    public ObservableList<LandmarkType> getLandmarkTypeItems() {
+        return landmarkTypeItems;
     }
 
     public void setStatus(String text) {
@@ -227,9 +228,9 @@ public class LandmarkTypeGUI extends BorderPane {
     }
 
     public void clearForm() {
-        typeRoomIdField.clear();
+        landmarkTypeIdField.clear();
         nameField.clear();
         detailArea.clear();
-        typeRoomList.getSelectionModel().clearSelection();
+        landmarkTypeList.getSelectionModel().clearSelection();
     }
 }
