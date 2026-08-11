@@ -30,15 +30,15 @@ public class LandmarkTypeService {
     }
 
     public List<LandmarkType> findByName(String keyword) {
-        return landmarkTypeRepository.findByLandmarkTypeNameContainingIgnoreCase(keyword);
+        return landmarkTypeRepository.findByNameContainingIgnoreCase(keyword);
     }
 
     /**
      * Thêm mới
      */
     public LandmarkType create(LandmarkType landmarkType) {
-        if (landmarkTypeRepository.existsByLandmarkTypeNameIgnoreCase(
-                landmarkType.getLandmarkTypeName().trim())) {
+        if (landmarkTypeRepository.existsByNameIgnoreCase(
+                landmarkType.getName() != null ? landmarkType.getName().trim() : null)) {
             throw new IllegalArgumentException("Loại địa điểm đã tồn tại.");
         }
 
@@ -62,7 +62,7 @@ public class LandmarkTypeService {
 
         validate(landmarkType);
 
-        existing.setLandmarkTypeName(landmarkType.getLandmarkTypeName());
+        existing.setName(landmarkType.getName());
 
         return landmarkTypeRepository.save(existing);
     }
@@ -85,8 +85,8 @@ public class LandmarkTypeService {
      */
     private void validate(LandmarkType landmarkType) {
 
-        if (landmarkType.getLandmarkTypeName() == null
-                || landmarkType.getLandmarkTypeName().trim().isEmpty()) {
+        if (landmarkType.getName() == null
+                || landmarkType.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("Tên loại địa điểm không được để trống.");
         }
     }

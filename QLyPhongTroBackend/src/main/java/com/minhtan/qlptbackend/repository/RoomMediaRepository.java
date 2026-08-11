@@ -1,7 +1,8 @@
 package com.minhtan.qlptbackend.repository;
 
-import com.minhtan.qlptbackend.entity.RoomMedia;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.minhtan.qlptbackend.entity.RoomMedia;
 
 import java.util.List;
 

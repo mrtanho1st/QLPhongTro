@@ -1,7 +1,8 @@
 package com.minhtan.qlptbackend.repository;
 
-import com.minhtan.qlptbackend.entity.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.minhtan.qlptbackend.entity.Room;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

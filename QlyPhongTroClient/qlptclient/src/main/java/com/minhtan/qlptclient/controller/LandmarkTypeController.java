@@ -1,9 +1,7 @@
 package com.minhtan.qlptclient.controller;
 
 import com.minhtan.qlptclient.entity.LandmarkType;
-import com.minhtan.qlptclient.entity.TypeRoom;
 import com.minhtan.qlptclient.gui.LandmarkTypeGUI;
-import com.minhtan.qlptclient.gui.TypeRoomGUI;
 import com.minhtan.qlptclient.service.ApiClient;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -26,7 +24,7 @@ public class LandmarkTypeController {
                 return;
             }
             view.getLandmarkTypeIdField().setText(valueOrEmpty(selected.getLandmarkTypeId()));
-            view.getNameField().setText(valueOrEmpty(selected.getLandmarkTypeName()));
+            view.getNameField().setText(valueOrEmpty(selected.getName()));
             view.setDetails(selected.toString());
         });
 
@@ -156,7 +154,7 @@ public class LandmarkTypeController {
         if (!landmarkTypeIdText.isBlank()) {
             landmarkType.setLandmarkTypeId(Integer.valueOf(landmarkTypeIdText));
         }
-        landmarkType.setLandmarkTypeName(textOf(view.getNameField().getText()));
+        landmarkType.setName(textOf(view.getNameField().getText()));
         return landmarkType;
     }
 

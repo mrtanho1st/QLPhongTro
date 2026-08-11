@@ -1,7 +1,8 @@
 package com.minhtan.qlptbackend.repository;
 
-import com.minhtan.qlptbackend.entity.Commission;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.minhtan.qlptbackend.entity.Commission;
 
 import java.math.BigDecimal;
 import java.util.List;

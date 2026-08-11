@@ -45,8 +45,7 @@ public class LandmarkGUI extends BorderPane {
     private final TextField landmarkNameField = new TextField();
     private final ComboBox<LandmarkType> landmarkTypeComboBox = new ComboBox<>(FXCollections.observableArrayList());
     private final TextField addressField = new TextField();
-    private final TextField latitudeField = new TextField();
-    private final TextField longitudeField = new TextField();
+    private final TextField coordinatesField = new TextField();
     private final TextArea descriptionField = new TextArea();
     private final ComboBox<Boolean> isActiveComboBox = new ComboBox<>(
             FXCollections.observableArrayList(Boolean.TRUE, Boolean.FALSE));
@@ -80,8 +79,7 @@ public class LandmarkGUI extends BorderPane {
         landmarkIdField.setPromptText("Tự động");
         landmarkNameField.setPromptText("Tên địa danh");
         addressField.setPromptText("Địa chỉ");
-        latitudeField.setPromptText("Vĩ độ (vd: 10.762622)");
-        longitudeField.setPromptText("Kinh độ (vd: 106.660172)");
+        coordinatesField.setPromptText("Tọa độ (vd: 10.762622, 106.660172)");
         descriptionField.setPromptText("Mô tả");
         descriptionField.setPrefRowCount(3);
 
@@ -117,10 +115,9 @@ public class LandmarkGUI extends BorderPane {
         form.addRow(1, fieldLabel("Name"), landmarkNameField);
         form.addRow(2, fieldLabel("Landmark Type"), landmarkTypeComboBox);
         form.addRow(3, fieldLabel("Address"), addressField);
-        form.addRow(4, fieldLabel("Latitude"), latitudeField);
-        form.addRow(5, fieldLabel("Longitude"), longitudeField);
-        form.addRow(6, fieldLabel("Description"), descriptionField);
-        form.addRow(7, fieldLabel("Is Active"), isActiveComboBox);
+        form.addRow(4, fieldLabel("Coordinates"), coordinatesField);
+        form.addRow(5, fieldLabel("Description"), descriptionField);
+        form.addRow(6, fieldLabel("Is Active"), isActiveComboBox);
 
         form.getChildren().stream()
                 .filter(node -> node instanceof TextField)
@@ -169,7 +166,7 @@ public class LandmarkGUI extends BorderPane {
                 if (type == null) {
                     return "";
                 }
-                return type.getLandmarkTypeId() + " - " + textOrEmpty(type.getLandmarkTypeName());
+                return type.getLandmarkTypeId() + " - " + textOrEmpty(type.getName());
             }
 
             @Override
@@ -235,8 +232,8 @@ public class LandmarkGUI extends BorderPane {
     }
 
     private String resolveTypeName(Landmark landmark) {
-        if (landmark.getLandmarkType() != null && landmark.getLandmarkType().getLandmarkTypeName() != null) {
-            return landmark.getLandmarkType().getLandmarkTypeName();
+        if (landmark.getLandmarkType() != null && landmark.getLandmarkType().getName() != null) {
+            return landmark.getLandmarkType().getName();
         }
         if (landmark.getLandmarkTypesId() != null) {
             return landmarkTypeNames.getOrDefault(landmark.getLandmarkTypesId(), "");
@@ -266,8 +263,7 @@ public class LandmarkGUI extends BorderPane {
         landmarkIdField.setStyle(fieldStyle);
         landmarkNameField.setStyle(fieldStyle);
         addressField.setStyle(fieldStyle);
-        latitudeField.setStyle(fieldStyle);
-        longitudeField.setStyle(fieldStyle);
+        coordinatesField.setStyle(fieldStyle);
         descriptionField.setStyle(fieldStyle);
         landmarkTypeComboBox.setStyle(comboBoxStyle);
         isActiveComboBox.setStyle(comboBoxStyle);
@@ -313,12 +309,8 @@ public class LandmarkGUI extends BorderPane {
         return addressField;
     }
 
-    public TextField getLatitudeField() {
-        return latitudeField;
-    }
-
-    public TextField getLongitudeField() {
-        return longitudeField;
+    public TextField getCoordinatesField() {
+        return coordinatesField;
     }
 
     public TextArea getDescriptionField() {
@@ -374,7 +366,7 @@ public class LandmarkGUI extends BorderPane {
         landmarkTypeComboBox.getItems().setAll(types);
         landmarkTypeNames.clear();
         for (LandmarkType type : types) {
-            landmarkTypeNames.put(type.getLandmarkTypeId(), type.getLandmarkTypeName());
+            landmarkTypeNames.put(type.getLandmarkTypeId(), type.getName());
         }
         landmarkList.refresh();
     }
@@ -392,8 +384,7 @@ public class LandmarkGUI extends BorderPane {
         landmarkNameField.clear();
         landmarkTypeComboBox.getSelectionModel().clearSelection();
         addressField.clear();
-        latitudeField.clear();
-        longitudeField.clear();
+        coordinatesField.clear();
         descriptionField.clear();
         isActiveComboBox.getSelectionModel().clearSelection();
         detailArea.clear();

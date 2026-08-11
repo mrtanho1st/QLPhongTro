@@ -1,7 +1,8 @@
 package com.minhtan.qlptbackend.repository;
 
-import com.minhtan.qlptbackend.entity.Amenity;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.minhtan.qlptbackend.entity.Amenity;
 
 import java.util.List;
 

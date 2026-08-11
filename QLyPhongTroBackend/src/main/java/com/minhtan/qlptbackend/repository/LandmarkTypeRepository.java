@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.minhtan.qlptbackend.entity.LandmarkType;
 
 public interface LandmarkTypeRepository extends JpaRepository<LandmarkType, Integer> {
-    boolean existsByLandmarkTypeNameIgnoreCase(String landmarkTypeName);
+    boolean existsByNameIgnoreCase(String landmarkTypeName);
 
-    List<LandmarkType> findByLandmarkTypeNameContainingIgnoreCase(String keyword);
+    List<LandmarkType> findByNameContainingIgnoreCase(String keyword);
 }

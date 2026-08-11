@@ -1,16 +1,19 @@
 package com.minhtan.qlptclient.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LandmarkType {
     
     private Integer landmarkTypeId;
-    private String landmarkTypeName;
+    private String name;
 
     public LandmarkType() {
     }
 
-    public LandmarkType(Integer landmarkTypeId, String landmarkTypeName) {
+    public LandmarkType(Integer landmarkTypeId, String name) {
         this.landmarkTypeId = landmarkTypeId;
-        this.landmarkTypeName = landmarkTypeName;
+        this.name = name;
     }
 
     public Integer getLandmarkTypeId() {
@@ -21,19 +24,19 @@ public class LandmarkType {
         this.landmarkTypeId = landmarkTypeId;
     }
 
-    public String getLandmarkTypeName() {
-        return landmarkTypeName;
+    public String getName() {
+        return name;
     }
 
-    public void setLandmarkTypeName(String landmarkTypeName) {
-        this.landmarkTypeName = landmarkTypeName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
         return "LandmarkType{" +
                 "landmarkTypeId=" + landmarkTypeId +
-                ", landmarkTypeName='" + landmarkTypeName + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

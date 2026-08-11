@@ -17,6 +17,10 @@ public class LandmarkController {
     public LandmarkController(LandmarkGUI view) {
         this.view = view;
         wireEvents();
+        loadPage();
+    }
+
+    private void loadPage() {
         loadLandmarkTypes();
         loadLandmarks();
     }
@@ -30,7 +34,7 @@ public class LandmarkController {
                     populateForm(selected);
                 });
 
-        view.getRefreshButton().setOnAction(event -> loadLandmarks());
+        view.getRefreshButton().setOnAction(event -> loadPage());
         view.getSearchButton().setOnAction(event -> searchLandmarks());
         view.getCreateButton().setOnAction(event -> createLandmark());
         view.getUpdateButton().setOnAction(event -> updateLandmark());
@@ -39,12 +43,17 @@ public class LandmarkController {
     }
 
     private void populateForm(Landmark selected) {
+        String coordinatesText = "";
+        if (selected.getLatitude() != null && selected.getLongitude() != null) {
+            coordinatesText = selected.getLatitude().toString() + ", " + selected.getLongitude().toString();
+        }
+        else {
+            coordinatesText = "";
+        }
         view.getLandmarkIdField().setText(valueOrEmpty(selected.getLandmarkId()));
         view.getLandmarkNameField().setText(valueOrEmpty(selected.getLandmarkName()));
         view.getAddressField().setText(valueOrEmpty(selected.getAddress()));
-        view.getLatitudeField().setText(selected.getLatitude() == null ? "" : selected.getLatitude().toPlainString());
-        view.getLongitudeField()
-                .setText(selected.getLongitude() == null ? "" : selected.getLongitude().toPlainString());
+        view.getCoordinatesField().setText(coordinatesText);
         view.getDescriptionField().setText(valueOrEmpty(selected.getDescription()));
         view.getIsActiveComboBox().getSelectionModel().select(selected.getIsActive());
 
@@ -222,17 +231,34 @@ public class LandmarkController {
         view.setStatus(statusText);
     }
 
+    private String[] readCoordinates(String coordinatesText) {
+        if (coordinatesText == null || coordinatesText.isBlank()) {
+            return null;
+        }
+        String[] parts = coordinatesText.split(",");
+        if (parts.length != 2) {
+            return null;
+        }
+        return parts;
+    }
+
     private Landmark readForm() {
         Landmark landmark = new Landmark();
         String landmarkIdText = textOf(view.getLandmarkIdField().getText());
         if (!landmarkIdText.isBlank()) {
             landmark.setLandmarkId(Integer.valueOf(landmarkIdText));
         }
+        String[] coordinates = readCoordinates(view.getCoordinatesField().getText());
+        if (coordinates != null) {
+            landmark.setLatitude(parseBigDecimal(coordinates[0], "Latitude"));
+            landmark.setLongitude(parseBigDecimal(coordinates[1], "Longitude"));
+        } else {
+            landmark.setLatitude(null);
+            landmark.setLongitude(null);
+        }
         landmark.setLandmarkName(textOf(view.getLandmarkNameField().getText()));
         landmark.setAddress(textOf(view.getAddressField().getText()));
         landmark.setDescription(textOf(view.getDescriptionField().getText()));
-        landmark.setLatitude(parseBigDecimal(view.getLatitudeField().getText(), "Latitude"));
-        landmark.setLongitude(parseBigDecimal(view.getLongitudeField().getText(), "Longitude"));
         landmark.setIsActive(view.getIsActiveComboBox().getValue());
 
         LandmarkType selectedType = view.getLandmarkTypeComboBox().getValue();

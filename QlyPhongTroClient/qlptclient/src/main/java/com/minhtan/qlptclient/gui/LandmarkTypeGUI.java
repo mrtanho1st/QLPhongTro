@@ -1,7 +1,6 @@
 package com.minhtan.qlptclient.gui;
 
 import com.minhtan.qlptclient.entity.LandmarkType;
-import com.minhtan.qlptclient.entity.TypeRoom;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -125,7 +124,7 @@ public class LandmarkTypeGUI extends BorderPane {
 
         TableColumn<LandmarkType, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setCellValueFactory(
-                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getLandmarkTypeName())));
+                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getName())));
         nameColumn.setPrefWidth(260);
 
         landmarkTypeList.getColumns().setAll(List.of(idColumn, nameColumn));

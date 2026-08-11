@@ -37,8 +37,7 @@ public class BuildingController {
                     view.getFakeAddressField().setText(valueOrEmpty(selected.getFakeAddress()));
                     view.getNoteField().setText(valueOrEmpty(selected.getNote()));
                     view.getOwnerPhoneField().setText(valueOrEmpty(selected.getOwnerPhone()));
-                    view.getLatitudeField().setText(valueOrEmpty(selected.getLatitude()));
-                    view.getLongitudeField().setText(valueOrEmpty(selected.getLongitude()));
+                    view.getCoordinatesField().setText(valueOrEmpty(selected.getLatitude() + ", " + selected.getLongitude()));
                     view.getFeeBuildingIdField().setText(valueOrEmpty(selected.getBuildingId()));
                     loadBuildingFee(selected.getBuildingId());
                 });
@@ -288,12 +287,17 @@ public class BuildingController {
         } else {
             building.setDistrictId(null);
         }
+        String[] parts = view.getCoordinatesField().getText().split(",");
+
+        String latitude = parts[0].trim();
+        String longitude = parts[1].trim()
+        ;
         building.setTrueAddress(textOf(view.getTrueAddressField().getText()));
         building.setFakeAddress(textOf(view.getFakeAddressField().getText()));
         building.setNote(textOf(view.getNoteField().getText()));
         building.setOwnerPhone(textOf(view.getOwnerPhoneField().getText()));
-        building.setLatitude(decimalOrNull(view.getLatitudeField().getText(), "Latitude"));
-        building.setLongitude(decimalOrNull(view.getLongitudeField().getText(), "Longitude"));
+        building.setLatitude(decimalOrNull(latitude, "Latitude"));
+        building.setLongitude(decimalOrNull(longitude, "Longitude"));
         return building;
     }
 
