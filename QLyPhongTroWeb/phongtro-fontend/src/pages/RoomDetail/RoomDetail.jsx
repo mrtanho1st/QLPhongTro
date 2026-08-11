@@ -239,7 +239,7 @@ function RoomDetail({ room, onBack }) {
                 </div>
                 <div className="contract-row">
                   <span>Tiền cọc</span>
-                  <strong>{commissionDeposit ? formatCurrency(commissionDeposit) : 'Đang cập nhật'}</strong>
+                  <strong>{commissionDeposit ? `${commissionDeposit} tháng`: 'Đang cập nhật'}</strong>
                 </div>
               </div>
 
