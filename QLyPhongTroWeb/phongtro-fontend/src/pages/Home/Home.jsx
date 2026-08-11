@@ -5,11 +5,14 @@ import RoomCard from '../../components/RoomCard/RoomCard.jsx';
 import Pagination from '../../components/Pagination/Pagination.jsx';
 import Footer from '../../components/Footer/Footer.jsx';
 import MobileBottomNav from '../../components/Common/MobileBottomNav.jsx';
+import RoomDetail from '../RoomDetail/RoomDetail.jsx';
 import { AREA_BANDS, PRICE_BANDS, AMENITY_BANDS, AMENITY_BAND_MATCHES } from '../../components/Navbar/Navbar.jsx';
 import { geocodeAddress, reverseGeocode, getCurrentPosition, getDistanceKm } from '../../services/geocodeService.js';
 import {
   getAmenities,
+  getBuildingFees,
   getBuildings,
+  getCommissions,
   getDistricts,
   getRoomAmenities,
   getRoomMedia,
@@ -39,9 +42,12 @@ function Home() {
   const [typeRooms, setTypeRooms] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [roomAmenities, setRoomAmenities] = useState([]);
+  const [buildingFees, setBuildingFees] = useState([]);
+  const [commissions, setCommissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchValue, setSearchValue] = useState('');
+  const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [filters, setFilters] = useState(initialFilters);
   const [currentPage, setCurrentPage] = useState(1);
   const [addressOpen, setAddressOpen] = useState(false);
@@ -62,16 +68,27 @@ function Home() {
       setError('');
 
       try {
-        const [roomData, mediaData, buildingData, districtData, typeRoomData, amenityData, roomAmenityData] =
-          await Promise.all([
-            getRooms(),
-            getRoomMedia(),
-            getBuildings(),
-            getDistricts(),
-            getTypeRooms(),
-            getAmenities(),
-            getRoomAmenities(),
-          ]);
+        const [
+          roomData,
+          mediaData,
+          buildingData,
+          districtData,
+          typeRoomData,
+          amenityData,
+          roomAmenityData,
+          buildingFeeData,
+          commissionData,
+        ] = await Promise.all([
+          getRooms(),
+          getRoomMedia(),
+          getBuildings(),
+          getDistricts(),
+          getTypeRooms(),
+          getAmenities(),
+          getRoomAmenities(),
+          getBuildingFees(),
+          getCommissions(),
+        ]);
 
         if (!isMounted) {
           return;
@@ -84,6 +101,8 @@ function Home() {
         setTypeRooms(typeRoomData || []);
         setAmenities(amenityData || []);
         setRoomAmenities(roomAmenityData || []);
+        setBuildingFees(buildingFeeData || []);
+        setCommissions(commissionData || []);
       } catch (loadError) {
         if (isMounted) {
           setError(loadError.message || 'Không thể tải dữ liệu phòng trọ.');
@@ -257,6 +276,36 @@ function Home() {
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const paginatedRooms = filteredRooms.slice((safeCurrentPage - 1) * PAGE_SIZE, safeCurrentPage * PAGE_SIZE);
 
+  const selectedRoomDetail = useMemo(() => {
+    if (selectedRoomId === null || selectedRoomId === undefined) {
+      return null;
+    }
+
+    const room = normalizedRooms.find((item) => String(item.roomId) === String(selectedRoomId));
+
+    if (!room) {
+      return null;
+    }
+
+    const roomAmenityEntries = (roomAmenityMap.get(String(room.roomId)) || [])
+      .map((amenityId) => amenityMap.get(String(amenityId)))
+      .filter(Boolean);
+
+    const buildingFee = buildingFees.find((fee) => String(fee.buildingId) === String(room.buildingId)) || null;
+    const commission = commissions.find((item) => String(item.buildingId) === String(room.buildingId)) || null;
+    const mediaList = roomMedia
+      .filter((media) => String(media.roomId) === String(room.roomId))
+      .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0));
+
+    return {
+      ...room,
+      roomAmenities: roomAmenityEntries,
+      buildingFee,
+      commission,
+      mediaList,
+    };
+  }, [amenityMap, buildingFees, commissions, normalizedRooms, roomAmenityMap, roomMedia, selectedRoomId]);
+
   const handleFiltersChange = (nextValues) => {
     setFilters((currentFilters) => ({
       ...currentFilters,
@@ -374,12 +423,17 @@ function Home() {
     }
   };
 
-  const handleRoomOpen = () => {
-    const contactElement = document.getElementById('contact');
-
-    if (contactElement) {
-      contactElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const handleRoomOpen = (room) => {
+    if (!room) {
+      return;
     }
+
+    setSelectedRoomId(room.roomId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleRoomDetailClose = () => {
+    setSelectedRoomId(null);
   };
 
   const handleSearchSubmit = (event) => {
@@ -435,73 +489,77 @@ function Home() {
         applyError={distanceError}
       />
 
-      <main className="home" id="top">
-        <section className="home__intro" aria-label="Tổng quan kết quả tìm kiếm">
-          <p>
-            Tìm thấy <strong>{filteredRooms.length}</strong> phòng trọ phù hợp
-          </p>
-        </section>
+      {selectedRoomDetail ? (
+        <RoomDetail room={selectedRoomDetail} onBack={handleRoomDetailClose} />
+      ) : (
+        <main className="home" id="top">
+          <section className="home__intro" aria-label="Tổng quan kết quả tìm kiếm">
+            <p>
+              Tìm thấy <strong>{filteredRooms.length}</strong> phòng trọ phù hợp
+            </p>
+          </section>
 
-        <section className="home__content" id="room-list">
-          <div className="home__main-column">
-            {loading ? (
-              <div className="home__grid">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <article key={index} className="room-card room-card--skeleton">
-                    <div className="room-card__media room-card__media--skeleton" />
-                    <div className="room-card__body">
-                      <div className="home__skeleton-line home__skeleton-line--wide" />
-                      <div className="home__skeleton-line" />
-                      <div className="home__skeleton-line home__skeleton-line--short" />
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : error ? (
-              <div className="home__state home__state--error">
-                <h3>Không tải được dữ liệu từ backend</h3>
-                <p>{error}</p>
-                <button type="button" onClick={() => window.location.reload()}>
-                  Thử lại
-                </button>
-              </div>
-            ) : paginatedRooms.length > 0 ? (
-              <>
+          <section className="home__content" id="room-list">
+            <div className="home__main-column">
+              {loading ? (
                 <div className="home__grid">
-                  {paginatedRooms.map((room) => (
-                    <RoomCard key={room.roomId} room={room} onOpen={handleRoomOpen} />
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <article key={index} className="room-card room-card--skeleton">
+                      <div className="room-card__media room-card__media--skeleton" />
+                      <div className="room-card__body">
+                        <div className="home__skeleton-line home__skeleton-line--wide" />
+                        <div className="home__skeleton-line" />
+                        <div className="home__skeleton-line home__skeleton-line--short" />
+                      </div>
+                    </article>
                   ))}
                 </div>
-                <Pagination
-                  currentPage={safeCurrentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                />
-              </>
-            ) : (
-              <div className="home__state">
-                <h3>Không có phòng nào khớp bộ lọc hiện tại</h3>
-                <p>Hãy nới bộ lọc hoặc xóa vài điều kiện để xem thêm kết quả.</p>
-                <button type="button" onClick={() => handleFiltersReset()}>
-                  Xóa bộ lọc
-                </button>
-              </div>
-            )}
-          </div>
+              ) : error ? (
+                <div className="home__state home__state--error">
+                  <h3>Không tải được dữ liệu từ backend</h3>
+                  <p>{error}</p>
+                  <button type="button" onClick={() => window.location.reload()}>
+                    Thử lại
+                  </button>
+                </div>
+              ) : paginatedRooms.length > 0 ? (
+                <>
+                  <div className="home__grid">
+                    {paginatedRooms.map((room) => (
+                      <RoomCard key={room.roomId} room={room} onOpen={handleRoomOpen} />
+                    ))}
+                  </div>
+                  <Pagination
+                    currentPage={safeCurrentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                </>
+              ) : (
+                <div className="home__state">
+                  <h3>Không có phòng nào khớp bộ lọc hiện tại</h3>
+                  <p>Hãy nới bộ lọc hoặc xóa vài điều kiện để xem thêm kết quả.</p>
+                  <button type="button" onClick={() => handleFiltersReset()}>
+                    Xóa bộ lọc
+                  </button>
+                </div>
+              )}
+            </div>
 
-          <div className="home__side-column">
-            <SidebarFilter
-              filters={filters}
-              onChange={handleFiltersChange}
-              onReset={() => handleFiltersReset()}
-              typeRooms={typeRooms}
-              amenityBands={AMENITY_BANDS}
-              priceBands={PRICE_BANDS}
-              areaBands={AREA_BANDS}
-            />
-          </div>
-        </section>
-      </main>
+            <div className="home__side-column">
+              <SidebarFilter
+                filters={filters}
+                onChange={handleFiltersChange}
+                onReset={() => handleFiltersReset()}
+                typeRooms={typeRooms}
+                amenityBands={AMENITY_BANDS}
+                priceBands={PRICE_BANDS}
+                areaBands={AREA_BANDS}
+              />
+            </div>
+          </section>
+        </main>
+      )}
 
       <Footer />
       <MobileBottomNav
