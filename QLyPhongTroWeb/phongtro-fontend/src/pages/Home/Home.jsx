@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar.jsx';
 import SidebarFilter from '../../components/SidebarFilter/SidebarFilter.jsx';
 import RoomCard from '../../components/RoomCard/RoomCard.jsx';
+import RoomDetailModal from '../../components/RoomDetailModal/RoomDetailModal.jsx';
 import Pagination from '../../components/Pagination/Pagination.jsx';
 import Footer from '../../components/Footer/Footer.jsx';
 import MobileBottomNav from '../../components/Common/MobileBottomNav.jsx';
@@ -46,6 +47,7 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [addressOpen, setAddressOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [address, setAddress] = useState('');
   const [radius, setRadius] = useState('');
   const [locating, setLocating] = useState(false);
@@ -164,10 +166,8 @@ function Home() {
         .filter((media) => String(media.roomId) === String(room.roomId))
         .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0));
       const preferredMedia = mediaList.find((media) => Number(media.mediaType) === 1) || mediaList[0] || null;
-
-      const addressLabel = [
-        building?.fakeAddress || building?.trueAddress || room.note
-      ]
+      const gallery = mediaList.map((media) => media.url).filter(Boolean);
+      const addressLabel = building?.fakeAddress || building?.trueAddress || room.note || `BĐS #${room.buildingId}`;
 
       return {
         ...room,
@@ -178,8 +178,9 @@ function Home() {
         districtName: district?.districtName || '',
         typeRoomName: typeRoom?.typeRoomName || '',
         title: room.roomCode || typeRoom?.typeRoomName || 'Phòng trọ',
-        addressLabel: addressLabel || `BĐS #${room.buildingId}`,
+        addressLabel,
         imageUrl: preferredMedia?.url || '',
+        gallery,
         amenityNames,
       };
     });
@@ -374,11 +375,15 @@ function Home() {
     }
   };
 
-  const handleRoomOpen = () => {
-    const contactElement = document.getElementById('contact');
+  const handleRoomOpen = (room) => {
+    setSelectedRoom(room || null);
 
-    if (contactElement) {
-      contactElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!room) {
+      const contactElement = document.getElementById('contact');
+
+      if (contactElement) {
+        contactElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   };
 
@@ -502,6 +507,8 @@ function Home() {
           </div>
         </section>
       </main>
+
+      <RoomDetailModal room={selectedRoom} onClose={() => setSelectedRoom(null)} />
 
       <Footer />
       <MobileBottomNav

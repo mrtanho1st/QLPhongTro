@@ -13,8 +13,29 @@ function RoomCard({ room, onOpen }) {
   const isAvailableNow = !availableDateValue || availableDateValue <= todayValue;
   const availabilityLabel = isAvailableNow ? 'Còn trống' : formatDate(room.availableDate);
 
+  const handleCardClick = (event) => {
+    if (event.target.closest('button')) {
+      return;
+    }
+
+    onOpen?.(room);
+  };
+
+  const handleCardKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onOpen?.(room);
+    }
+  };
+
   return (
-    <article className="room-card">
+    <article
+      className="room-card"
+      role="button"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+    >
       <div className="room-card__media">
         {hasImage ? (
           <img
@@ -29,7 +50,12 @@ function RoomCard({ room, onOpen }) {
           </div>
         )}
 
-        <button className="room-card__favorite" type="button" aria-label="Đánh dấu yêu thích">
+        <button
+          className="room-card__favorite"
+          type="button"
+          aria-label="Đánh dấu yêu thích"
+          onClick={(event) => event.stopPropagation()}
+        >
           <HeartIcon />
         </button>
       </div>
@@ -78,7 +104,14 @@ function RoomCard({ room, onOpen }) {
           </div>
         ) : null}
 
-        <button className="room-card__cta" type="button" onClick={() => onOpen(room)}>
+        <button
+          className="room-card__cta"
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpen?.(room);
+          }}
+        >
           Xem chi tiết
         </button>
       </div>
