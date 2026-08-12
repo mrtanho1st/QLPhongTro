@@ -403,3 +403,120 @@
     border-radius: 18px;
   }
 }
+
+.room-detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.room-detail__action-btn {
+  flex: 1 1 160px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.room-detail__action-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.room-detail__action-btn--outline {
+  color: var(--primary-dark);
+  background: rgba(31, 94, 255, 0.06);
+  border-color: rgba(31, 94, 255, 0.25);
+}
+
+.room-detail__action-btn--outline:hover {
+  background: rgba(31, 94, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.room-detail__action-btn--primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  box-shadow: 0 10px 24px -12px rgba(31, 94, 255, 0.65);
+}
+
+.room-detail__action-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px -12px rgba(31, 94, 255, 0.75);
+}
+
+/* Modal Tư vấn */
+.consult-modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(17, 27, 48, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.consult-modal {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 28px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.consult-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--muted-strong);
+  background: var(--surface-soft);
+}
+
+.consult-modal__close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.consult-modal h3 {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+  color: var(--text);
+}
+
+.consult-modal p {
+  margin: 0 0 20px;
+  color: var(--muted-strong);
+  line-height: 1.6;
+}
+
+.consult-modal__actions {
+  display: grid;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .room-detail__actions {
+    flex-direction: column;
+  }
+
+  .room-detail__action-btn {
+    width: 100%;
+  }
+}

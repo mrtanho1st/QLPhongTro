@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon, AreaIcon, BedIcon, CalendarIcon, HomeIcon } from '../../components/Common/Icons.jsx';
+import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon, AreaIcon, BedIcon, CalendarIcon, HomeIcon, PhoneIcon, CloseIcon } from '../../components/Common/Icons.jsx';
 import { resolveBackendUrl } from '../../services/api.js';
 import { formatArea, formatCurrency, formatDate } from '../../utils/format.js';
 import './RoomDetail.css';
 
-function RoomDetail({ room, onBack }) {
+const CONTACT_PHONE = '0349099412'; // TODO: thay bằng số điện thoại tư vấn thật
+const CONTACT_ZALO_URL = `https://zalo.me/${CONTACT_PHONE}`;
+
+function RoomDetail({ room, onBack, onViewLocation, onConsult }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isConsultOpen, setIsConsultOpen] = useState(false);
 
   const galleryImages = useMemo(() => {
     const imagesFromMedia = (room?.mediaList || [])
@@ -42,6 +46,31 @@ function RoomDetail({ room, onBack }) {
     }
 
     setCurrentImageIndex((currentIndex) => (currentIndex + 1) % galleryImages.length);
+  };
+
+  const handleViewLocation = () => {
+    if (typeof onViewLocation === 'function') {
+      onViewLocation(room);
+      return;
+    }
+
+    const lat = room?.building?.latitude;
+    const lng = room?.building?.longitude;
+    const query = lat && lng ? `${lat},${lng}` : buildingAddress;
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
+
+  const handleConsult = () => {
+    if (typeof onConsult === 'function') {
+      onConsult(room);
+      return;
+    }
+
+    setIsConsultOpen(true);
   };
 
   return (
@@ -114,6 +143,17 @@ function RoomDetail({ room, onBack }) {
                 <span className="room-detail__badge room-detail__badge--primary">{roomTypeName}</span>
                 <span className="room-detail__badge">{districtName}</span>
                 {!room?.locked ? <span className="room-detail__badge room-detail__badge--success">Còn trống</span> : null}
+              </div>
+
+              <div className="room-detail__actions">
+                <button type="button" className="room-detail__action-btn room-detail__action-btn--outline" onClick={handleViewLocation}>
+                  <MapPinIcon />
+                  Xem vị trí
+                </button>
+                <button type="button" className="room-detail__action-btn room-detail__action-btn--primary" onClick={handleConsult}>
+                  <PhoneIcon />
+                  Tư vấn
+                </button>
               </div>
             </div>
 
@@ -239,7 +279,7 @@ function RoomDetail({ room, onBack }) {
                 </div>
                 <div className="contract-row">
                   <span>Tiền cọc</span>
-                  <strong>{commissionDeposit ? `${commissionDeposit} tháng`: 'Đang cập nhật'}</strong>
+                  <strong>{commissionDeposit ? `${commissionDeposit} tháng` : 'Đang cập nhật'}</strong>
                 </div>
               </div>
 
@@ -251,6 +291,31 @@ function RoomDetail({ room, onBack }) {
           </aside>
         </section>
       </div>
+
+      {isConsultOpen ? (
+        <div className="consult-modal__overlay" role="dialog" aria-modal="true" onClick={() => setIsConsultOpen(false)}>
+          <div className="consult-modal" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="consult-modal__close" onClick={() => setIsConsultOpen(false)} aria-label="Đóng">
+              <CloseIcon />
+            </button>
+
+            <h3>Liên hệ tư vấn</h3>
+            <p>
+              Bạn quan tâm đến phòng <strong>{room?.title || room?.roomCode}</strong>? Gọi ngay hoặc nhắn Zalo, chúng tôi sẽ hỗ trợ trong thời gian sớm nhất.
+            </p>
+
+            <div className="consult-modal__actions">
+              <a className="room-detail__action-btn room-detail__action-btn--primary" href={`tel:${CONTACT_PHONE}`}>
+                <PhoneIcon />
+                Gọi {CONTACT_PHONE}
+              </a>
+              <a className="room-detail__action-btn room-detail__action-btn--outline" href={CONTACT_ZALO_URL} target="_blank" rel="noopener noreferrer">
+                Nhắn Zalo
+              </a>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar.jsx';
 import SidebarFilter from '../../components/SidebarFilter/SidebarFilter.jsx';
 import RoomCard from '../../components/RoomCard/RoomCard.jsx';
@@ -35,6 +36,8 @@ const initialFilters = {
 };
 
 function Home() {
+  const navigate = useNavigate();
+  const { roomId: routeRoomId } = useParams();
   const [rooms, setRooms] = useState([]);
   const [roomMedia, setRoomMedia] = useState([]);
   const [buildings, setBuildings] = useState([]);
@@ -276,12 +279,14 @@ function Home() {
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const paginatedRooms = filteredRooms.slice((safeCurrentPage - 1) * PAGE_SIZE, safeCurrentPage * PAGE_SIZE);
 
+  const activeRoomId = routeRoomId ?? selectedRoomId;
+
   const selectedRoomDetail = useMemo(() => {
-    if (selectedRoomId === null || selectedRoomId === undefined) {
+    if (activeRoomId === null || activeRoomId === undefined) {
       return null;
     }
 
-    const room = normalizedRooms.find((item) => String(item.roomId) === String(selectedRoomId));
+    const room = normalizedRooms.find((item) => String(item.roomId) === String(activeRoomId));
 
     if (!room) {
       return null;
@@ -304,7 +309,7 @@ function Home() {
       commission,
       mediaList,
     };
-  }, [amenityMap, buildingFees, commissions, normalizedRooms, roomAmenityMap, roomMedia, selectedRoomId]);
+  }, [activeRoomId, amenityMap, buildingFees, commissions, normalizedRooms, roomAmenityMap, roomMedia]);
 
   const handleFiltersChange = (nextValues) => {
     setFilters((currentFilters) => ({
@@ -429,11 +434,13 @@ function Home() {
     }
 
     setSelectedRoomId(room.roomId);
+    navigate(`/room-detail/${room.roomId}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleRoomDetailClose = () => {
     setSelectedRoomId(null);
+    navigate('/');
   };
 
   const handleSearchSubmit = (event) => {
