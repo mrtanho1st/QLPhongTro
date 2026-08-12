@@ -29,7 +29,11 @@ const initialFilters = {
   districtId: 'all',
   typeRoomId: 'all',
   priceBand: 'all',
+  priceMin: '',
+  priceMax: '',
   areaBand: 'all',
+  areaMin: '',
+  areaMax: '',
   amenityBand: 'all',
   amenityIds: [],
   onlyAvailable: false,
@@ -37,7 +41,8 @@ const initialFilters = {
 
 function Home() {
   const navigate = useNavigate();
-  const { roomId: routeRoomId } = useParams();
+  const { roomId: activeRoomId } = useParams(); // <-- nguồn duy nhất, bỏ selectedRoomId
+
   const [rooms, setRooms] = useState([]);
   const [roomMedia, setRoomMedia] = useState([]);
   const [buildings, setBuildings] = useState([]);
@@ -50,7 +55,6 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [filters, setFilters] = useState(initialFilters);
   const [currentPage, setCurrentPage] = useState(1);
   const [addressOpen, setAddressOpen] = useState(false);
@@ -61,8 +65,9 @@ function Home() {
   const [locationError, setLocationError] = useState('');
   const [applyingDistance, setApplyingDistance] = useState(false);
   const [distanceError, setDistanceError] = useState('');
-  const [distanceFilter, setDistanceFilter] = useState(null); // { origin: {lat, lng}, radiusKm }
-  const buildingCoordsRef = useRef(new Map()); // cache buildingId -> {lat,lng} | null
+  const [distanceFilter, setDistanceFilter] = useState(null);
+  const buildingCoordsRef = useRef(new Map());
+
   useEffect(() => {
     let isMounted = true;
 
@@ -175,36 +180,36 @@ function Home() {
     return rooms
       .filter((room) => room.locked === false)
       .map((room) => {
-      const building = buildingMap.get(String(room.buildingId)) || room.building || null;
-      const typeRoom = typeRoomMap.get(String(room.typeRoomId)) || room.typeRoom || null;
-      const district = building ? districtMap.get(String(building.districtId)) || building.district || null : null;
-      const amenityIds = roomAmenityMap.get(String(room.roomId)) || [];
-      const amenityNames = amenityIds
-        .map((amenityId) => amenityMap.get(String(amenityId))?.name)
-        .filter(Boolean);
-      const mediaList = roomMedia
-        .filter((media) => String(media.roomId) === String(room.roomId))
-        .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0));
-      const preferredMedia = mediaList.find((media) => Number(media.mediaType) === 1) || mediaList[0] || null;
+        const building = buildingMap.get(String(room.buildingId)) || room.building || null;
+        const typeRoom = typeRoomMap.get(String(room.typeRoomId)) || room.typeRoom || null;
+        const district = building ? districtMap.get(String(building.districtId)) || building.district || null : null;
+        const amenityIds = roomAmenityMap.get(String(room.roomId)) || [];
+        const amenityNames = amenityIds
+          .map((amenityId) => amenityMap.get(String(amenityId))?.name)
+          .filter(Boolean);
+        const mediaList = roomMedia
+          .filter((media) => String(media.roomId) === String(room.roomId))
+          .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0));
+        const preferredMedia = mediaList.find((media) => Number(media.mediaType) === 1) || mediaList[0] || null;
 
-      const addressLabel = [
-        building?.fakeAddress || building?.trueAddress || room.note
-      ]
+        const addressLabel = [
+          building?.fakeAddress || building?.trueAddress || room.note
+        ]
 
-      return {
-        ...room,
-        building,
-        district,
-        typeRoom,
-        districtId: building?.districtId,
-        districtName: district?.districtName || '',
-        typeRoomName: typeRoom?.typeRoomName || '',
-        title: room.roomCode || typeRoom?.typeRoomName || 'Phòng trọ',
-        addressLabel: addressLabel || `BĐS #${room.buildingId}`,
-        imageUrl: preferredMedia?.url || '',
-        amenityNames,
-      };
-    });
+        return {
+          ...room,
+          building,
+          district,
+          typeRoom,
+          districtId: building?.districtId,
+          districtName: district?.districtName || '',
+          typeRoomName: typeRoom?.typeRoomName || '',
+          title: room.roomCode || typeRoom?.typeRoomName || 'Phòng trọ',
+          addressLabel: addressLabel || `BĐS #${room.buildingId}`,
+          imageUrl: preferredMedia?.url || '',
+          amenityNames,
+        };
+      });
   }, [amenityMap, buildingMap, districtMap, roomMedia, rooms, typeRoomMap, roomAmenityMap]);
 
   const filteredRooms = useMemo(() => {
@@ -231,13 +236,33 @@ function Home() {
         const matchesTypeRoom =
           filters.typeRoomId === 'all' || String(room.typeRoomId) === String(filters.typeRoomId);
 
-        const matchesPrice = matchesBand(Number(room.price || 0), filters.priceBand);
-        const matchesArea = matchesBand(Number(room.area || 0), filters.areaBand);
+        const roomPrice = Number(room.price || 0);
+        const roomArea = Number(room.area || 0);
+
+        const priceMinValue = filters.priceMin === '' || filters.priceMin === null ? null : Number(filters.priceMin);
+        const priceMaxValue = filters.priceMax === '' || filters.priceMax === null ? null : Number(filters.priceMax);
+        const areaMinValue = filters.areaMin === '' || filters.areaMin === null ? null : Number(filters.areaMin);
+        const areaMaxValue = filters.areaMax === '' || filters.areaMax === null ? null : Number(filters.areaMax);
+
+        const matchesPrice =
+          matchesBand(roomPrice, filters.priceBand) &&
+          (priceMinValue === null || roomPrice >= priceMinValue) &&
+          (priceMaxValue === null || roomPrice <= priceMaxValue);
+
+        const matchesArea =
+          matchesBand(roomArea, filters.areaBand) &&
+          (areaMinValue === null || roomArea >= areaMinValue) &&
+          (areaMaxValue === null || roomArea <= areaMaxValue);
+
         const matchesAmenity = matchesAmenityBand(room.amenityNames, filters.amenityBand);
         const matchesAmenityIds =
           filters.amenityIds.length === 0 ||
           filters.amenityIds.every((amenityId) => roomAmenityMap.get(String(room.roomId))?.includes(amenityId));
-        const matchesAvailability = !filters.onlyAvailable || !room.locked;
+
+        const availableDateValue = room.availableDate ? new Date(room.availableDate) : null;
+        const todayValue = new Date();
+        todayValue.setHours(0, 0, 0, 0);
+        const matchesAvailability = !filters.onlyAvailable || !availableDateValue || availableDateValue <= todayValue;
 
         const matchesDistance = (() => {
           if (!distanceFilter) {
@@ -273,16 +298,14 @@ function Home() {
         );
       })
       .sort((left, right) => Number(left.price || 0) - Number(right.price || 0));
-  }, [distanceFilter,filters, normalizedRooms, roomAmenityMap, searchValue]);
+  }, [distanceFilter, filters, normalizedRooms, roomAmenityMap, searchValue]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRooms.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const paginatedRooms = filteredRooms.slice((safeCurrentPage - 1) * PAGE_SIZE, safeCurrentPage * PAGE_SIZE);
 
-  const activeRoomId = routeRoomId ?? selectedRoomId;
-
   const selectedRoomDetail = useMemo(() => {
-    if (activeRoomId === null || activeRoomId === undefined) {
+    if (!activeRoomId) {
       return null;
     }
 
@@ -332,7 +355,7 @@ function Home() {
       return nextFilters;
     });
   };
-  
+
   const handleUseCurrentLocation = async () => {
     setLocationError('');
     setLocating(true);
@@ -433,13 +456,11 @@ function Home() {
       return;
     }
 
-    setSelectedRoomId(room.roomId);
     navigate(`/room-detail/${room.roomId}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleRoomDetailClose = () => {
-    setSelectedRoomId(null);
     navigate('/');
   };
 
@@ -588,46 +609,16 @@ function matchesAmenityBand(roomAmenityNames, bandId) {
 }
 
 function matchesBand(value, bandId) {
-  if (bandId === 'all') {
-    return true;
-  }
-
-  if (bandId === 'under-2m') {
-    return value < 2_000_000;
-  }
-
-  if (bandId === '2m-4m') {
-    return value >= 2_000_000 && value < 4_000_000;
-  }
-
-  if (bandId === '4m-6m') {
-    return value >= 4_000_000 && value < 6_000_000;
-  }
-
-  if (bandId === '6m-8m') {
-    return value >= 6_000_000 && value < 8_000_000;
-  }
-
-  if (bandId === 'over-8m') {
-    return value >= 8_000_000;
-  }
-
-  if (bandId === 'under-20') {
-    return value < 20;
-  }
-
-  if (bandId === '20-30') {
-    return value >= 20 && value < 30;
-  }
-
-  if (bandId === '30-40') {
-    return value >= 30 && value < 40;
-  }
-
-  if (bandId === 'over-40') {
-    return value >= 40;
-  }
-
+  if (bandId === 'all') return true;
+  if (bandId === 'under-2m') return value < 2_000_000;
+  if (bandId === '2m-4m') return value >= 2_000_000 && value < 4_000_000;
+  if (bandId === '4m-6m') return value >= 4_000_000 && value < 6_000_000;
+  if (bandId === '6m-8m') return value >= 6_000_000 && value < 8_000_000;
+  if (bandId === 'over-8m') return value >= 8_000_000;
+  if (bandId === 'under-20') return value < 20;
+  if (bandId === '20-30') return value >= 20 && value < 30;
+  if (bandId === '30-40') return value >= 30 && value < 40;
+  if (bandId === 'over-40') return value >= 40;
   return true;
 }
 

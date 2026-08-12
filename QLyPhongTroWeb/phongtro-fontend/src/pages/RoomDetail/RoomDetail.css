@@ -513,10 +513,10 @@
 
 @media (max-width: 480px) {
   .room-detail__actions {
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .room-detail__action-btn {
-    width: 100%;
+    flex: 1
   }
 }

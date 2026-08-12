@@ -242,3 +242,10 @@
     box-sizing: border-box;
   }
 }
+
+.filter-dropdown__radio-row input[type="radio"] {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}

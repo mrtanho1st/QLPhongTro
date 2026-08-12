@@ -6,6 +6,16 @@ export function formatCurrency(value) {
   }).format(numberValue)}đ`;
 }
 
+export function formatNumberInput(value) {
+    const number = value.replace(/\D/g, '');
+
+    if (!number) {
+        return '';
+    }
+
+    return new Intl.NumberFormat('vi-VN').format(Number(number));
+}
+
 export function formatArea(value) {
   const numberValue = Number(value || 0);
   return `${new Intl.NumberFormat('vi-VN', {
