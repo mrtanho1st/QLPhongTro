@@ -153,6 +153,116 @@
   border-bottom: 1px solid var(--border);
 }
 
+.address-dropdown__mode-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.address-dropdown__mode-card,
+.address-dropdown__select-button,
+.address-dropdown__panel-item,
+.address-dropdown__back {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 12px 14px;
+  text-align: left;
+  font: inherit;
+}
+
+.address-dropdown__mode-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.address-dropdown__mode-card svg {
+  width: 18px;
+  height: 18px;
+}
+
+.address-dropdown__back {
+  margin-top: 14px;
+  width: fit-content;
+  background: var(--surface-soft);
+  color: var(--muted-strong);
+  font-weight: 700;
+}
+
+.address-dropdown__panel-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 6px 2px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(245, 247, 255, 0.72);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(31, 94, 255, 0.38) transparent;
+}
+
+.address-dropdown__panel-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.address-dropdown__panel-list::-webkit-scrollbar-thumb {
+  background: rgba(31, 94, 255, 0.32);
+  border-radius: 999px;
+}
+
+.address-dropdown__panel-list--compact {
+  max-height: 180px;
+}
+
+.address-dropdown__panel-item {
+  width: 100%;
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--border);
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.address-dropdown__panel-item:hover {
+  border-color: rgba(31, 94, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.address-dropdown__panel-item.is-selected,
+.address-dropdown__select-button.is-selected {
+  background: rgba(31, 94, 255, 0.08);
+  border-color: rgba(31, 94, 255, 0.3);
+}
+
+.address-dropdown__select-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.address-dropdown__select-button svg,
+.address-dropdown__panel-item svg {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+.address-dropdown__empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .address-dropdown__field {
   display: grid;
   gap: 6px;

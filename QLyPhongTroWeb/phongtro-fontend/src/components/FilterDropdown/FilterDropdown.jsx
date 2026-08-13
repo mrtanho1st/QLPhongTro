@@ -19,8 +19,6 @@ function FilterDropdown({
   const [priceMax, setPriceMax] = useState('');
   const [areaMin, setAreaMin] = useState('');
   const [areaMax, setAreaMax] = useState('');
-  const [availabilityMode, setAvailabilityMode] = useState('');
-  const [availableFrom, setAvailableFrom] = useState('');
 
   useEffect(() => {
     setPriceMin(filters.priceMin ?? '');
@@ -28,10 +26,7 @@ function FilterDropdown({
     setAreaMin(filters.areaMin ?? '');
     setAreaMax(filters.areaMax ?? '');
 
-    setAvailabilityMode(filters.availabilityMode ?? '');
-    setAvailableFrom(filters.availableFrom ?? '');
-
-  }, [filters.priceMin, filters.priceMax, filters.areaMin, filters.areaMax, filters.availabilityMode, filters.availableFrom]);
+  }, [filters.priceMin, filters.priceMax, filters.areaMin, filters.areaMax]);
   
   if (!open) {
     return null;
@@ -55,8 +50,6 @@ function FilterDropdown({
     setPriceMax('');
     setAreaMin('');
     setAreaMax('');
-    setAvailabilityMode('');
-    setAvailableFrom('');
   };
 
   const updateRangeValue = (field, value) => {
@@ -72,27 +65,20 @@ function FilterDropdown({
   const handleAvailabilityModeChange = (mode) => {
     if (mode === 'date') {
         const date =
-            availableFrom ||
+            filters.availableFrom ||
             new Date().toISOString().split('T')[0];
-
-        setAvailableFrom(date);
-        setAvailabilityMode('date');
 
         onChange({
             availabilityMode: 'date',
             availableFrom: date,
         });
     } else if (mode === 'now') {
-        setAvailableFrom('');
-        setAvailabilityMode('now');
 
         onChange({
             availabilityMode: 'now',
             availableFrom: '',
         });
     } else {
-        setAvailableFrom('');
-        setAvailabilityMode('');
 
         onChange({
             availabilityMode: '',
@@ -236,7 +222,7 @@ function FilterDropdown({
               <input
                   type="radio"
                   name={availabilityGroupName}
-                  checked={availabilityMode === ''}
+                  checked={filters.availabilityMode === ''}
                   onChange={() => handleAvailabilityModeChange('')}
               />
               <span>Không lọc</span>
@@ -247,7 +233,7 @@ function FilterDropdown({
               <input
                 type="radio"
                 name={availabilityGroupName}
-                checked={availabilityMode === 'now'}
+                checked={filters.availabilityMode === 'now'}
                 onChange={() => handleAvailabilityModeChange('now')}
               />
               <span>Trống liền</span>
@@ -258,7 +244,7 @@ function FilterDropdown({
                 <input
                   type="radio"
                   name={availabilityGroupName}
-                  checked={availabilityMode === 'date'}
+                  checked={filters.availabilityMode === 'date'}
                   onChange={() => handleAvailabilityModeChange('date')}
                 />
                 <span>Ngày khác</span>
@@ -267,9 +253,15 @@ function FilterDropdown({
               <input
                 className="filter-dropdown__date-input"
                 type="date"
-                value={availableFrom}
-                onChange={(event) => setAvailableFrom(event.target.value)}
-                disabled={availabilityMode !== 'date'}
+                value={filters.availableFrom}
+                onChange={(event) => {
+                  const date = event.target.value;
+                  onChange({
+                    availabilityMode: 'date',
+                    availableFrom: date,
+                  });
+                }}
+                disabled={filters.availabilityMode !== 'date'}
               />
             </div>
           </div>

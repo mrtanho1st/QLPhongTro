@@ -9,3 +9,6 @@ export const getAmenities = () => requestJson('/amenities');
 export const getRoomAmenities = () => requestJson('/room-amenities');
 export const getBuildingFees = () => requestJson('/building-fees');
 export const getCommissions = () => requestJson('/commissions');
+export const getLandmarkTypes = () => requestJson('/landmark-types');
+export const getLandmarks = () => requestJson('/landmarks');
+export const getLandmarksByType = (landmarkTypeId) => requestJson(`/landmarks/type/${landmarkTypeId}`);

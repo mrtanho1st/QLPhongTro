@@ -15,6 +15,8 @@ import {
   getBuildings,
   getCommissions,
   getDistricts,
+  getLandmarkTypes,
+  getLandmarks,
   getRoomAmenities,
   getRoomMedia,
   getRooms,
@@ -36,7 +38,8 @@ const initialFilters = {
   areaMax: '',
   amenityBand: 'all',
   amenityIds: [],
-  onlyAvailable: false,
+  availabilityMode: '',
+  availableFrom: '',
 };
 
 function Home() {
@@ -47,6 +50,8 @@ function Home() {
   const [roomMedia, setRoomMedia] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [districts, setDistricts] = useState([]);
+  const [landmarkTypes, setLandmarkTypes] = useState([]);
+  const [landmarks, setLandmarks] = useState([]);
   const [typeRooms, setTypeRooms] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [roomAmenities, setRoomAmenities] = useState([]);
@@ -86,6 +91,8 @@ function Home() {
           roomAmenityData,
           buildingFeeData,
           commissionData,
+          landmarkTypeData,
+          landmarkData,
         ] = await Promise.all([
           getRooms(),
           getRoomMedia(),
@@ -96,6 +103,8 @@ function Home() {
           getRoomAmenities(),
           getBuildingFees(),
           getCommissions(),
+          getLandmarkTypes(),
+          getLandmarks(),
         ]);
 
         if (!isMounted) {
@@ -111,6 +120,8 @@ function Home() {
         setRoomAmenities(roomAmenityData || []);
         setBuildingFees(buildingFeeData || []);
         setCommissions(commissionData || []);
+        setLandmarkTypes(landmarkTypeData || []);
+        setLandmarks(landmarkData || []);
       } catch (loadError) {
         if (isMounted) {
           setError(loadError.message || 'Không thể tải dữ liệu phòng trọ.');
@@ -259,14 +270,44 @@ function Home() {
           filters.amenityIds.length === 0 ||
           filters.amenityIds.every((amenityId) => roomAmenityMap.get(String(room.roomId))?.includes(amenityId));
 
-        const availableDateValue = room.availableDate ? new Date(room.availableDate) : null;
-        const todayValue = new Date();
-        todayValue.setHours(0, 0, 0, 0);
-        const matchesAvailability = !filters.onlyAvailable || !availableDateValue || availableDateValue <= todayValue;
+        let matchesAvailability = true;
+        if (filters.availabilityMode === 'now') {
+          // Phòng trống liền: availableDate trước ngày hôm nay
+          const availableDateValue = room.availableDate ? new Date(room.availableDate) : null;
+          const todayValue = new Date();
+          todayValue.setHours(0, 0, 0, 0);
+          matchesAvailability = !availableDateValue || availableDateValue <= todayValue;
+        } 
+        else if (filters.availabilityMode === 'date' && filters.availableFrom) {
+          // Phòng trống từ ngày được chọn: availableDate trước ngày chọn
+          const availableDateValue = room.availableDate ? new Date(room.availableDate) : null;
+          const selectedDate = new Date(filters.availableFrom);
+          selectedDate.setHours(0, 0, 0, 0);
+          matchesAvailability = !availableDateValue || availableDateValue <= selectedDate;
+        }
 
         const matchesDistance = (() => {
           if (!distanceFilter) {
             return true;
+          }
+
+          if (distanceFilter.type === 'landmark') {
+            const landmark = distanceFilter.landmark;
+            const buildingLat = Number(room.building?.latitude ?? room.latitude ?? 0);
+            const buildingLng = Number(room.building?.longitude ?? room.longitude ?? 0);
+
+            if (!landmark || !Number.isFinite(buildingLat) || !Number.isFinite(buildingLng)) {
+              return false;
+            }
+
+            const distanceKm = getDistanceKm(
+              Number(landmark.latitude),
+              Number(landmark.longitude),
+              buildingLat,
+              buildingLng,
+            );
+
+            return distanceKm <= distanceFilter.radiusKm;
           }
 
           const coords = buildingCoordsRef.current.get(String(room.buildingId));
@@ -404,13 +445,34 @@ function Home() {
     handleFiltersReset(['districtId']);
   };
 
-  const handleApplyAddressFilter = async () => {
+  const handleApplyAddressFilter = async (payload = {}) => {
     setDistanceError('');
 
-    const trimmedAddress = address.trim();
-    const radiusValue = Number(radius);
+    const mode = payload.mode || 'district';
+    const radiusValue = Number(payload.radiusKm ?? radius);
 
-    if (!trimmedAddress || !radiusValue || radiusValue <= 0) {
+    if (!radiusValue || radiusValue <= 0) {
+      setDistanceFilter(null);
+      setAddressOpen(false);
+      return;
+    }
+
+    if (mode === 'landmark') {
+      const landmark = landmarks.find((item) => String(item.landmarkId) === String(payload.landmarkId));
+
+      if (!landmark) {
+        setDistanceError('Vui lòng chọn địa điểm để tìm phòng quanh địa điểm.');
+        return;
+      }
+
+      setDistanceFilter({ type: 'landmark', landmark, radiusKm: radiusValue });
+      setAddressOpen(false);
+      return;
+    }
+
+    const trimmedAddress = (payload.address ?? address).trim();
+
+    if (!trimmedAddress) {
       setDistanceFilter(null);
       setAddressOpen(false);
       return;
@@ -442,7 +504,7 @@ function Home() {
         }
       }
 
-      setDistanceFilter({ origin, radiusKm: radiusValue });
+      setDistanceFilter({ type: 'district', origin, radiusKm: radiusValue });
       setAddressOpen(false);
     } catch (applyError) {
       setDistanceError(applyError.message || 'Không thể xác định tọa độ. Vui lòng kiểm tra lại địa chỉ.');
@@ -483,6 +545,8 @@ function Home() {
         onSearchChange={setSearchValue}
         onSearchSubmit={handleSearchSubmit}
         districts={districts}
+        landmarkTypes={landmarkTypes}
+        landmarks={landmarks}
         typeRooms={typeRooms}
         amenities={amenities}
         filters={filters}

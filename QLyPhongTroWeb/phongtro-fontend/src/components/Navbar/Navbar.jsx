@@ -9,6 +9,8 @@ function Navbar({
   onSearchChange,
   onSearchSubmit,
   districts,
+  landmarkTypes,
+  landmarks,
   typeRooms,
   amenities,
   filters,
@@ -36,6 +38,8 @@ function Navbar({
   const addressDropdownProps = {
     open: addressOpen,
     districts,
+    landmarkTypes,
+    landmarks,
     selectedDistrictId: filters.districtId,
     onSelectDistrict,
     onClear,

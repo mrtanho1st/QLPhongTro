@@ -89,8 +89,8 @@ function SidebarFilter({ filters, onChange, onReset, typeRooms, amenityBands, pr
       <label className="sidebar-filter__checkbox sidebar-filter__checkbox--highlight">
         <input
           type="checkbox"
-          checked={Boolean(filters.onlyAvailable)}
-          onChange={(event) => onChange({ onlyAvailable: event.target.checked })}
+          checked={filters.availabilityMode === 'now'}
+          onChange={(event) => onChange({ availabilityMode: event.target.checked ? 'now' : '' })}
         />
         <span>Chỉ phòng còn trống</span>
       </label>
