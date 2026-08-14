@@ -3,7 +3,9 @@ package com.minhtan.qlptbackend.service;
 import com.minhtan.qlptbackend.entity.RoomMedia;
 import com.minhtan.qlptbackend.repository.RoomMediaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,6 +84,35 @@ public class RoomMediaService {
 
         return roomMediaRepository.findById(mediaId)
                 .map(this::toPublic);
+    }
+
+    /**
+     * Upload file từ MultipartFile và lưu vào database.
+     * 
+     * Backend sẽ:
+     * 1. Lưu file vào đĩa cứng: /var/www/PhongTro/uploads/{roomId}/...
+     * 2. Lưu đường dẫn tương đối vào database: {roomId}/...
+     */
+    public RoomMedia uploadRoomMedia(Integer roomId, MultipartFile file, Byte mediaType, Integer sortOrder)
+            throws IOException {
+
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File không được để trống");
+        }
+
+        // Lưu file vào đĩa cứng
+        String relativePath = fileStorageService.saveFile(roomId, file.getOriginalFilename(), file.getBytes());
+
+        // Tạo entity và lưu vào database
+        RoomMedia roomMedia = new RoomMedia();
+        roomMedia.setRoomId(roomId);
+        roomMedia.setUrl(relativePath);
+        roomMedia.setMediaType(mediaType);
+        roomMedia.setSortOrder(sortOrder);
+
+        RoomMedia saved = roomMediaRepository.save(roomMedia);
+
+        return toPublic(saved);
     }
 
     /**

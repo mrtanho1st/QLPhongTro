@@ -120,6 +120,39 @@ public class FileStorageService {
     }
 
     /**
+     * Lưu file từ MultipartFile.
+     * 
+     * Trả về đường dẫn tương đối.
+     * Ví dụ: 1/img.jpg
+     */
+    public String saveFile(Integer roomId, String originalFilename, byte[] fileBytes) throws IOException {
+        if (roomId == null || originalFilename == null || originalFilename.isBlank()) {
+            throw new IllegalArgumentException("roomId và originalFilename không thể rỗng");
+        }
+
+        // Tạo thư mục {roomId} nếu chưa tồn tại
+        Path roomDir = uploadRoot.resolve(String.valueOf(roomId));
+        Files.createDirectories(roomDir);
+
+        // Lấy extension từ filename
+        String extension = "";
+        int lastDot = originalFilename.lastIndexOf('.');
+        if (lastDot > 0) {
+            extension = originalFilename.substring(lastDot);
+        }
+
+        // Tạo tên file duy nhất
+        String fileName = System.currentTimeMillis() + extension;
+        Path filePath = roomDir.resolve(fileName);
+
+        // Lưu file
+        Files.write(filePath, fileBytes);
+
+        // Trả về đường dẫn tương đối
+        return roomId + "/" + fileName;
+    }
+
+    /**
      * Xóa file.
      */
     public void delete(String path) {

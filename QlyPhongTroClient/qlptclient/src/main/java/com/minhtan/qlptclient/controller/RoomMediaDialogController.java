@@ -181,8 +181,18 @@ public class RoomMediaDialogController {
             }
             try {
                 if (media.getMediaId() == null) {
-                    apiClient.createRoomMedia(media);
+                    // Media mới - kiểm tra xem có phải file local hay không
+                    java.io.File localFile = new java.io.File(media.getUrl());
+                    if (localFile.exists() && localFile.isFile()) {
+                        // Upload file từ local
+                        apiClient.uploadRoomMedia(room.getRoomId(), localFile, media.getMediaType(),
+                                media.getSortOrder());
+                    } else {
+                        // URL từ link hoặc đã là path tương đối từ server
+                        apiClient.createRoomMedia(media);
+                    }
                 } else {
+                    // Media đã tồn tại - chỉ update metadata
                     apiClient.updateRoomMedia(media.getMediaId(), media);
                 }
             } catch (Exception exception) {

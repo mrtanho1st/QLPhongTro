@@ -5,7 +5,9 @@ import com.minhtan.qlptbackend.service.RoomMediaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -54,6 +56,20 @@ public class RoomMediaController {
     public ResponseEntity<RoomMedia> createRoomMedia(@RequestBody RoomMedia roomMedia) {
         RoomMedia createdRoomMedia = roomMediaService.createRoomMedia(roomMedia);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRoomMedia);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<RoomMedia> uploadRoomMedia(
+            @RequestParam Integer roomId,
+            @RequestParam MultipartFile file,
+            @RequestParam Byte mediaType,
+            @RequestParam(required = false) Integer sortOrder) {
+        try {
+            RoomMedia createdRoomMedia = roomMediaService.uploadRoomMedia(roomId, file, mediaType, sortOrder);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdRoomMedia);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/{mediaId}")

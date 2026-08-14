@@ -501,6 +501,73 @@ public class ApiClient {
         return objectMapper.readValue(response.body(), responseType);
     }
 
+    /**
+     * Upload file với multipart/form-data.
+     */
+    public RoomMedia uploadRoomMedia(Integer roomId, java.io.File file, Byte mediaType, Integer sortOrder)
+            throws IOException, InterruptedException {
+
+        String boundary = "----FormBoundary" + System.currentTimeMillis();
+        byte[] bodyBytes = buildMultipartBody(roomId, file, mediaType, sortOrder, boundary);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/api/room-media/upload"))
+                .timeout(Duration.ofSeconds(30))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.ofByteArray(bodyBytes))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        ensureSuccess(response);
+        return objectMapper.readValue(response.body(), RoomMedia.class);
+    }
+
+    /**
+     * Xây dựng multipart/form-data body.
+     */
+    private byte[] buildMultipartBody(Integer roomId, java.io.File file, Byte mediaType, Integer sortOrder,
+            String boundary)
+            throws IOException {
+
+        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        String CRLF = "\r\n";
+
+        // roomId
+        baos.write(("--" + boundary + CRLF).getBytes());
+        baos.write("Content-Disposition: form-data; name=\"roomId\"".getBytes());
+        baos.write((CRLF + CRLF).getBytes());
+        baos.write(roomId.toString().getBytes());
+        baos.write(CRLF.getBytes());
+
+        // mediaType
+        baos.write(("--" + boundary + CRLF).getBytes());
+        baos.write("Content-Disposition: form-data; name=\"mediaType\"".getBytes());
+        baos.write((CRLF + CRLF).getBytes());
+        baos.write(mediaType.toString().getBytes());
+        baos.write(CRLF.getBytes());
+
+        // sortOrder
+        if (sortOrder != null) {
+            baos.write(("--" + boundary + CRLF).getBytes());
+            baos.write("Content-Disposition: form-data; name=\"sortOrder\"".getBytes());
+            baos.write((CRLF + CRLF).getBytes());
+            baos.write(sortOrder.toString().getBytes());
+            baos.write(CRLF.getBytes());
+        }
+
+        // file
+        baos.write(("--" + boundary + CRLF).getBytes());
+        baos.write(("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"").getBytes());
+        baos.write((CRLF + "Content-Type: application/octet-stream" + CRLF + CRLF).getBytes());
+        baos.write(java.nio.file.Files.readAllBytes(file.toPath()));
+        baos.write(CRLF.getBytes());
+
+        // closing boundary
+        baos.write(("--" + boundary + "--" + CRLF).getBytes());
+
+        return baos.toByteArray();
+    }
+
     private <T> T getList(String path, TypeReference<T> typeReference) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + path))
