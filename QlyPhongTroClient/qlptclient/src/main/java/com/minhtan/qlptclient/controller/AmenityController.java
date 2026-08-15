@@ -15,6 +15,9 @@ public class AmenityController {
     public AmenityController(AmenityGUI view) {
         this.view = view;
         wireEvents();
+    }
+
+    public void refreshData() {
         loadAmenities();
     }
 

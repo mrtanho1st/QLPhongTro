@@ -55,6 +55,9 @@ public class SearchRoomController {
     public SearchRoomController(SearchRoomGUI view) {
         this.view = view;
         wireEvents();
+    }
+
+    public void refreshData() {
         loadInitialData();
     }
 

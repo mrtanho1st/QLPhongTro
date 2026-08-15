@@ -28,6 +28,9 @@
         public RoomController(RoomGUI view) {
             this.view = view;
             wireEvents();
+        }
+
+        public void refreshData() {
             loadInitialData();
         }
 

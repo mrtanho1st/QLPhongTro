@@ -17,6 +17,9 @@ public class LandmarkController {
     public LandmarkController(LandmarkGUI view) {
         this.view = view;
         wireEvents();
+    }
+
+    public void refreshData() {
         loadPage();
     }
 

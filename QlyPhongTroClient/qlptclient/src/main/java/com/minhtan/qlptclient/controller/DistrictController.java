@@ -15,6 +15,9 @@ public class DistrictController {
     public DistrictController(DistrictGUI view) {
         this.view = view;
         wireEvents();
+    }
+
+    public void refreshData() {
         loadDistricts();
     }
 

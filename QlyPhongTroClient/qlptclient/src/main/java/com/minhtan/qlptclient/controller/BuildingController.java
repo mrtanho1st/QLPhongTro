@@ -21,8 +21,10 @@ public class BuildingController {
     public BuildingController(BuildingGUI view) {
         this.view = view;
         wireEvents();
-        loadBuildingPage();
+    }
 
+    public void refreshData() {
+        loadBuildingPage();
     }
 
     private void wireEvents() {

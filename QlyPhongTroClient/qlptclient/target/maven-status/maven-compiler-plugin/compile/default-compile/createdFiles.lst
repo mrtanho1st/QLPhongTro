@@ -12,7 +12,6 @@ com\minhtan\qlptclient\controller\BuildingController$Loader.class
 com\minhtan\qlptclient\entity\RoomMedia.class
 com\minhtan\qlptclient\controller\DistrictController$Loader.class
 com\minhtan\qlptclient\controller\BuildingController$1.class
-com\minhtan\qlptclient\entity\RoomAmenity$RoomAmenityId.class
 com\minhtan\qlptclient\entity\RoomAmenity.class
 com\minhtan\qlptclient\gui\RoomMediaDialog.class
 com\minhtan\qlptclient\service\ApiClient$6.class

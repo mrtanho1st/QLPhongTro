@@ -23,6 +23,9 @@ public class CommissionController {
     public CommissionController(CommissionGUI view) {
         this.view = view;
         wireEvents();
+    }
+
+    public void refreshData() {
         loadInitialData();
     }
 

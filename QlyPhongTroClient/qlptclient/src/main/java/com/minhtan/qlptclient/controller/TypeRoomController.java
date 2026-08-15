@@ -15,6 +15,9 @@ public class TypeRoomController {
     public TypeRoomController(TypeRoomGUI view) {
         this.view = view;
         wireEvents();
+    }
+
+    public void refreshData() {
         loadTypeRooms();
     }
 

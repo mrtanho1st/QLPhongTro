@@ -16,6 +16,9 @@ public class HomeDashboardController {
     public HomeDashboardController(HomeDashboardPane view) {
         this.view = view;
         wireEvents();
+    }
+
+    public void refreshData() {
         loadStats();
     }
 

@@ -15,6 +15,9 @@ public class LandmarkTypeController {
     public LandmarkTypeController(LandmarkTypeGUI view) {
         this.view = view;
         wireEvents();
+    }
+
+    public void refreshData() {
         loadLandmarkTypes();
     }
 

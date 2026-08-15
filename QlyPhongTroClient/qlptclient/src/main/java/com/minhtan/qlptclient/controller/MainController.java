@@ -7,40 +7,45 @@ public class MainController {
     private final MainView view;
 
     private final SearchRoomController searchRoomController;
+    private final BuildingController buildingController;
+    private final RoomController roomController;
+    private final AmenityController amenityController;
+    private final CommissionController commissionController;
+    private final HomeDashboardController homeDashboardController;
+    private final DistrictController districtController;
+    private final TypeRoomController typeRoomController;
+    private final LandmarkController landmarkController;
+    private final LandmarkTypeController landmarkTypeController;
 
     public MainController(MainView view) {
 
         this.view = view;
 
-        // =====================================
-        // CONTROLLERS
-        // =====================================
-
         this.searchRoomController = new SearchRoomController(
                 view.getSearchRoomGUI());
 
-        new BuildingController(
+        this.buildingController = new BuildingController(
                 view.getBuildingGUI());
 
-        new RoomController(
+        this.roomController = new RoomController(
                 view.getRoomGUI());
 
-        new AmenityController(
+        this.amenityController = new AmenityController(
                 view.getAmenityGUI());
 
-        new CommissionController(
+        this.commissionController = new CommissionController(
                 view.getCommissionGUI());
 
-        new HomeDashboardController(
+        this.homeDashboardController = new HomeDashboardController(
                 view.getHomeDashboardPane());
 
-        new DistrictController(
+        this.districtController = new DistrictController(
                 view.getDistrictGUI());
 
-        new TypeRoomController(
+        this.typeRoomController = new TypeRoomController(
                 view.getTypeRoomGUI());
 
-        new LandmarkController(
+        this.landmarkController = new LandmarkController(
                 view.getLandmarkGUI());
 
         new SaleOffController(
@@ -49,11 +54,8 @@ public class MainController {
         new RoomSaleOffController(
                 view.getRoomSaleOffGUI());
 
-        new LandmarkTypeController(
+        this.landmarkTypeController = new LandmarkTypeController(
                 view.getLandmarkTypeGUI());
-
-        new SaleOffController(
-                view.getSaleOffGUI());
 
         wireEvents();
 
@@ -140,7 +142,7 @@ public class MainController {
     // =====================================================
 
     private void showHome() {
-
+        homeDashboardController.refreshData();
         view.setPage(
                 "Trang chủ",
                 view.getHomeDashboardPane(),
@@ -152,7 +154,7 @@ public class MainController {
     // =====================================================
 
     private void showBuilding() {
-
+        buildingController.refreshData();
         view.setPage(
                 "Quản lý tòa nhà",
                 view.getBuildingGUI(),
@@ -160,7 +162,7 @@ public class MainController {
     }
 
     private void showRoom() {
-
+        roomController.refreshData();
         view.setPage(
                 "Quản lý phòng",
                 view.getRoomGUI(),
@@ -168,7 +170,7 @@ public class MainController {
     }
 
     private void showTypeRoom() {
-
+        typeRoomController.refreshData();
         view.setPage(
                 "Quản lý loại phòng",
                 view.getTypeRoomGUI(),
@@ -176,7 +178,7 @@ public class MainController {
     }
 
     private void showAmenity() {
-
+        amenityController.refreshData();
         view.setPage(
                 "Quản lý tiện ích",
                 view.getAmenityGUI(),
@@ -184,7 +186,7 @@ public class MainController {
     }
 
     private void showDistrict() {
-
+        districtController.refreshData();
         view.setPage(
                 "Quản lý khu vực",
                 view.getDistrictGUI(),
@@ -196,7 +198,7 @@ public class MainController {
     // =====================================================
 
     private void showSearchRoom() {
-
+        searchRoomController.refreshData();
         view.setPage(
                 "Tìm phòng trọ",
                 view.getSearchRoomGUI(),
@@ -208,7 +210,7 @@ public class MainController {
     // =====================================================
 
     private void showCommission() {
-
+        commissionController.refreshData();
         view.setPage(
                 "Quản lý hoa hồng",
                 view.getCommissionGUI(),
@@ -236,7 +238,7 @@ public class MainController {
     // =====================================================
 
     private void showLandmark() {
-
+        landmarkController.refreshData();
         view.setPage(
                 "Quản lý địa danh",
                 view.getLandmarkGUI(),
@@ -244,7 +246,7 @@ public class MainController {
     }
 
     private void showLandmarkType() {
-
+        landmarkTypeController.refreshData();
         view.setPage(
                 "Quản lý loại địa danh",
                 view.getLandmarkTypeGUI(),
