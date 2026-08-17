@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon, AreaIcon, BedIcon, CalendarIcon, HomeIcon, PhoneIcon, CloseIcon } from '../../components/Common/Icons.jsx';
+import { useEffect, useMemo, useState } from 'react';
+import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon, AreaIcon, BedIcon, CalendarIcon, HomeIcon, PhoneIcon, CloseIcon, HeartIcon } from '../../components/Common/Icons.jsx';
 import { resolveBackendUrl } from '../../services/api.js';
 import { formatArea, formatCurrency, formatDate } from '../../utils/format.js';
+import { isRoomSaved, toggleSavedRoom } from '../../utils/savedRooms.js';
 import './RoomDetail.css';
 
 const CONTACT_PHONE = '0349099412'; // TODO: thay bằng số điện thoại tư vấn thật
@@ -10,6 +11,11 @@ const CONTACT_ZALO_URL = `https://zalo.me/${CONTACT_PHONE}`;
 function RoomDetail({ room, onBack, onViewLocation, onConsult }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isConsultOpen, setIsConsultOpen] = useState(false);
+  const [isSaved, setIsSaved] = useState(isRoomSaved(room));
+
+  useEffect(() => {
+    setIsSaved(isRoomSaved(room));
+  }, [room]);
 
   const galleryImages = useMemo(() => {
     const imagesFromMedia = (room?.mediaList || [])
@@ -71,6 +77,11 @@ function RoomDetail({ room, onBack, onViewLocation, onConsult }) {
     }
 
     setIsConsultOpen(true);
+  };
+
+  const handleToggleSaved = () => {
+    const nextSaved = toggleSavedRoom(room);
+    setIsSaved(Boolean(nextSaved));
   };
 
   return (
@@ -149,6 +160,15 @@ function RoomDetail({ room, onBack, onViewLocation, onConsult }) {
                 <button type="button" className="room-detail__action-btn room-detail__action-btn--outline" onClick={handleViewLocation}>
                   <MapPinIcon />
                   Xem vị trí
+                </button>
+                <button
+                  type="button"
+                  className={`room-detail__action-btn ${isSaved ? 'room-detail__action-btn--saved' : 'room-detail__action-btn--primary'}`}
+                  onClick={handleToggleSaved}
+                  aria-label={isSaved ? 'Bỏ lưu phòng' : 'Lưu phòng'}
+                >
+                  <HeartIcon />
+                  {isSaved ? 'Đã lưu' : 'Lưu phòng'}
                 </button>
                 <button type="button" className="room-detail__action-btn room-detail__action-btn--primary" onClick={handleConsult}>
                   <PhoneIcon />
