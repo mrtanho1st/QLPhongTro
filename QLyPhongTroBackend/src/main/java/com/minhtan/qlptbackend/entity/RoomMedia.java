@@ -1,9 +1,13 @@
 package com.minhtan.qlptbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "RoomMedia")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class RoomMedia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +19,7 @@ public class RoomMedia {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RoomId", insertable = false, updatable = false)
+    @JsonIgnore
     private Room room;
 
     @Column(name = "MediaType", nullable = false)

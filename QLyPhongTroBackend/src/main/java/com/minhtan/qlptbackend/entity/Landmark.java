@@ -2,6 +2,7 @@ package com.minhtan.qlptbackend.entity;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -31,6 +32,7 @@ public class Landmark {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LandmarkTypesId", insertable = false, updatable = false)
+    @JsonIgnore
     private LandmarkType landmarkType;
 
     @Column(name = "Address", length = 300)

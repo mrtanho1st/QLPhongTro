@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -21,10 +22,12 @@ public class RoomAmenity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RoomId", insertable = false, updatable = false)
+    @JsonIgnore
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "AmenityId", insertable = false, updatable = false)
+    @JsonIgnore
     private Amenity amenity;
 
     public RoomAmenity() {

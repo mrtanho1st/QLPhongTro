@@ -1,8 +1,11 @@
 package com.minhtan.qlptbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 @Entity
 @Table(name = "LandmarkTypes")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class LandmarkType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

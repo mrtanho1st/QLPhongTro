@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -20,6 +21,7 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BuildingId", insertable = false, updatable = false)
+    @JsonIgnore
     private Building building;
 
     @Column(name = "TypeRoomId", nullable = false)
@@ -27,6 +29,7 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TypeRoomId", insertable = false, updatable = false)
+    @JsonIgnore
     private TypeRoom typeRoom;
 
     @Column(name = "RoomCode", length = 20)

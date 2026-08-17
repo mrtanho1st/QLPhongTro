@@ -1,10 +1,14 @@
 package com.minhtan.qlptbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Commissions")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Commission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +20,7 @@ public class Commission {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BuildingId", insertable = false, updatable = false)
+    @JsonIgnore
     private Building building;
 
     @Column(name = "ContractMonth")
