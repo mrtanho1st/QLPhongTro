@@ -1,5 +1,6 @@
 USE master;
 GO
+
 IF DB_ID('QuanLyPhongTro') IS NOT NULL
 BEGIN
     ALTER DATABASE QuanLyPhongTro SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
@@ -25,6 +26,7 @@ CREATE TABLE TypeRooms
     TypeRoomId INT IDENTITY PRIMARY KEY,
     TypeRoomName NVARCHAR(50) NOT NULL UNIQUE
 );
+GO
 
 CREATE TABLE Buildings
 (
@@ -104,7 +106,7 @@ CREATE TABLE RoomMedia
 (
     MediaId INT IDENTITY PRIMARY KEY,
     RoomId INT NOT NULL,
-    MediaType TINYINT NOT NULL,   -- 1=Image, 2=Video
+    MediaType TINYINT NOT NULL,
     Url NVARCHAR(1000) NOT NULL,
     SortOrder INT DEFAULT 0,
     FOREIGN KEY(RoomId) REFERENCES Rooms(RoomId)
@@ -121,21 +123,13 @@ GO
 CREATE TABLE Landmarks
 (
     LandmarkId INT IDENTITY PRIMARY KEY,
-
     Name NVARCHAR(200) NOT NULL,
-
     LandmarkTypesId INT NOT NULL,
-
     Address NVARCHAR(300) NOT NULL,
-
     Latitude DECIMAL(10,8) NOT NULL,
-
     Longitude DECIMAL(11,8) NOT NULL,
-
     Description NVARCHAR(500),
-
-    IsActive BIT DEFAULT 1
-
+    IsActive BIT DEFAULT 1,
     FOREIGN KEY(LandmarkTypesId) REFERENCES LandmarkTypes(LandmarkTypesId)
 );
 GO
@@ -143,12 +137,13 @@ GO
 CREATE TABLE SaleOffs
 (
     SaleOffId INT IDENTITY(1,1) PRIMARY KEY,
-    SaleOffName NVARCHAR(100) NOT NULL,      -- Ví dụ: Khuyến mãi tháng 8
-    DiscountAmount DECIMAL(18,2) NOT NULL,   -- Giảm theo số tiền
+    SaleOffName NVARCHAR(100) NOT NULL,
+    DiscountAmount DECIMAL(18,2) NOT NULL,
     StartDate DATETIME NOT NULL,
     EndDate DATETIME NOT NULL,
-    IsActive BIT NOT NULL DEFAULT 1,         -- Bật/Tắt khuyến mãi
+    IsActive BIT NOT NULL DEFAULT 1
 );
+GO
 
 CREATE TABLE RoomSaleOffs
 (
@@ -158,6 +153,6 @@ CREATE TABLE RoomSaleOffs
     PRIMARY KEY(RoomId, SaleOffId),
 
     FOREIGN KEY(RoomId) REFERENCES Rooms(RoomId) ON DELETE CASCADE,
-
     FOREIGN KEY(SaleOffId) REFERENCES SaleOffs(SaleOffId) ON DELETE CASCADE
 );
+GO
