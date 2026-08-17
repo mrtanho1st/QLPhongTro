@@ -2,6 +2,8 @@ package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.Landmark;
 import com.minhtan.qlptbackend.repository.LandmarkRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,7 @@ public class LandmarkService {
     /**
      * Lấy tất cả địa điểm
      */
+    @Cacheable(value = "landmarks", key = "'all'")
     public List<Landmark> findAll() {
         return landmarkRepository.findAll();
     }
@@ -25,6 +28,7 @@ public class LandmarkService {
     /**
      * Lấy theo ID
      */
+    @Cacheable(value = "landmarks", key = "'byId:' + #id")
     public Landmark findById(Integer id) {
         return landmarkRepository.findById(id).orElse(null);
     }
@@ -32,6 +36,7 @@ public class LandmarkService {
     /**
      * Thêm mới
      */
+    @CacheEvict(value = "landmarks", allEntries = true)
     public Landmark create(Landmark landmark) {
 
         validate(landmark);
@@ -44,6 +49,7 @@ public class LandmarkService {
     /**
      * Cập nhật
      */
+    @CacheEvict(value = "landmarks", allEntries = true)
     public Landmark update(Integer id, Landmark landmark) {
 
         Landmark existing = findById(id);
@@ -68,6 +74,7 @@ public class LandmarkService {
     /**
      * Xóa
      */
+    @CacheEvict(value = "landmarks", allEntries = true)
     public boolean delete(Integer id) {
 
         if (!landmarkRepository.existsById(id)) {

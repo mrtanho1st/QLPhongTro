@@ -8,6 +8,8 @@ import com.minhtan.qlptbackend.repository.CommissionRepository;
 
 import jakarta.transaction.Transactional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,10 +31,12 @@ public class BuildingService {
         this.commissionRepository = commissionRepository;
     }
 
+    @Cacheable(value = "buildings", key = "'all'")
     public List<Building> getAllBuildings() {
         return buildingRepository.findAll();
     }
 
+    @Cacheable(value = "buildings", key = "'byTrueAddress:' + #trueAddress")
     public List<Building> searchByTrueAddress(String trueAddress) {
         return buildingRepository.findByTrueAddressContainingIgnoreCase(trueAddress);
     }
@@ -53,15 +57,18 @@ public class BuildingService {
         return buildingRepository.findByDistrictId(districtId);
     }
 
+    @Cacheable(value = "buildings", key = "'byId:' + #buildingId")
     public Optional<Building> getBuildingById(Integer buildingId) {
         return buildingRepository.findById(buildingId);
     }
 
+    @CacheEvict(value = {"buildings", "rooms"}, allEntries = true)
     public Building createBuilding(Building building) {
         building.setBuildingId(null);
         return buildingRepository.save(building);
     }
 
+    @CacheEvict(value = {"buildings", "rooms"}, allEntries = true)
     public Optional<Building> updateBuilding(Integer buildingId, Building buildingRequest) {
         return buildingRepository.findById(buildingId).map(existingBuilding -> {
             existingBuilding.setTrueAddress(buildingRequest.getTrueAddress());
@@ -76,6 +83,7 @@ public class BuildingService {
     }
 
     @Transactional
+    @CacheEvict(value = {"buildings", "rooms"}, allEntries = true)
     public boolean deleteBuilding(Integer buildingId) {
         if (!buildingRepository.existsById(buildingId)) {
             return false;

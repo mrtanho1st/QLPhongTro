@@ -8,6 +8,8 @@ import com.minhtan.qlptbackend.repository.RoomRepository;
 
 import jakarta.transaction.Transactional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,10 +33,12 @@ public class RoomService {
         this.fileStorageService = fileStorageService;
     }
 
+    @Cacheable(value = "rooms", key = "'all'")
     public List<Room> getAllRooms() {
         return roomRepository.findAll();
     }
 
+    @Cacheable(value = "rooms", key = "'byBuildingId:' + #buildingId")
     public List<Room> searchByBuildingId(Integer buildingId) {
         return roomRepository.findByBuildingId(buildingId);
     }
@@ -83,15 +87,18 @@ public class RoomService {
         return roomRepository.findByNoteContainingIgnoreCase(note);
     }
 
+    @Cacheable(value = "rooms", key = "'byId:' + #roomId")
     public Optional<Room> getRoomById(Integer roomId) {
         return roomRepository.findById(roomId);
     }
 
+    @CacheEvict(value = {"rooms"}, allEntries = true)
     public Room createRoom(Room room) {
         room.setRoomId(null);
         return roomRepository.save(room);
     }
 
+    @CacheEvict(value = {"rooms"}, allEntries = true)
     public Optional<Room> updateRoom(Integer roomId, Room roomRequest) {
         return roomRepository.findById(roomId).map(existingRoom -> {
             existingRoom.setBuildingId(roomRequest.getBuildingId());
@@ -108,6 +115,7 @@ public class RoomService {
         });
     }   
     @Transactional
+    @CacheEvict(value = {"rooms"}, allEntries = true)
     public boolean deleteRoom(Integer roomId) {
         if (!roomRepository.existsById(roomId)) {
             return false;

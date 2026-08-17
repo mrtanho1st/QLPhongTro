@@ -2,6 +2,8 @@ package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.BuildingFee;
 import com.minhtan.qlptbackend.repository.BuildingFeeRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,10 +19,12 @@ public class BuildingFeeService {
         this.buildingFeeRepository = buildingFeeRepository;
     }
 
+    @Cacheable(value = "buildingFees", key = "'all'")
     public List<BuildingFee> getAllBuildingFees() {
         return buildingFeeRepository.findAll();
     }
 
+    @Cacheable(value = "buildingFees", key = "'byBuildingId:' + #buildingId")
     public List<BuildingFee> searchByBuildingId(Integer buildingId) {
         return buildingFeeRepository.findByBuildingId(buildingId);
     }
@@ -49,15 +53,18 @@ public class BuildingFeeService {
         return buildingFeeRepository.findByFreeParking(freeParking);
     }
 
+    @Cacheable(value = "buildingFees", key = "'byId:' + #feeId")
     public Optional<BuildingFee> getBuildingFeeById(Integer feeId) {
         return buildingFeeRepository.findById(feeId);
     }
 
+    @CacheEvict(value = "buildingFees", allEntries = true)
     public BuildingFee createBuildingFee(BuildingFee buildingFee) {
         buildingFee.setFeeId(null);
         return buildingFeeRepository.save(buildingFee);
     }
 
+    @CacheEvict(value = "buildingFees", allEntries = true)
     public Optional<BuildingFee> updateBuildingFee(Integer feeId, BuildingFee buildingFeeRequest) {
         return buildingFeeRepository.findById(feeId).map(existingBuildingFee -> {
             existingBuildingFee.setBuildingId(buildingFeeRequest.getBuildingId());
@@ -71,6 +78,7 @@ public class BuildingFeeService {
         });
     }
 
+    @CacheEvict(value = "buildingFees", allEntries = true)
     public boolean deleteBuildingFee(Integer feeId) {
         if (!buildingFeeRepository.existsById(feeId)) {
             return false;

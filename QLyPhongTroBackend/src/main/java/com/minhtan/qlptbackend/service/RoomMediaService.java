@@ -2,6 +2,8 @@ package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.RoomMedia;
 import com.minhtan.qlptbackend.repository.RoomMediaRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,7 @@ public class RoomMediaService {
         return roomMedia;
     }
 
+    @Cacheable(value = "roomMedia", key = "'all'")
     public List<RoomMedia> getAllRoomMedia() {
 
         List<RoomMedia> medias = roomMediaRepository.findAll();
@@ -42,6 +45,7 @@ public class RoomMediaService {
         return medias;
     }
 
+    @Cacheable(value = "roomMedia", key = "'byRoomId:' + #roomId")
     public List<RoomMedia> searchByRoomId(Integer roomId) {
 
         List<RoomMedia> medias = roomMediaRepository.findByRoomId(roomId);
@@ -80,6 +84,7 @@ public class RoomMediaService {
         return medias;
     }
 
+    @Cacheable(value = "roomMedia", key = "'byId:' + #mediaId")
     public Optional<RoomMedia> getRoomMediaById(Integer mediaId) {
 
         return roomMediaRepository.findById(mediaId)
@@ -93,6 +98,7 @@ public class RoomMediaService {
      * 1. Lưu file vào đĩa cứng: /var/www/PhongTro/uploads/{roomId}/...
      * 2. Lưu đường dẫn tương đối vào database: {roomId}/...
      */
+    @CacheEvict(value = "roomMedia", allEntries = true)
     public RoomMedia uploadRoomMedia(Integer roomId, MultipartFile file, Byte mediaType, Integer sortOrder)
             throws IOException {
 
@@ -118,6 +124,7 @@ public class RoomMediaService {
     /**
      * Lưu vào database dưới dạng đường dẫn tương đối.
      */
+    @CacheEvict(value = "roomMedia", allEntries = true)
     public RoomMedia createRoomMedia(RoomMedia roomMedia) {
 
         roomMedia.setMediaId(null);
@@ -133,6 +140,7 @@ public class RoomMediaService {
     /**
      * Cập nhật và lưu đường dẫn tương đối.
      */
+    @CacheEvict(value = "roomMedia", allEntries = true)
     public Optional<RoomMedia> updateRoomMedia(Integer mediaId,
             RoomMedia roomMediaRequest) {
 
@@ -151,6 +159,7 @@ public class RoomMediaService {
         });
     }
 
+    @CacheEvict(value = "roomMedia", allEntries = true)
     public boolean deleteRoomMedia(Integer mediaId) {
 
         if (!roomMediaRepository.existsById(mediaId)) {

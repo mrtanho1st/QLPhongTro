@@ -2,6 +2,8 @@ package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.SaleOff;
 import com.minhtan.qlptbackend.repository.SaleOffRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +21,7 @@ public class SaleOffService {
     /**
      * Lấy tất cả chương trình khuyến mãi
      */
+    @Cacheable(value = "saleOffs", key = "'all'")
     public List<SaleOff> findAll() {
         return saleOffRepository.findAll();
     }
@@ -26,6 +29,7 @@ public class SaleOffService {
     /**
      * Lấy theo ID
      */
+    @Cacheable(value = "saleOffs", key = "'byId:' + #id")
     public SaleOff findById(Integer id) {
         return saleOffRepository.findById(id).orElse(null);
     }
@@ -33,6 +37,7 @@ public class SaleOffService {
     /**
      * Thêm mới
      */
+    @CacheEvict(value = "saleOffs", allEntries = true)
     public SaleOff create(SaleOff saleOff) {
         validateSaleOff(saleOff);
         saleOff.setSaleOffId(null);
@@ -42,6 +47,7 @@ public class SaleOffService {
     /**
      * Cập nhật
      */
+    @CacheEvict(value = "saleOffs", allEntries = true)
     public SaleOff update(Integer id, SaleOff saleOff) {
         SaleOff existing = findById(id);
 
@@ -63,6 +69,7 @@ public class SaleOffService {
     /**
      * Xóa
      */
+    @CacheEvict(value = "saleOffs", allEntries = true)
     public boolean delete(Integer id) {
         if (!saleOffRepository.existsById(id)) {
             return false;

@@ -2,6 +2,8 @@ package com.minhtan.qlptbackend.service;
 
 import com.minhtan.qlptbackend.entity.RoomSaleOff;
 import com.minhtan.qlptbackend.repository.RoomSaleOffRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,7 @@ public class RoomSaleOffService {
     /**
      * Lấy tất cả
      */
+    @Cacheable(value = "roomSaleOffs", key = "'all'")
     public List<RoomSaleOff> findAll() {
         return roomSaleOffRepository.findAll();
     }
@@ -25,6 +28,7 @@ public class RoomSaleOffService {
     /**
      * Lấy theo khóa chính
      */
+    @Cacheable(value = "roomSaleOffs", key = "'byId:' + #roomId + ':' + #saleOffId")
     public RoomSaleOff findById(Integer roomId, Integer saleOffId) {
         RoomSaleOff.RoomSaleOffId id = new RoomSaleOff.RoomSaleOffId(roomId, saleOffId);
 
@@ -34,6 +38,7 @@ public class RoomSaleOffService {
     /**
      * Gán khuyến mãi cho phòng
      */
+    @CacheEvict(value = "roomSaleOffs", allEntries = true)
     public RoomSaleOff create(RoomSaleOff roomSaleOff) {
 
         RoomSaleOff.RoomSaleOffId id = new RoomSaleOff.RoomSaleOffId(
@@ -54,6 +59,7 @@ public class RoomSaleOffService {
     /**
      * Xóa khuyến mãi khỏi phòng
      */
+    @CacheEvict(value = "roomSaleOffs", allEntries = true)
     public boolean delete(Integer roomId, Integer saleOffId) {
 
         RoomSaleOff.RoomSaleOffId id = new RoomSaleOff.RoomSaleOffId(roomId, saleOffId);
@@ -84,10 +90,12 @@ public class RoomSaleOffService {
         return roomSaleOffRepository.findBySaleOffId(saleOffId);
     }
 
+    @CacheEvict(value = "roomSaleOffs", allEntries = true)
     public void deleteAllByRoom(Integer roomId) {
         roomSaleOffRepository.deleteByRoomId(roomId);
     }
 
+    @CacheEvict(value = "roomSaleOffs", allEntries = true)
     public void deleteAllBySaleOff(Integer saleOffId) {
         roomSaleOffRepository.deleteBySaleOffId(saleOffId);
     }
