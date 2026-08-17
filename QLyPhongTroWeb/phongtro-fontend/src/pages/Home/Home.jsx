@@ -42,22 +42,22 @@ const initialFilters = {
   availableFrom: '',
 };
 
-function Home() {
+function Home({ homeDataCache, onHomeDataCache }) {
   const navigate = useNavigate();
   const { roomId: activeRoomId } = useParams(); // <-- nguồn duy nhất, bỏ selectedRoomId
 
-  const [rooms, setRooms] = useState([]);
-  const [roomMedia, setRoomMedia] = useState([]);
-  const [buildings, setBuildings] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [landmarkTypes, setLandmarkTypes] = useState([]);
-  const [landmarks, setLandmarks] = useState([]);
-  const [typeRooms, setTypeRooms] = useState([]);
-  const [amenities, setAmenities] = useState([]);
-  const [roomAmenities, setRoomAmenities] = useState([]);
-  const [buildingFees, setBuildingFees] = useState([]);
-  const [commissions, setCommissions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [rooms, setRooms] = useState(homeDataCache?.rooms ?? []);
+  const [roomMedia, setRoomMedia] = useState(homeDataCache?.roomMedia ?? []);
+  const [buildings, setBuildings] = useState(homeDataCache?.buildings ?? []);
+  const [districts, setDistricts] = useState(homeDataCache?.districts ?? []);
+  const [landmarkTypes, setLandmarkTypes] = useState(homeDataCache?.landmarkTypes ?? []);
+  const [landmarks, setLandmarks] = useState(homeDataCache?.landmarks ?? []);
+  const [typeRooms, setTypeRooms] = useState(homeDataCache?.typeRooms ?? []);
+  const [amenities, setAmenities] = useState(homeDataCache?.amenities ?? []);
+  const [roomAmenities, setRoomAmenities] = useState(homeDataCache?.roomAmenities ?? []);
+  const [buildingFees, setBuildingFees] = useState(homeDataCache?.buildingFees ?? []);
+  const [commissions, setCommissions] = useState(homeDataCache?.commissions ?? []);
+  const [loading, setLoading] = useState(!homeDataCache);
   const [error, setError] = useState('');
   const [searchValue, setSearchValue] = useState('');
   const [filters, setFilters] = useState(initialFilters);
@@ -74,6 +74,23 @@ function Home() {
   const buildingCoordsRef = useRef(new Map());
 
   useEffect(() => {
+    if (homeDataCache) {
+      setRooms(homeDataCache.rooms ?? []);
+      setRoomMedia(homeDataCache.roomMedia ?? []);
+      setBuildings(homeDataCache.buildings ?? []);
+      setDistricts(homeDataCache.districts ?? []);
+      setLandmarkTypes(homeDataCache.landmarkTypes ?? []);
+      setLandmarks(homeDataCache.landmarks ?? []);
+      setTypeRooms(homeDataCache.typeRooms ?? []);
+      setAmenities(homeDataCache.amenities ?? []);
+      setRoomAmenities(homeDataCache.roomAmenities ?? []);
+      setBuildingFees(homeDataCache.buildingFees ?? []);
+      setCommissions(homeDataCache.commissions ?? []);
+      setLoading(false);
+      setError('');
+      return;
+    }
+
     let isMounted = true;
 
     async function loadData() {
@@ -111,17 +128,35 @@ function Home() {
           return;
         }
 
-        setRooms(roomData || []);
-        setRoomMedia(mediaData || []);
-        setBuildings(buildingData || []);
-        setDistricts(districtData || []);
-        setTypeRooms(typeRoomData || []);
-        setAmenities(amenityData || []);
-        setRoomAmenities(roomAmenityData || []);
-        setBuildingFees(buildingFeeData || []);
-        setCommissions(commissionData || []);
-        setLandmarkTypes(landmarkTypeData || []);
-        setLandmarks(landmarkData || []);
+        const nextData = {
+          rooms: roomData || [],
+          roomMedia: mediaData || [],
+          buildings: buildingData || [],
+          districts: districtData || [],
+          landmarkTypes: landmarkTypeData || [],
+          landmarks: landmarkData || [],
+          typeRooms: typeRoomData || [],
+          amenities: amenityData || [],
+          roomAmenities: roomAmenityData || [],
+          buildingFees: buildingFeeData || [],
+          commissions: commissionData || [],
+        };
+
+        setRooms(nextData.rooms);
+        setRoomMedia(nextData.roomMedia);
+        setBuildings(nextData.buildings);
+        setDistricts(nextData.districts);
+        setTypeRooms(nextData.typeRooms);
+        setAmenities(nextData.amenities);
+        setRoomAmenities(nextData.roomAmenities);
+        setBuildingFees(nextData.buildingFees);
+        setCommissions(nextData.commissions);
+        setLandmarkTypes(nextData.landmarkTypes);
+        setLandmarks(nextData.landmarks);
+
+        if (typeof onHomeDataCache === 'function') {
+          onHomeDataCache(nextData);
+        }
       } catch (loadError) {
         if (isMounted) {
           setError(loadError.message || 'Không thể tải dữ liệu phòng trọ.');
@@ -138,7 +173,7 @@ function Home() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [homeDataCache, onHomeDataCache]);
 
   useEffect(() => {
     const handleEscape = (event) => {
