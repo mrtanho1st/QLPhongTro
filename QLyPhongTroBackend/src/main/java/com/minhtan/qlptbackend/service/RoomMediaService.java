@@ -166,6 +166,15 @@ public class RoomMediaService {
             return false;
         }
 
+        // Lấy RoomMedia trước khi xóa để lấy đường dẫn file
+        RoomMedia roomMedia = roomMediaRepository.findById(mediaId).orElse(null);
+
+        if (roomMedia != null && roomMedia.getUrl() != null) {
+            // Xóa file từ đĩa cứng
+            fileStorageService.delete(roomMedia.getUrl());
+        }
+
+        // Xóa record từ database
         roomMediaRepository.deleteById(mediaId);
 
         return true;
