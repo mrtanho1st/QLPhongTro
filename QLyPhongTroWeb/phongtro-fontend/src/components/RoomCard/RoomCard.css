@@ -71,6 +71,17 @@
   height: 18px;
 }
 
+.room-card__favorite.is-saved {
+  color: #ff5a78;
+  background: rgba(255, 90, 120, 0.15);
+  box-shadow: 0 0 0 2px rgba(255, 90, 120, 0.1);
+}
+
+.room-card__favorite.is-saved svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
 .room-card__body {
   display: grid;
   gap: 8px;

@@ -1,11 +1,13 @@
 import { AreaIcon, BedIcon, CalendarIcon, HeartIcon, LocationIcon } from '../Common/Icons.jsx';
 import { resolveBackendUrl } from '../../services/api.js';
 import { formatArea, formatCurrency, formatDate, toText } from '../../utils/format.js';
+import { isRoomSaved, toggleSavedRoom } from '../../utils/savedRooms.js';
 import './RoomCard.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-function RoomCard({ room, onOpen }) {
+function RoomCard({ room, onOpen, isSaved: controlledSaved, onToggleSaved }) {
   const [imageFailed, setImageFailed] = useState(false);
+  const [isSaved, setIsSaved] = useState(typeof controlledSaved === 'boolean' ? controlledSaved : isRoomSaved(room));
   const imageUrl = room.imageUrl ? resolveBackendUrl(room.imageUrl) : '';
   const hasImage = Boolean(imageUrl) && !imageFailed;
   const availableDateValue = String(room.availableDate || '').slice(0, 10);
@@ -13,8 +15,19 @@ function RoomCard({ room, onOpen }) {
   const isAvailableNow = !availableDateValue || availableDateValue <= todayValue;
   const availabilityLabel = isAvailableNow ? 'Còn trống' : formatDate(room.availableDate);
 
+  useEffect(() => {
+    if (typeof controlledSaved === 'boolean') {
+      setIsSaved(controlledSaved);
+      return;
+    }
+
+    setIsSaved(isRoomSaved(room));
+  }, [controlledSaved, room]);
+
   const handleOpen = () => {
-    onOpen(room);
+    if (typeof onOpen === 'function') {
+      onOpen(room);
+    }
   };
 
   const handleKeyDown = (event) => {
@@ -26,7 +39,16 @@ function RoomCard({ room, onOpen }) {
 
   const handleFavoriteClick = (event) => {
     event.stopPropagation();
-    // TODO: xử lý logic đánh dấu yêu thích tại đây
+
+    let nextSavedState = isSaved;
+
+    if (typeof onToggleSaved === 'function') {
+      nextSavedState = onToggleSaved(room, !isSaved) ?? !isSaved;
+    } else {
+      nextSavedState = toggleSavedRoom(room);
+    }
+
+    setIsSaved(Boolean(nextSavedState));
   };
 
   return (
@@ -52,9 +74,9 @@ function RoomCard({ room, onOpen }) {
         )}
 
         <button
-          className="room-card__favorite"
+          className={`room-card__favorite ${isSaved ? 'is-saved' : ''}`}
           type="button"
-          aria-label="Đánh dấu yêu thích"
+          aria-label={isSaved ? 'Bỏ đánh dấu yêu thích' : 'Đánh dấu yêu thích'}
           onClick={handleFavoriteClick}
         >
           <HeartIcon />

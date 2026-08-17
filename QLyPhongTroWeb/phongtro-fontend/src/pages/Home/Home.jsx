@@ -526,6 +526,10 @@ function Home() {
     navigate('/');
   };
 
+  const handleSavedRoomsOpen = () => {
+    navigate('/saved-rooms');
+  };
+
   const handleSearchSubmit = (event) => {
     event.preventDefault();
     const roomListElement = document.getElementById('room-list');
@@ -567,6 +571,7 @@ function Home() {
           setFilterOpen(false);
         }}
         onSearchFocus={() => document.getElementById('navbar-search-input')?.focus()}
+        onSavedRoomsClick={handleSavedRoomsOpen}
         onSelectDistrict={handleSelectDistrict}
         onClear={handleClearAddressFilter}
         address={address}
@@ -656,6 +661,7 @@ function Home() {
       <Footer />
       <MobileBottomNav
         onSearchFocus={() => document.getElementById('navbar-mobile-search-input')?.focus()}
+        onSavedRoomsClick={handleSavedRoomsOpen}
         onScrollToContact={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
       />
     </div>

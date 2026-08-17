@@ -22,6 +22,7 @@ function Navbar({
   onToggleFilter,
   onClosePanels,
   onSearchFocus,
+  onSavedRoomsClick,
   onSelectDistrict,
   onClear,
   address,
@@ -110,7 +111,7 @@ function Navbar({
             </div>
 
             <nav className="navbar__links" aria-label="Liên kết nhanh">
-              <button className="navbar__link" type="button" onClick={onSearchFocus}>
+              <button className="navbar__link" type="button" onClick={onSavedRoomsClick}>
                 <HeartIcon />
                 <span>Phòng đã lưu</span>
               </button>
@@ -155,7 +156,7 @@ function Navbar({
             <FilterIcon />
             <span>Lọc</span>
           </button>
-          <button className="navbar__chip" type="button" onClick={onSearchFocus}>
+          <button className="navbar__chip" type="button" onClick={onSavedRoomsClick}>
             <HeartIcon />
             <span>Đã lưu</span>
           </button>
