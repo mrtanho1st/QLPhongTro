@@ -28,7 +28,7 @@ public class ApiClient {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final String baseUrl;
-    private final static ApiClient INSTANCE = new ApiClient("http://192.168.1.243:8080");
+    private final static ApiClient INSTANCE = new ApiClient("http://103.109.187.53:8080");
 
     private ApiClient(String baseUrl) {
         this.baseUrl = stripTrailingSlash(baseUrl);
