@@ -454,6 +454,22 @@
   box-shadow: 0 14px 28px -12px rgba(31, 94, 255, 0.75);
 }
 
+.room-detail__action-btn--saved {
+  color: #fff;
+  background: linear-gradient(135deg, #ff6f91, #ff4f70);
+  box-shadow: 0 10px 24px -12px rgba(255, 79, 112, 0.7);
+}
+
+.room-detail__action-btn--saved:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px -12px rgba(255, 79, 112, 0.8);
+}
+
+.room-detail__action-btn--saved svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
 /* Modal Tư vấn */
 .consult-modal__overlay {
   position: fixed;
