@@ -24,7 +24,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.minhtan.qlptclient.entity.Building;
 import com.minhtan.qlptclient.entity.District;
@@ -68,6 +70,7 @@ public class BuildingGUI extends BorderPane {
     private final Button updateFeeButton = new Button("Sửa");
     private final Button deleteFeeButton = new Button("Xoá");
     private final Button clearFeeButton = new Button("Làm mới");
+    private final Map<Integer, String> districtNameMap = new HashMap<>();
 
     public BuildingGUI() {
         buildUi();
@@ -205,8 +208,15 @@ public class BuildingGUI extends BorderPane {
         idColumn.setMinWidth(64);
 
         TableColumn<Building, String> districtColumn = new TableColumn<>("District Name");
-        districtColumn.setCellValueFactory(
-                cellData -> new ReadOnlyStringWrapper(textOrEmpty(cellData.getValue().getDistrict() != null ? cellData.getValue().getDistrict().getDistrictName() : "")));
+        districtColumn.setCellValueFactory(cellData -> {
+            Integer districtId = cellData.getValue().getDistrictId();
+
+            String districtName = districtId == null
+                    ? ""
+                    : districtNameMap.getOrDefault(districtId, "");
+
+            return new ReadOnlyStringWrapper(districtName);
+        });
         districtColumn.setPrefWidth(140);
 
         TableColumn<Building, String> trueAddressColumn = new TableColumn<>("True Address");
@@ -320,6 +330,21 @@ public class BuildingGUI extends BorderPane {
         String name = textOrEmpty(district.getDistrictName());
         String id = district.getDistrictId() == null ? "" : String.valueOf(district.getDistrictId());
         return id.isBlank() ? name : id + " - " + name;
+    }
+
+    public void setDistricts(List<District> districts) {
+        districtItems.setAll(districts);
+
+        districtNameMap.clear();
+
+        for (District district : districts) {
+            if (district.getDistrictId() != null) {
+                districtNameMap.put(
+                        district.getDistrictId(),
+                        district.getDistrictName()
+                );
+            }
+        }
     }
 
     public Label getStatusLabel() {

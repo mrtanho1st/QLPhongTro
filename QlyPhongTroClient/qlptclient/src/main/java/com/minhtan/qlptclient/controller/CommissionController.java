@@ -79,6 +79,7 @@ public class CommissionController {
 
         task.setOnSucceeded(event -> {
             allCommissions = task.getValue();
+            bindBuildingsToCommissions();
             Platform.runLater(() -> {
                 view.getCommissionItems().setAll(allCommissions);
                 view.setStatus("Tải xong " + allCommissions.size() + " bản ghi");
@@ -246,6 +247,32 @@ public class CommissionController {
         view.setStatus("Đã làm mới");
     }
 
+    private void bindBuildingsToCommissions() {
+        if (allCommissions == null || allCommissions.isEmpty()) {
+            return;
+        }
+
+        for (Commission commission : allCommissions) {
+            if (commission == null) {
+                continue;
+            }
+
+            Building matchedBuilding = findBuildingById(commission.getBuildingId());
+            commission.setBuilding(matchedBuilding);
+        }
+    }
+
+    private Building findBuildingById(Integer buildingId) {
+        if (buildingId == null || allBuildings == null) {
+            return null;
+        }
+
+        return allBuildings.stream()
+                .filter(building -> building != null && buildingId.equals(building.getBuildingId()))
+                .findFirst()
+                .orElse(null);
+    }
+
     private void handleSearch() {
         String searchMode = view.getSearchModeBox().getSelectionModel().getSelectedItem();
         String searchText = view.getSearchField().getText().trim().toLowerCase();
@@ -293,7 +320,7 @@ public class CommissionController {
 
         view.getCommissionIdField().setText(String.valueOf(selected.getCommissionId()));
 
-        Building building = selected.getBuilding();
+        Building building = selected.getBuilding() != null ? selected.getBuilding() : findBuildingById(selected.getBuildingId());
         if (building != null) {
             view.getBuildingComboBox().getSelectionModel().select(building);
         }

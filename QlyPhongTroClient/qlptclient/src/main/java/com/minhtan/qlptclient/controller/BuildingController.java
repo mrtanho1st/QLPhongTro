@@ -71,7 +71,7 @@ public class BuildingController {
 
         task.setOnSucceeded(workerStateEvent -> {
             List<District> districts = task.getValue();
-            view.getDistrictItems().setAll(districts);
+            view.setDistricts(districts);
             view.setStatus("Tải thành công " + districts.size() + " district(s)");
         });
 
