@@ -1,5 +1,6 @@
-import { HeartIcon, HomeIcon, LocationIcon, PhoneIcon } from '../Common/Icons.jsx';
+import { HeartIcon, LocationIcon, PhoneIcon } from '../Common/Icons.jsx';
 import './Footer.css';
+import logo from '../../assets/icons/logo.jpg';
 import qrZalo from "../../assets/imgs/qr_zl.png";
 
 function Footer() {
@@ -7,11 +8,11 @@ function Footer() {
     <footer className="footer" id="contact">
       <div className="footer__brand">
         <div className="footer__brand-mark">
-          <HomeIcon />
+          <img src={logo} alt="Logo" />
         </div>
         <div>
-          <h2>TANEzHouse</h2>
-          <p>Phòng đẹp giá rẻ</p>
+          <h2>Tân Ez House</h2>
+          <p>Chuyên viên tư vấn nhà trọ</p>
         </div>
       </div>
 
@@ -51,7 +52,7 @@ function Footer() {
         </section>
       </div>
 
-      <div className="footer__bottom">© 2026 TÂN EzHouse. All rights reserved.</div>
+      <div className="footer__bottom">© 2026 TÂN Ez House. All rights reserved.</div>
     </footer>
   );
 }

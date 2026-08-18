@@ -37,6 +37,9 @@ function RoomDetail({ room, onBack, onViewLocation, onConsult }) {
   const buildingNote = room?.building?.note || 'Không có mô tả thêm';
   const commissionDeposit = room?.commission?.deposit ?? null;
   const commissionMonth = room?.commission?.contractMonth ?? null;
+  const availableDateValue = String(room.availableDate || '').slice(0, 10);
+  const todayValue = new Date().toISOString().slice(0, 10);
+  const isAvailableNow = !availableDateValue || availableDateValue <= todayValue;
 
   const goToPreviousImage = () => {
     if (galleryImages.length === 0) {
@@ -153,7 +156,7 @@ function RoomDetail({ room, onBack, onViewLocation, onConsult }) {
               <div className="room-detail__badges">
                 <span className="room-detail__badge room-detail__badge--primary">{roomTypeName}</span>
                 <span className="room-detail__badge">{districtName}</span>
-                {!room?.locked ? <span className="room-detail__badge room-detail__badge--success">Còn trống</span> : null}
+                {isAvailableNow ? <span className="room-detail__badge room-detail__badge--success">Còn trống</span> : null}
               </div>
 
               <div className="room-detail__actions">

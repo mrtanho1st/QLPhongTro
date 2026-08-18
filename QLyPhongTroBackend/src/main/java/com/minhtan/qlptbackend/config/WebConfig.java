@@ -16,6 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://103.109.187.69:5173",
                         "http://192.168.1.31:5173",
                         "http://192.168.1.243:5173",
+                        "https://thegioinhatro.id.vn",
                         "http://localhost:4173",
                         "http://127.0.0.1:4173",
                         "http://localhost:8080")

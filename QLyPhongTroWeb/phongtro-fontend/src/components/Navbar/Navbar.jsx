@@ -2,6 +2,8 @@ import SearchBar from '../SearchBar/SearchBar.jsx';
 import AddressDropdown from '../AddressDropdown/AddressDropdown.jsx';
 import FilterDropdown from '../FilterDropdown/FilterDropdown.jsx';
 import { BrandIcon, ChevronDownIcon, HeartIcon, MenuIcon, UserIcon, MapPinIcon, FilterIcon, PhoneIcon } from '../Common/Icons.jsx';
+import logo from '../../assets/icons/logo.jpg';
+
 import './Navbar.css';
 
 function Navbar({
@@ -62,11 +64,11 @@ function Navbar({
         <div className="navbar__top">
           <a className="navbar__brand" href="#home" aria-label="Phongtro Giá Rẻ">
             <span className="navbar__brand-mark">
-              <BrandIcon />
+              <img src={logo} alt="Logo" />
             </span>
             <span className="navbar__brand-text">
-              <strong>TANEzHouse</strong>
-              <span>Phòng đẹp giá rẻ</span>
+              <strong>Thế Giới Nhà Trọ</strong>
+              <span>Phòng đẹp giá tốt</span>
             </span>
           </a>
 
@@ -134,11 +136,11 @@ function Navbar({
 
           <a className="navbar__mobile-brand" href="#home">
             <span className="navbar__brand-mark navbar__brand-mark--mobile">
-              <BrandIcon />
+              <img src={logo} alt="Logo" />
             </span>
             <span>
-              <strong>TANEzHouse</strong>
-              <small>Phòng đẹp giá rẻ</small>
+              <strong>Thế Giới Nhà Trọ</strong>
+              <small>Phòng đẹp giá tốt</small>
             </span>
           </a>
 
