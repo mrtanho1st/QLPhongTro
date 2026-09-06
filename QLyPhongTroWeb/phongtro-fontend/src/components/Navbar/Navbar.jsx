@@ -25,6 +25,7 @@ function Navbar({
   onClosePanels,
   onSearchFocus,
   onSavedRoomsClick,
+  onBrandClick,
   onSelectDistrict,
   onClear,
   address,
@@ -62,7 +63,15 @@ function Navbar({
     <header className="navbar" id="home">
       <div className="navbar__shell">
         <div className="navbar__top">
-          <a className="navbar__brand" href="#home" aria-label="Phongtro Giá Rẻ">
+          <button
+            type="button"
+            className="navbar__brand navbar__brand-logo"
+            aria-label="Phongtro Giá Rẻ"
+            onClick={(event) => {
+              event.preventDefault();
+              onBrandClick?.();
+            }}
+          >
             <span className="navbar__brand-mark">
               <img src={logo} alt="Logo" />
             </span>
@@ -70,7 +79,7 @@ function Navbar({
               <strong>Thế Giới Nhà Trọ</strong>
               <span>Phòng đẹp giá tốt</span>
             </span>
-          </a>
+          </button>
 
           <div className="navbar__desktop-row">
             <div className="navbar__picker-wrap">
@@ -134,7 +143,14 @@ function Navbar({
             <MenuIcon />
           </button>
 
-          <a className="navbar__mobile-brand" href="#home">
+          <button
+            type="button"
+            className="navbar__mobile-brand navbar__brand-logo"
+            onClick={(event) => {
+              event.preventDefault();
+              onBrandClick?.();
+            }}
+          >
             <span className="navbar__brand-mark navbar__brand-mark--mobile">
               <img src={logo} alt="Logo" />
             </span>
@@ -142,7 +158,7 @@ function Navbar({
               <strong>Thế Giới Nhà Trọ</strong>
               <small>Phòng đẹp giá tốt</small>
             </span>
-          </a>
+          </button>
 
           <button className="navbar__icon-button" type="button" aria-label="Tài khoản">
             <UserIcon />
@@ -214,7 +230,7 @@ const AMENITY_BANDS = [
   { id: 'all', label: 'Tất cả tiện ích' },
   { id: 'low', label: 'Có điều hoà' },
   { id: 'medium', label: 'Máy lạnh, tủ lạnh, tủ đồ, cửa sổ' },
-  { id: 'high', label: 'Máy lạnh, máy giặt, tủ bếp, tủ đồ, cửa sổ' },
+  { id: 'high', label: 'Máy lạnh, máy giặt, tủ đồ, cửa sổ' },
   { id: 'full', label: 'Đầy đủ nội thất' },
 ];
 
@@ -226,7 +242,6 @@ const AMENITY_BAND_MATCHES = {
     'Máy lạnh',
     'Máy giặt (chung)',
     'Máy giặt (riêng)',
-    'Tủ bếp',
     'Tủ đồ',
     'Cửa sổ trời',
     'Cửa sổ hành lang',
@@ -235,10 +250,7 @@ const AMENITY_BAND_MATCHES = {
     'Máy lạnh',
     'Tủ lạnh',
     'Máy giặt (riêng)',
-    'Tủ bếp',
     'Tủ đồ',
-    'Giường nệm',
-    'Bàn ghế',
   ],
 };
 

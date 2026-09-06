@@ -29,6 +29,15 @@
   align-items: center;
   gap: 12px;
 }
+.navbar__brand-logo {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font: inherit;
+}
 
 .navbar__brand-mark {
   width: 52px;

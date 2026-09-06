@@ -565,6 +565,20 @@ function Home({ homeDataCache, onHomeDataCache }) {
     navigate('/saved-rooms');
   };
 
+  const handleBrandClick = () => {
+    setSearchValue('');
+    setFilters(initialFilters);
+    setCurrentPage(1);
+    setAddress('');
+    setRadius('');
+    setDistanceFilter(null);
+    setDistanceError('');
+    setAddressOpen(false);
+    setFilterOpen(false);
+    navigate('/');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSearchSubmit = (event) => {
     event.preventDefault();
     const roomListElement = document.getElementById('room-list');
@@ -607,6 +621,7 @@ function Home({ homeDataCache, onHomeDataCache }) {
         }}
         onSearchFocus={() => document.getElementById('navbar-search-input')?.focus()}
         onSavedRoomsClick={handleSavedRoomsOpen}
+        onBrandClick={handleBrandClick}
         onSelectDistrict={handleSelectDistrict}
         onClear={handleClearAddressFilter}
         address={address}
